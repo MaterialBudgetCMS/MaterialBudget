@@ -1,0 +1,65 @@
+%MSG-i Geometry:  (NoModuleName) CSCGeometryESModule() 10-Feb-2015 18:30:47 CET  pre-events
+Label '' looking for alignment labels ''.
+%MSG
+%MSG-i Geometry:  (NoModuleName) DTGeometryESModule() 10-Feb-2015 18:30:47 CET  pre-events
+Label '' looking for alignment labels ''.
+%MSG
+%MSG-i Alignments:  (NoModuleName) FakeAlignmentProducer()  10-Feb-2015 18:30:48 CET pre-events
+Providing data with label 'fakeForIdeal'.
+%MSG
+%MSG-i HCAL:  (NoModuleName) 10-Feb-2015 18:30:48 CET pre-events
+HcalTopologyIdealEP::HcalTopologyIdealEP
+%MSG
+%MSG-i SiPixelQualityESProducer::SiPixelQualityESProducer:  (NoModuleName)  10-Feb-2015 18:30:49 CET pre-events
+
+%MSG
+%MSG-i SiStripBackPlaneCorrectionDepESProducer:  (NoModuleName)  10-Feb-2015 18:30:49 CET pre-events
+ctor
+%MSG
+%MSG-i SiStripLorentzAngleDepESProducer:  (NoModuleName)  10-Feb-2015 18:30:49 CET pre-events
+ctor
+%MSG
+%MSG-i SiStripQualityESProducer:  (NoModuleName) 10-Feb-2015 18:30:49 CET  pre-events
+ctor
+%MSG
+%MSG-i SiStripDetInfoFileReader:  (NoModuleName) 10-Feb-2015 18:30:49 CET  pre-events
+filePath /cvmfs/cms.cern.ch/slc6_amd64_gcc481/cms/cmssw/CMSSW_7_3_1/src/CalibTracker/SiStripCommon/data/SiStripDetInfo.dat
+%MSG
+%MSG-i SiStripDetInfoFileReader::SiStripDetInfoFileReader - END of file reached:  (NoModuleName) 10-Feb-2015 18:30:49 CET pre-events
+
+%MSG
+%MSG-i Geometry:  (NoModuleName) TrackerDigiGeometryESModule()  10-Feb-2015 18:30:50 CET pre-events
+Label 'idealForDigi' IGNORING alignment labels 'fakeForIdeal'.
+%MSG
+%MSG-i TRACKER:  (NoModuleName) 10-Feb-2015 18:30:50 CET pre-events
+TrackerTopologyIdealEP::TrackerTopologyIdealEP
+%MSG
+10-Feb-2015 18:30:50 CET  Initiating request to open file file:/afs/cern.ch/work/m/mgouzevi/private/TRACKING/CMSSW_7_3_1/src/this_is_an_example.root
+10-Feb-2015 18:31:00 CET  Successfully opened file file:/afs/cern.ch/work/m/mgouzevi/private/TRACKING/CMSSW_7_3_1/src/this_is_an_example.root
+%MSG-i Root_Information:  AfterFile TClass::TClass() 10-Feb-2015 18:31:00 CET  pre-events
+no dictionary for class pair<edm::IndexIntoFile::IndexRunKey,Long64_t> is available
+%MSG
+%MSG-i path:  AfterModConstruction 10-Feb-2015 18:31:02 CET pre-events
+The following module labels are not assigned to any path:
+'out','randomEngineStateProducer'
+
+%MSG
+%MSG-i EventSetupDependency:  AfterSource 10-Feb-2015 18:31:02 CET BeforeEvents
+The EventSetup record HcalDbRecord depends on at least one Record 
+ (HcalGainsRcd, HcalPFCorrsRcd, HcalQIEDataRcd, HcalLUTCorrsRcd, HcalPedestalsRcd, HcalRespCorrsRcd, HcalTimeCorrsRcd, HcalLutMetadataRcd, HcalZSThresholdsRcd, HcalElectronicsMapRcd, HcalPedestalWidthsRcd, HcalL1TriggerObjectsRcd) which is not present in the job.
+ This may lead to an exception begin thrown during event processing.
+ If no exception occurs during the job than it is usually safe to ignore this message.
+%MSG
+%MSG-i HCAL:  AfterSource 10-Feb-2015 18:31:02 CET BeforeEvents
+HcalHardcodeCalibrations::setIntervalFor-> key: HcalGainWidthsRcd time: run: 1 lumi: 0 event: 0/1
+%MSG
+Begin processing the 1st record. Run 1, Event 1, LumiSection 1 at 10-Feb-2015 18:31:02.988 CET
+%MSG-i GetByLabelWithoutRegistration:   NtupleMakerNuclearInteractions:MyNtupleMaking 10-Feb-2015 18:31:02 CET  Run: 1 Event: 1
+::getByLabel without corresponding call to consumes or mayConsumes for this module.
+  type: std::vector<reco::Vertex>
+  module label: offlinePrimaryVertices
+  product instance name: ''
+  process name: ''
+
+%MSG
+10-Feb-2015 18:31:03 CET  Closed file file:/afs/cern.ch/work/m/mgouzevi/private/TRACKING/CMSSW_7_3_1/src/this_is_an_example.root
