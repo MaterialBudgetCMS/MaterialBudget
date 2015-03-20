@@ -224,6 +224,8 @@ process.source = cms.Source("PoolSource",
 #process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
+process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
+
 ### Define text output
 process.MessageLogger = cms.Service("MessageLogger",
   destinations = cms.untracked.vstring('MyNtupleMaker.log'), ### Output filename
@@ -232,6 +234,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 ### Define Ntuplizer
 process.MyNtupleMaking = cms.EDAnalyzer("NtupleMakerNuclearInteractions",
+   RealData  = cms.bool(False),
 )
 
 ### Root output
