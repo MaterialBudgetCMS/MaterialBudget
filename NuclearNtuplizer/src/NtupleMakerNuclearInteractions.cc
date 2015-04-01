@@ -376,7 +376,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
   bool isGoodSimulation = false;
   if ( !isRealData )
-    isGoodSimulation = iEvent.getByLabel( "mergedtruth", "MergedTrackTruth", trackingVtxHandle );
+    isGoodSimulation = iEvent.getByLabel( "mix", "MergedTrackTruth", trackingVtxHandle );
 
   if ( isGoodSimulation )
   {

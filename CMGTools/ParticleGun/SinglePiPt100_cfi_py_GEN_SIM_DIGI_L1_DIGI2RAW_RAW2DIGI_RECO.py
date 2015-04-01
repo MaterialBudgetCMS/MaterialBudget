@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Configuration/Generator/python/SinglePiPt100_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,RAW2DIGI,RECO --mc --conditions=auto:mc --eventcontent=FEVTDEBUG -n 2 --no_exec --fileout SinglePiPt100_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_RAW2DIGI_RECO.root
+# with command line options: Configuration/Generator/python/SinglePiPt100_cfi.py -s GEN,SIM,DIGI:pdigi_valid,L1,DIGI2RAW,RAW2DIGI,RECO --mc --conditions=auto:mc --eventcontent=FEVTDEBUG -n 20 --fileout this_is_an_example.root
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('RECO')
@@ -29,7 +29,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
@@ -42,7 +42,7 @@ process.options = cms.untracked.PSet(
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.19 $'),
-    annotation = cms.untracked.string('Configuration/Generator/python/SinglePiPt100_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_RAW2DIGI_RECO.py nevts:10000'),
+    annotation = cms.untracked.string('Configuration/Generator/python/SinglePiPt100_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_RAW2DIGI_RECO.py nevts:1000'),
     name = cms.untracked.string('Applications')
 )
 
@@ -66,6 +66,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
+process.mix.digitizers = cms.PSet(process.theDigitizersValid)
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
 
@@ -89,7 +90,7 @@ process.generator = cms.EDProducer("FlatRandomPtGunProducer",
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen)
 process.simulation_step = cms.Path(process.psim)
-process.digitisation_step = cms.Path(process.pdigi)
+process.digitisation_step = cms.Path(process.pdigi_valid)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
 process.digi2raw_step = cms.Path(process.DigiToRaw)
 process.raw2digi_step = cms.Path(process.RawToDigi)
