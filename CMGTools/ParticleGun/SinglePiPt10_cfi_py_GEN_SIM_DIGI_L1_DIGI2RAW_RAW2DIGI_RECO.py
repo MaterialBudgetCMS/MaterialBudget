@@ -69,7 +69,7 @@ process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 process.mix.digitizers = cms.PSet(process.theDigitizersValid)
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
-process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_73_V13::All', '') # run2_mc Global Tag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_73_V13', '') # run2_mc Global Tag
 
 process.generator = cms.EDProducer("FlatRandomPtGunProducer",
     PGunParameters = cms.PSet(
