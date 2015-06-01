@@ -41,6 +41,28 @@ class NtupleReaderNuclearInteractions_2015
 
     TFile* outputFile;
 
+    double Bins[12];
+    int NTKBins = 11;
+
+    TH1D* hPFDV_CountEventsWithNI;
+   
+    TH1D* hMC_TrkV_R;
+    TH1D* hMC_TrkV_R_isNuclearInteraction;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Barrel;
+    TH1D* hMC_TrkV_R_isAssociatedPF;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Barrel;
+    TH1D* hMC_TrkV_R_associationPFDVIdx;
+    TH1D* hMC_TrkV_R_associationPFDVIdx_Barrel;
+    TH1D* hMC_TrkV_isNuclearInteraction;
+    TH1D* hMC_TrkV_isAssociatedPF;
+    TH1D* hMC_TrkV_associationPFDVIdx;
+
+    TH1D* hPFDV_R;
+    TH1D* hPFDV_R_BPix;
+    TH1D* hPFDV_R_isAssociatedMC;
+    TH1D* hPFDV_R_isAssociatedMC_Barrel;
+    TH1D* hPFDV_isAssociatedMC;
+
     /// Histograms
     TH2D* hPFDV_XY_Map;
     TH2D* hPFDV_RhoPhi_Map;
@@ -48,6 +70,8 @@ class NtupleReaderNuclearInteractions_2015
     TH2D* hPFDV_RhoPhi_Map_BPix;
     TH2D* hPFDV_XY_Map_Pipe;
     TH2D* hPFDV_RhoPhi_Map_Pipe;
+
+    TH2D* hPFDV_ZR_Map;
 
 //    TH2D* hPFDV_XY_Map_Corr;
 //    TH2D* hPFDV_RhoPhi_Map_Corr;

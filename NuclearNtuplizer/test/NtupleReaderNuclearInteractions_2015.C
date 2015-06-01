@@ -375,19 +375,93 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
     inputChain->SetBranchAddress( "PFDV_vTrack_closestDzPVIdx_dz", &PFDV_vTrack_closestDzPVIdx_dz, &b_PFDV_vTrack_closestDzPVIdx_dz );
   else std::cout << "PFDV_vTrack_closestDzPVIdx_dz" << warningString_Branches.data() << std::endl;
 
+
+   //TRACKER MATERIAL bints : 1 bin by big structure.
+   Bins[0]=     0.;
+   Bins[1]=     2.;
+   Bins[2]=     6.;
+   Bins[3]=     9.;
+   Bins[4]=     11.5;
+   Bins[5]=     22.;
+   Bins[6]=     30.;
+   Bins[7]=     38.;
+   Bins[8]=     45.5;
+   Bins[9]=     53.5;
+   Bins[10]=    57.;
+   Bins[11]=    65.;
+
+  //histo MC_TrkV
+  hMC_TrkV_isNuclearInteraction = new TH1D( "hMC_TrkV_isNuclearInteraction", "N.I. in Tracker", 10, -5, 5 );
+  hMC_TrkV_isNuclearInteraction->Sumw2();
+
+  hMC_TrkV_isAssociatedPF = new TH1D( "hMC_TrkV_isAssociatedPF","N.I. in Tracker", 10, -5, 5 );
+  hMC_TrkV_isAssociatedPF->Sumw2();
+
+  hMC_TrkV_associationPFDVIdx = new TH1D( "hMC_TrkV_associationPFDVIdx", "N.I. in Tracker", 10, -5, 5 );
+  hMC_TrkV_associationPFDVIdx->Sumw2();
+ 
+  //hMC_TrkV_R_isNuclearInteraction = new TH1D( "hMC_TrkV_R_isNuclearInteraction", "N.I. in Tracker", 500, 0, 60 );
+  hMC_TrkV_R_isNuclearInteraction = new TH1D( "hMC_TrkV_R_isNuclearInteraction", "N.I. in Tracker",NTKBins, Bins );
+  hMC_TrkV_R_isNuclearInteraction->Sumw2();
+
+  //hMC_TrkV_R_isNuclearInteraction_Barrel = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Barrel", "N.I. in Tracker", 500, 0, 60 );
+  hMC_TrkV_R_isNuclearInteraction_Barrel = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Barrel", "N.I. in Tracker", NTKBins, Bins );
+  hMC_TrkV_R_isNuclearInteraction_Barrel->Sumw2();
+
+  //hMC_TrkV_R_isAssociatedPF = new TH1D( "hMC_TrkV_R_isAssociatedPF", "N.I. in Tracker", 500, 0, 60 );
+  hMC_TrkV_R_isAssociatedPF = new TH1D( "hMC_TrkV_R_isAssociatedPF", "N.I. in Tracker", NTKBins, Bins );
+  hMC_TrkV_R_isAssociatedPF->Sumw2();
+
+  //hMC_TrkV_R_isAssociatedPF_Barrel = new TH1D( "hMC_TrkV_R_isAssociatedPF_Barrel","N.I. in Tracker", 500, 0, 60 );
+  hMC_TrkV_R_isAssociatedPF_Barrel = new TH1D( "hMC_TrkV_R_isAssociatedPF_Barrel","N.I. in Tracker", NTKBins, Bins );
+  hMC_TrkV_R_isAssociatedPF_Barrel->Sumw2();
+
+  //hMC_TrkV_R_associationPFDVIdx = new TH1D( "hMC_TrkV_R_associationPFDVIdx", "N.I. in Tracker", 500, 0, 60 );
+  hMC_TrkV_R_associationPFDVIdx = new TH1D( "hMC_TrkV_R_associationPFDVIdx", "N.I. in Tracker", NTKBins, Bins );
+  hMC_TrkV_R_associationPFDVIdx->Sumw2();
+
+  //hMC_TrkV_R_associationPFDVIdx_Barrel = new TH1D( "hMC_TrkV_R_associationPFDVIdx_Barrel", "N.I. in Tracker", 500, 0, 60 );
+  hMC_TrkV_R_associationPFDVIdx_Barrel = new TH1D( "hMC_TrkV_R_associationPFDVIdx_Barrel", "N.I. in Tracker", NTKBins, Bins );
+  hMC_TrkV_R_associationPFDVIdx_Barrel->Sumw2();
+
+  hMC_TrkV_R = new TH1D( "hMC_TrkV_R", "N.I. in Tracker", 500, 0, 60 );
+  hMC_TrkV_R->Sumw2();
+
   /// Output histograms and graphs etc
-  hPFDV_XY_Map = new TH2D( "hPFDV_XY_Map", "N.I. in Tracker", 280, -70, 70, 280, -70, 70 );
-  hPFDV_RhoPhi_Map = new TH2D( "hPFDV_RhoPhi_Map", "N.I. in Tracker", 200, -TMath::Pi(), TMath::Pi(), 280, 0, 70 );
+  hPFDV_CountEventsWithNI = new TH1D( "hPFDV_CountEventsWithNI", "N.I. in Tracker", 3, 0, 2 );
+  hPFDV_CountEventsWithNI->Sumw2();
+
+  hPFDV_isAssociatedMC = new TH1D( "hPFDV_isAssociatedMC", "CMS work in progress", 10, -5, 5 );
+  hPFDV_isAssociatedMC->Sumw2();
+
+  //hPFDV_R_isAssociatedMC = new TH1D( "hPFDV_R_isAssociatedMC", "CMS work in progress", 500, 0, 60 );
+  hPFDV_R_isAssociatedMC = new TH1D( "hPFDV_R_isAssociatedMC", "CMS work in progress", NTKBins, Bins );
+  hPFDV_R_isAssociatedMC->Sumw2();
+
+  //hPFDV_R_isAssociatedMC_Barrel = new TH1D( "hPFDV_R_isAssociatedMC_Barrel", "CMS work in progress", 500, 0, 60 );
+  hPFDV_R_isAssociatedMC_Barrel = new TH1D( "hPFDV_R_isAssociatedMC_Barrel", "CMS work in progress", NTKBins, Bins );
+  hPFDV_R_isAssociatedMC_Barrel->Sumw2();
+
+  hPFDV_R = new TH1D( "hPFDV_R", "CMS work in progress", 500, 0, 60 );
+  hPFDV_R->Sumw2();
+  hPFDV_R_BPix = new TH1D( "hPFDV_R_BPix", "CMS work in progress", 500, 0, 60 );
+  hPFDV_R_BPix->Sumw2();
+
+  hPFDV_ZR_Map = new TH2D( "hPFDV_ZR_Map", "CMS work in progress", 800, -200, 200, 140, 0, 70 );
+  hPFDV_ZR_Map->Sumw2();
+
+  hPFDV_XY_Map = new TH2D( "hPFDV_XY_Map", "CMS work in progress", 280, -70, 70, 280, -70, 70 );
+  hPFDV_RhoPhi_Map = new TH2D( "hPFDV_RhoPhi_Map", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 280, 0, 70 );
   hPFDV_XY_Map->Sumw2();
   hPFDV_RhoPhi_Map->Sumw2();
 
-  hPFDV_XY_Map_BPix = new TH2D( "hPFDV_XY_Map_BPix", "N.I. in Tracker", 200, -25, 25, 200, -25, 25 );
-  hPFDV_RhoPhi_Map_BPix = new TH2D( "hPFDV_RhoPhi_Map_BPix", "N.I. in Tracker", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 25 );
+  hPFDV_XY_Map_BPix = new TH2D( "hPFDV_XY_Map_BPix", "CMS work in progress", 200, -25, 25, 200, -25, 25 );
+  hPFDV_RhoPhi_Map_BPix = new TH2D( "hPFDV_RhoPhi_Map_BPix", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 25 );
   hPFDV_XY_Map_BPix->Sumw2();
   hPFDV_RhoPhi_Map_BPix->Sumw2();
 
-  hPFDV_XY_Map_Pipe = new TH2D( "hPFDV_XY_Map_Pipe", "N.I. in Tracker", 200, -5, 5, 200, -5, 5 );
-  hPFDV_RhoPhi_Map_Pipe = new TH2D( "hPFDV_RhoPhi_Map_Pipe", "N.I. in Tracker", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 5 );
+  hPFDV_XY_Map_Pipe = new TH2D( "hPFDV_XY_Map_Pipe", "CMS work in progress", 200, -5, 5, 200, -5, 5 );
+  hPFDV_RhoPhi_Map_Pipe = new TH2D( "hPFDV_RhoPhi_Map_Pipe", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 5 );
   hPFDV_XY_Map_Pipe->Sumw2();
   hPFDV_RhoPhi_Map_Pipe->Sumw2();
 
@@ -707,8 +781,75 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     double ni_x_c, ni_y_c, ni_rho_c, ni_phi_c;
     int ni_z_i;
 
+    double ni_MC_x, ni_MC_y, ni_MC_z, ni_MC_rho;
+ 
+    for ( unsigned int i = 0; i < numberOfMC_TrkV; i++ )
+    {
+      ni_MC_x = MC_TrkV_x->at(i);
+      ni_MC_y = MC_TrkV_y->at(i);
+      ni_MC_z = MC_TrkV_z->at(i);
+      ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+ 
+      hMC_TrkV_R->Fill( ni_MC_rho );
+ 
+      if ( MC_TrkV_isNuclearInteraction->at(i)){
+      hMC_TrkV_isNuclearInteraction -> Fill (1.);
+      hMC_TrkV_R_isNuclearInteraction->Fill( ni_MC_rho );
+        if ( MC_TrkV_isAssociatedPF->at(i)){
+        hMC_TrkV_R_isAssociatedPF -> Fill ( ni_MC_rho );
+        }
+      }
+      else{
+      hMC_TrkV_isNuclearInteraction -> Fill (0.); 
+      }
+      /*
+      if ( MC_TrkV_isAssociatedPF->at(i)){
+      hMC_TrkV_isAssociatedPF -> Fill (1.);
+      hMC_TrkV_R_isAssociatedPF -> Fill ( ni_MC_rho );
+      }
+      else{
+      hMC_TrkV_isAssociatedPF -> Fill (0.);
+      }
+      
+      if ( MC_TrkV_associationPFDVIdx->at(i)){
+      hMC_TrkV_associationPFDVIdx -> Fill (1.);
+      hMC_TrkV_R_associationPFDVIdx -> Fill ( ni_MC_rho );
+      }
+      else{
+      hMC_TrkV_associationPFDVIdx -> Fill (0.);
+      }
+      */
+      //PIXEL region only 
+      if(fabs(ni_MC_z) <20)
+      {
+        if ( MC_TrkV_isNuclearInteraction->at(i)){
+        hMC_TrkV_R_isNuclearInteraction_Barrel->Fill( ni_MC_rho );
+          if ( MC_TrkV_isAssociatedPF->at(i)){
+          hMC_TrkV_R_isAssociatedPF_Barrel -> Fill ( ni_MC_rho );
+          }
+        }
+        /*
+        if ( MC_TrkV_isAssociatedPF->at(i)){
+        hMC_TrkV_R_isAssociatedPF_Barrel -> Fill ( ni_MC_rho );
+        }
+      
+        if ( MC_TrkV_associationPFDVIdx->at(i)){
+        hMC_TrkV_R_associationPFDVIdx_Barrel -> Fill ( ni_MC_rho );
+        }
+        */
+      }
+
+
+
+    }
+
+    if (numberOfPFDV >= 1){
+    hPFDV_CountEventsWithNI->Fill(1.);
+    }
+
     for ( unsigned int i = 0; i < numberOfPFDV; i++ )
     {
+      
       ni_x = PFDV_x->at(i);
       ni_y = PFDV_y->at(i);
       ni_z = PFDV_z->at(i);
@@ -716,6 +857,12 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       ni_rho = TMath::Sqrt( ni_x*ni_x + ni_y*ni_y );
 
       ni_z_i = floor( ni_z/5.0 );
+
+      hPFDV_R->Fill( ni_rho );
+      
+      if ( fabs(ni_z) < 20 ) {
+      hPFDV_R_BPix->Fill( ni_rho );
+      }
 
       hPFDV_XY_Map->Fill( ni_x, ni_y );
       hPFDV_RhoPhi_Map->Fill( ni_phi, ni_rho );
@@ -725,6 +872,26 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       hPFDV_XY_Map_Pipe->Fill( ni_x, ni_y );
       hPFDV_RhoPhi_Map_Pipe->Fill( ni_phi, ni_rho );
+
+      hPFDV_ZR_Map->Fill( ni_z, ni_rho );
+
+      if ( PFDV_isAssociatedMC->at(i)){
+      hPFDV_isAssociatedMC -> Fill (1.); 
+      hPFDV_R_isAssociatedMC->Fill( ni_rho );
+      }
+      else{ 
+      hPFDV_isAssociatedMC -> Fill (0.); 
+      }
+
+      if ( fabs(ni_z) <20)
+      {
+        if ( PFDV_isAssociatedMC->at(i)){
+        hPFDV_R_isAssociatedMC_Barrel->Fill( ni_rho );
+        }
+      }
+
+
+
 
 //      if ( fabs(ni_z) < 25 )
 //      {
@@ -848,6 +1015,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     }
 
   } /// End of loop over events
+      cout<<"number of events with NI = "<<hPFDV_CountEventsWithNI->Integral()<<endl;
+      cout<<"number of NI events = "<<hPFDV_XY_Map->Integral()<<endl;
 
 }
 
