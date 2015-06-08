@@ -118,6 +118,8 @@ void NtupleMakerNuclearInteractions::beginJob()
   PFDV_isTherePrimaryTrack = new std::vector< bool >;
   PFDV_isThereMergedTrack = new std::vector< bool >;
   PFDV_isAssociatedMC = new std::vector< bool >;
+  PFDV_distance3D_Associated = new std::vector< double >;
+  PFDV_deltaR_Associated = new std::vector< double >;
   PFDV_associationMC_TrkVIdx = new std::vector< unsigned int >;
   PFDV_vTrack_pt = new std::vector< std::vector< double > >;
   PFDV_vTrack_eta = new std::vector< std::vector< double > >;
@@ -236,6 +238,8 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "PFDV_isTherePrimaryTrack", "std::vector< bool >", &PFDV_isTherePrimaryTrack );
   outputTree->Branch( "PFDV_isThereMergedTrack", "std::vector< bool >", &PFDV_isThereMergedTrack );
   outputTree->Branch( "PFDV_isAssociatedMC", "std::vector< bool >", &PFDV_isAssociatedMC );
+  outputTree->Branch( "PFDV_distance3D_Associated", "std::vector< double >", &PFDV_distance3D_Associated );
+  outputTree->Branch( "PFDV_deltaR_Associated", "std::vector< double >", &PFDV_deltaR_Associated );
   outputTree->Branch( "PFDV_associationMC_TrkVIdx", "std::vector< unsigned int >", &PFDV_associationMC_TrkVIdx );
   outputTree->Branch( "PFDV_vTrack_pt", "std::vector< std::vector< double > >", &PFDV_vTrack_pt );
   outputTree->Branch( "PFDV_vTrack_eta", "std::vector< std::vector< double > >", &PFDV_vTrack_eta );
@@ -436,7 +440,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       double deltaX = 999;
       double deltaY = 999;
 
-      double distance3DOld = 10000.; //Start with a big value
+      double distance3D_Ass = 1000.; //Start with a big value
+      double deltaR_Ass    = 1000.; //Start with a big value
       //      bool assoc = false;
       unsigned int iAssociationIndexLast = 0;
 
@@ -470,23 +475,27 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
         /// Apply Selection
         bool isAssociated = true;
+        // very-very loose cut of 20 cm for future test:
+        if (distance3D > 20.) isAssociated = false;
 
-        if ( !( ( fabs(thisVtx.position().eta()) < 1.2 && ( deltaR < -1.0 || deltaR > 3.0 ) ) ||
-                ( fabs(thisVtx.position().eta()) >= 1.2 && ( deltaR < -2.0 || deltaR > 6.0 ) ) ) )
-          isAssociated = false;
+       // if ( !( ( fabs(thisVtx.position().eta()) < 1.2 && ( deltaR < -1.0 || deltaR > 3.0 ) ) ||
+       //         ( fabs(thisVtx.position().eta()) >= 1.2 && ( deltaR < -2.0 || deltaR > 6.0 ) ) ) )
+       //   isAssociated = false;
 
-        else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaTheta) > 0.2 ) ||
-                     ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaTheta) > 0.1 ) ) )
-          isAssociated = false;
+       // else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaTheta) > 0.2 ) ||
+       //              ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaTheta) > 0.1 ) ) )
+       //   isAssociated = false;
 
-        else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaPhi) > 0.04 ) ||
-                     ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaPhi) > 0.08 ) ) )
-          isAssociated = false;
+       // else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaPhi) > 0.04 ) ||
+       //              ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaPhi) > 0.08 ) ) )
+       //   isAssociated = false;
 
-        if ( !isAssociated  && (distance3D > distance3DOld) )
+        //reject if we don't find association or if our new dR is large then previous
+        if ( !isAssociated  || (distance3D > distance3D_Ass) )
           continue;
 
-        distance3DOld = distance3D;
+        distance3D_Ass = distance3D;
+        deltaR_Ass = deltaR; 
         foundAssociated = true;
 	iAssociationIndexLast = j;
         jAssociationCounterLast = jAssociationCounter;
@@ -580,6 +589,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   PFDV_isTherePrimaryTrack->clear();
   PFDV_isThereMergedTrack->clear();
   PFDV_isAssociatedMC->clear();
+  PFDV_distance3D_Associated->clear();
+  PFDV_deltaR_Associated->clear();
   PFDV_associationMC_TrkVIdx->clear();
   PFDV_vTrack_pt->clear();
   PFDV_vTrack_eta->clear();
@@ -645,7 +656,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     double deltaX = 999;
     double deltaY = 999;
 
-    double distance3DOld = 10000.; //Start with a big value
+    double distance3D_Ass = 1000.; //Start with a big value
+    double deltaR_Ass = 1000.; //Start with a big value
     //    bool assoc = false;
 
     bool foundAssociated = false;
@@ -685,22 +697,27 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
         /// Apply Selection
         bool isAssociated = true;
 
-        if ( !( ( fabs(thisVtx.position().eta()) < 1.2 && ( deltaR < -1.0 || deltaR > 3.0 ) ) ||
-                ( fabs(thisVtx.position().eta()) >= 1.2 && ( deltaR < -2.0 || deltaR > 6.0 ) ) ) )
-          isAssociated = false;
+        // very-very loose cut of 20 cm for future test:
+        if (distance3D > 20.) isAssociated = false;
+ 
+       // if ( !( ( fabs(thisVtx.position().eta()) < 1.2 && ( deltaR < -1.0 || deltaR > 3.0 ) ) ||
+       //         ( fabs(thisVtx.position().eta()) >= 1.2 && ( deltaR < -2.0 || deltaR > 6.0 ) ) ) )
+       //   isAssociated = false;
 
-        else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaTheta) > 0.2 ) ||
-                     ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaTheta) > 0.1 ) ) )
-          isAssociated = false;
+       // else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaTheta) > 0.2 ) ||
+       //              ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaTheta) > 0.1 ) ) )
+       //   isAssociated = false;
 
-        else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaPhi) > 0.04 ) ||
-                     ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaPhi) > 0.08 ) ) )
-          isAssociated = false;
+       // else if ( !( ( fabs(thisVtx.position().eta()) < 1.4 && fabs(deltaPhi) > 0.04 ) ||
+       //              ( fabs(thisVtx.position().eta()) >= 1.4 && fabs(deltaPhi) > 0.08 ) ) )
+       //   isAssociated = false;
 
-        if ( !isAssociated  && (distance3D > distance3DOld) )
+        //reject if we don't find association or if our new dR is large then previous
+        if ( !isAssociated  || (distance3D > distance3D_Ass) )
           continue;
 
-        distance3DOld = distance3D;
+        distance3D_Ass = distance3D;
+        deltaR_Ass = deltaR;
         foundAssociated = true;
 	iAssociationIndexLast = j;
         jAssociationCounterLast = jAssociationCounter;
@@ -712,11 +729,15 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     if ( foundAssociated )
     {
       PFDV_isAssociatedMC->push_back( true );
+      PFDV_deltaR_Associated->push_back( deltaR_Ass );
+      PFDV_distance3D_Associated->push_back( distance3D_Ass );
       PFDV_associationMC_TrkVIdx->push_back( jAssociationCounterLast ); /// This will match the association in the output ntuple
     }
-    else
+    else // don't find assosication
     {
       PFDV_isAssociatedMC->push_back( false );
+      PFDV_deltaR_Associated->push_back( 1000. );
+      PFDV_distance3D_Associated->push_back( 1000. );
       PFDV_associationMC_TrkVIdx->push_back( 0 );
     }
 

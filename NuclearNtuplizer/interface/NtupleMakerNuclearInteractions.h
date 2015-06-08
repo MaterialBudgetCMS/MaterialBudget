@@ -165,6 +165,8 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< bool > *PFDV_isTherePrimaryTrack;
     std::vector< bool > *PFDV_isThereMergedTrack;
     std::vector< bool > *PFDV_isAssociatedMC;
+    std::vector< double > *PFDV_distance3D_Associated;
+    std::vector< double > *PFDV_deltaR_Associated;
     std::vector< unsigned int > *PFDV_associationMC_TrkVIdx;
     std::vector< std::vector< double > > *PFDV_vTrack_pt;
     std::vector< std::vector< double > > *PFDV_vTrack_eta;
