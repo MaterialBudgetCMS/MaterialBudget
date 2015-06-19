@@ -113,7 +113,9 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< double > *MC_TrkV_momentumOut_phi;
     std::vector< double > *MC_TrkV_momentumOut_theta;
     std::vector< double > *MC_TrkV_momentumOut_mass;
-    std::vector< unsigned int > *MC_TrkV_momentumOut_numberOfParticles;
+    std::vector< unsigned int > *MC_TrkV_momentumOut_numberOfParticles_0p2;
+    std::vector< unsigned int > *MC_TrkV_momentumOut_numberOfParticles_0p5;
+    std::vector< unsigned int > *MC_TrkV_momentumOut_numberOfParticles_1p0;
     std::vector< bool > *MC_TrkV_isAssociatedPF;
     std::vector< unsigned int > *MC_TrkV_associationPFDVIdx;
 /*
@@ -151,6 +153,9 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< double > *PFDV_momentumOut_theta;
     std::vector< double > *PFDV_momentumOut_mass;
     std::vector< unsigned int > *PFDV_momentumOut_numberOfTracks;
+    std::vector< unsigned int > *PFDV_momentumOut_numberOfParticles_0p2;
+    std::vector< unsigned int > *PFDV_momentumOut_numberOfParticles_0p5;
+    std::vector< unsigned int > *PFDV_momentumOut_numberOfParticles_1p0;
     std::vector< bool > *PFDV_isNuclear;
     std::vector< bool > *PFDV_isNuclearLoose;
     std::vector< bool > *PFDV_isNuclearKink;

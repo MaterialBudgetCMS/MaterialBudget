@@ -397,7 +397,7 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_isAssociatedPF = new TH1D( "hMC_TrkV_isAssociatedPF","N.I. in Tracker", 10, -5, 5 );
   hMC_TrkV_isAssociatedPF->Sumw2();
 
-  hMC_TrkV_associationPFDVIdx = new TH1D( "hMC_TrkV_associationPFDVIdx", "N.I. in Tracker", 10, -5, 5 );
+  hMC_TrkV_associationPFDVIdx = new TH1D( "hMC_TrkV_associationPFDVIdx", "N.I. in Tracker", 10, 0, 10 );
   hMC_TrkV_associationPFDVIdx->Sumw2();
  
   //hMC_TrkV_R_isNuclearInteraction = new TH1D( "hMC_TrkV_R_isNuclearInteraction", "N.I. in Tracker", 500, 0, 60 );
@@ -802,23 +802,18 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       else{
       hMC_TrkV_isNuclearInteraction -> Fill (0.); 
       }
-      /*
+
+      
       if ( MC_TrkV_isAssociatedPF->at(i)){
       hMC_TrkV_isAssociatedPF -> Fill (1.);
-      hMC_TrkV_R_isAssociatedPF -> Fill ( ni_MC_rho );
       }
       else{
       hMC_TrkV_isAssociatedPF -> Fill (0.);
       }
       
-      if ( MC_TrkV_associationPFDVIdx->at(i)){
-      hMC_TrkV_associationPFDVIdx -> Fill (1.);
-      hMC_TrkV_R_associationPFDVIdx -> Fill ( ni_MC_rho );
-      }
-      else{
-      hMC_TrkV_associationPFDVIdx -> Fill (0.);
-      }
-      */
+      hMC_TrkV_associationPFDVIdx -> Fill (MC_TrkV_associationPFDVIdx->at(i));
+     
+      
       //PIXEL region only 
       if(fabs(ni_MC_z) <20)
       {
@@ -828,15 +823,6 @@ void NtupleReaderNuclearInteractions_2015::analyze()
           hMC_TrkV_R_isAssociatedPF_Barrel -> Fill ( ni_MC_rho );
           }
         }
-        /*
-        if ( MC_TrkV_isAssociatedPF->at(i)){
-        hMC_TrkV_R_isAssociatedPF_Barrel -> Fill ( ni_MC_rho );
-        }
-      
-        if ( MC_TrkV_associationPFDVIdx->at(i)){
-        hMC_TrkV_R_associationPFDVIdx_Barrel -> Fill ( ni_MC_rho );
-        }
-        */
       }
 
 
