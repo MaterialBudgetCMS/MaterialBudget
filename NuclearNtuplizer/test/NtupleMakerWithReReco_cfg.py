@@ -32,7 +32,8 @@ process.source = cms.Source("PoolSource",
 
 
 ### Define number of events to be processed (-1 means all)
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 ### Define text output
 process.MessageLogger = cms.Service("MessageLogger",
@@ -59,7 +60,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 #process.load("RecoTracker.TrackProducer.TrackRefitters_cff")
 process.load('RecoParticleFlow/PFTracking/particleFlowDisplacedVertex_cff')
 process.load('RecoParticleFlow/PFTracking/particleFlowDisplacedVertexCandidate_cff')
-process.particleFlowDisplacedVertex.primaryVertexCut = cms.double(2.0)
+process.particleFlowDisplacedVertex.primaryVertexCut = cms.double(1.8)
 process.particleFlowDisplacedVertexCandidate.primaryVertexCut = cms.double(1.8)
 
 
