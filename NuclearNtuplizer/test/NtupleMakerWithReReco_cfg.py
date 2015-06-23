@@ -1,59 +1,58 @@
-# -*- coding: utf-8 -*-
+# Auto generated configuration file
+# using: 
+# Revision: 1.19 
+# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
+# with command line options: step2 --conditions auto:run1_data -s RAW2DIGI,L1Reco,RECO,EI,ALCAPRODUCER:@allForPrompt,DQM,ENDJOB --process RECO --data --eventcontent RECO,AOD,ALCARECO,DQM --scenario pp --datatier RECO,AOD,ALCARECO,DQMIO --customise Configuration/DataProcessing/RecoTLR.customisePrompt -n 100 --filein filelist:step1_dasquery.log --lumiToProcess step1_lumiRanges.log --fileout file:step2.root
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("MyNtupleMaker")
+process = cms.Process('niReRECO')
 
-### Import real conditions
-from Configuration.StandardSequences.Services_cff import *
-from Configuration.StandardSequences.GeometryExtended_cff import *
-from Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff import *
-from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
-from Configuration.StandardSequences.FrontierConditions_GlobalTag_cff import *
+# import of standard configurations
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
+process.load('FWCore.MessageService.MessageLogger_cfi')
+process.load('Configuration.EventContent.EventContent_cff')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
+process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
+process.load('Configuration.StandardSequences.L1Reco_cff')
+process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
+process.load('CommonTools.ParticleFlow.EITopPAG_cff')
+process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
+process.load('DQMOffline.Configuration.DQMOffline_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
-process.load('Configuration/StandardSequences/Services_cff')
-#process.load('Configuration/StandardSequences/GeometryExtended_cff')
-process.load("Configuration.StandardSequences.GeometryDB_cff")
-process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(100)
+)
 
-from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
-
-### Define source
+# Input source
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring(
-    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/12DC640A-25A6-E411-8D85-0025905964C0.root'
-#    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_MCRUN2_73_V9_GenSim_7113-v1/00000/EEAF333A-2FB1-E411-A0BB-0025905A60D6.root'
-  ),
-  secondaryFileNames = cms.untracked.vstring(
-  )
+    fileNames = cms.untracked.vstring('/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/12DC640A-25A6-E411-8D85-0025905964C0.root'),
+    secondaryFileNames = cms.untracked.vstring()
 )
 
+process.options = cms.untracked.PSet(
 
-### Define number of events to be processed (-1 means all)
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-
-### Define text output
-process.MessageLogger = cms.Service("MessageLogger",
-  destinations = cms.untracked.vstring('MyNtupleMaker.log'), ### Output filename
-    default = cms.untracked.PSet( reportEvery = cms.untracked.int32(1000) ),
 )
 
-### Define Ntuplizer
-process.MyNtupleMaking = cms.EDAnalyzer("NtupleMakerNuclearInteractions",
+# Output definition
+
+process.AODoutput = cms.OutputModule("PoolOutputModule",
+    compressionAlgorithm = cms.untracked.string('LZMA'),
+    compressionLevel = cms.untracked.int32(4),
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('AOD'),
+        filterName = cms.untracked.string('')
+    ),
+    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+    fileName = cms.untracked.string('file:step_niPFrereco_inAOD.root'),
+    outputCommands = process.FEVTEventContent.outputCommands
 )
 
-### Root output
-process.TFileService = cms.Service("TFileService",
-  fileName = cms.string('Ntuple_MC_prova_1.root' )
-)
-
-process.out = cms.OutputModule("PoolOutputModule",
-  outputCommands = cms.untracked.vstring ('keep *'),
-  fileName = cms.untracked.string('myOutputFileMC.root')
-)
+# Other statements
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run1_data', '')
 
 
 ### Additional stuff
@@ -64,14 +63,25 @@ process.particleFlowDisplacedVertex.primaryVertexCut = cms.double(1.8)
 process.particleFlowDisplacedVertexCandidate.primaryVertexCut = cms.double(1.8)
 
 
-process.disp = cms.Sequence(process.particleFlowDisplacedVertexCandidate + process.particleFlowDisplacedVertex)
-#process.disp = cms.Sequence(process.particleFlowDisplacedVertex)
+
+### Define Ntuplizer
+process.MyNtupleMaking = cms.EDAnalyzer("NtupleMakerNuclearInteractions",
+)
+
+### Root output
+process.TFileService = cms.Service("TFileService",
+  fileName = cms.string('Ntuple_MC_prova_1.root' )
+)
 
 
-process.ana_step = cms.Path( process.disp*process.MyNtupleMaking )
+# Path and EndPath definitions
+process.niReReconstruction_step = cms.Path(process.particleFlowDisplacedVertexCandidate
+                                           +process.particleFlowDisplacedVertex
+                                           +process.MyNtupleMaking)
 
-#process.e = cms.EndPath(process.out)
+process.AODoutput_step = cms.EndPath(process.AODoutput)
 
-### Schedule definition
-#process.schedule = cms.Schedule(process.ana_step, process.e)
-process.schedule = cms.Schedule(process.ana_step)
+# Schedule definition
+process.schedule = cms.Schedule(process.niReReconstruction_step)
+#,process.AODoutput_step)
+

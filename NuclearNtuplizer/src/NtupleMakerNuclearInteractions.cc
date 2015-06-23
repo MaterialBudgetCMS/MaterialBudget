@@ -461,16 +461,18 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
       double deltaR  = 999;
       double deltaZ  = 999;
-      double deltaPt = 999;
-      double deltaPhi = 999;
-      double deltaTheta = 999;
+      double deltaPt = 999; deltaPt = deltaPt;
+      double deltaPhi = 999; deltaPhi = deltaPhi;
+      double deltaTheta = 999; deltaTheta = deltaTheta;
       double deltaX = 999;
       double deltaY = 999;
 
       double distance3D_Ass = 1000.; //Start with a big value
       double deltaR_Ass    = 1000.; //Start with a big value
-      //      bool assoc = false;
+      deltaR_Ass = deltaR_Ass;
+   //      bool assoc = false;
       unsigned int iAssociationIndexLast = 0;
+      iAssociationIndexLast = iAssociationIndexLast;
 
       bool foundAssociated = false;
 
@@ -680,9 +682,9 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     /// Find association with Tracking Vertices
     double deltaR  = 999;
     double deltaZ  = 999;
-    double deltaPt = 999;
-    double deltaPhi = 999;
-    double deltaTheta = 999;
+    double deltaPt = 999;  deltaPt =  deltaPt;
+    double deltaPhi = 999; deltaPhi = deltaPhi;
+    double deltaTheta = 999; deltaTheta = deltaTheta;
     double deltaX = 999;
     double deltaY = 999;
 
@@ -692,7 +694,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
     bool foundAssociated = false;
    
-    unsigned int iAssociationIndexLast = 0;
+    unsigned int iAssociationIndexLast = 0; iAssociationIndexLast = iAssociationIndexLast;
 
     unsigned int jAssociationCounter = 0;
     unsigned int jAssociationCounterLast = 0;
