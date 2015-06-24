@@ -23,12 +23,22 @@ process.load('DQMOffline.Configuration.DQMOffline_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(-1)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/12DC640A-25A6-E411-8D85-0025905964C0.root'),
+    fileNames = cms.untracked.vstring(#'/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/12DC640A-25A6-E411-8D85-0025905964C0.root'
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/12DC640A-25A6-E411-8D85-0025905964C0.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/167F590F-2FA6-E411-8FF6-003048FFCBB0.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/220FF210-2BA6-E411-B176-002618943857.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/5E9416C6-26A6-E411-94CC-0026189437EC.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/6A443257-27A6-E411-ADF4-0025905B85D8.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/7697B09E-7AA6-E411-BC7B-0025905A60F2.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/B0A02540-35A6-E411-BB10-002354EF3BDB.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/E47A9325-24A6-E411-9F7E-003048D15DE0.root',
+    '/store/relval/CMSSW_7_3_1_patch1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_73_V9-v1/00000/FEBAD062-2CA6-E411-8E80-00261894392B.root',
+),
     secondaryFileNames = cms.untracked.vstring()
 )
 
