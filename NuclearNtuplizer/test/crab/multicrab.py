@@ -60,7 +60,7 @@ if __name__ == '__main__':
                    
     for key, value in samples.iteritems():
         print key, ' -> ', value
-        
+         
         config.General.requestName = key
         config.Data.inputDataset = value[0]
         config.JobType.pyCfgParams = list(pyCfgParams)
