@@ -21,7 +21,7 @@ config.Data.inputDBS      = 'global'
 #config.Data.splitting     = 'FileBased'
 config.Data.splitting     = 'LumiBased'
 config.Data.unitsPerJob   = 5 # number of files, lumi sec. or events depending of "splitting"
-config.Data.totalUnits    = 5 # total number of files, lumi sec. or events depending of "splitting"
+config.Data.totalUnits    = 50 # total number of files, lumi sec. or events depending of "splitting"
 config.Data.outLFNDirBase = '/store/group/phys_higgs/cmshww/kropiv/Run2015B/'
 
 config.section_('Site')
