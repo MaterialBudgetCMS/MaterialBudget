@@ -26,7 +26,7 @@ MultiCRAB
 
     cmsenv
 
-    python multicrab.py samples/samples_Run2015B.py
+    python multicrab_data.py samples/samples_Run2015B.py
     python multicrab.py samples/samples_spring15.py
  
     crab status -d folder_name

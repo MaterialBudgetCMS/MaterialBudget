@@ -64,8 +64,8 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     #fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/k/kropiv/public/forKangwon/Tracker/Run2015A_RECO_test.root'),
-    fileNames = cms.untracked.vstring('file:step1_RAW2DIGI_RECO_DQM.root'),
-    secondaryFileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring()
+    #secondaryFileNames = cms.untracked.vstring()
 )
 
 process.options = cms.untracked.PSet(

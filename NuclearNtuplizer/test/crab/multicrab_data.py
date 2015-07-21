@@ -18,12 +18,11 @@ config.JobType.allowUndistributedCMSSW = True
 
 config.section_('Data')    
 config.Data.inputDBS      = 'global'
-config.Data.splitting     = 'FileBased'
-#config.Data.splitting     = 'LumiBased'
-config.Data.unitsPerJob   = 1 # number of files, lumi sec. or events depending of "splitting"
-config.Data.totalUnits    = 2 # total number of files, lumi sec. or events depending of "splitting"
-#config.Data.unitsPerJob   = 5 # number of files, lumi sec. or events depending of "splitting"
+#config.Data.splitting     = 'FileBased'
+config.Data.splitting     = 'LumiBased'
+config.Data.unitsPerJob   = 100 # number of files, lumi sec. or events depending of "splitting"
 #config.Data.totalUnits    = 50 # total number of files, lumi sec. or events depending of "splitting"
+config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON_MuonPhys.txt'
 config.Data.outLFNDirBase = '/store/group/phys_higgs/cmshww/kropiv/Run2015B/'
 
 config.section_('Site')

@@ -12,7 +12,7 @@
 # 50 ns
 ########
 #        CRAB task name       DAS name                                                                                    Latino name
-samples['50ns_DY_Spring15']        = ['/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM',  ['globalTag=MCRUN2_74_V9A']]
+samples['50ns_DY_Spring15_RECO']        = ['/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-AsymptNoPURawReco_MCRUN2_74_V9A-v4/GEN-SIM-RECO',  ['globalTag=MCRUN2_74_V9A']]
 
 
 

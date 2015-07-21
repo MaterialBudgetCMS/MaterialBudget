@@ -20,14 +20,14 @@
 ########
  
 samples['ZeroBias_Run2015B']         = ['/ZeroBias/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias1_Run2015B']        = ['/ZeroBias1/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias2_Run2015B']        = ['/ZeroBias2/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias3_Run2015B']        = ['/ZeroBias3/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias4_Run2015B']        = ['/ZeroBias4/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias5_Run2015B']        = ['/ZeroBias5/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias6_Run2015B']        = ['/ZeroBias6/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias7_Run2015B']        = ['/ZeroBias7/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
-#samples['ZeroBias8_Run2015B']        = ['/ZeroBias8/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias1_Run2015B']        = ['/ZeroBias1/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias2_Run2015B']        = ['/ZeroBias2/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias3_Run2015B']        = ['/ZeroBias3/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias4_Run2015B']        = ['/ZeroBias4/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias5_Run2015B']        = ['/ZeroBias5/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias6_Run2015B']        = ['/ZeroBias6/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias7_Run2015B']        = ['/ZeroBias7/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
+samples['ZeroBias8_Run2015B']        = ['/ZeroBias8/Run2015B-PromptReco-v1/RECO',  ['globalTag=74X_dataRun2_Prompt_v1']]
 
 
 ########
