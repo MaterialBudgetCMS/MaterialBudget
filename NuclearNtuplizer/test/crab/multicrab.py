@@ -11,7 +11,7 @@ config.General.workArea     = 'crab_projects_Run2015B'  # Make sure you set this
 config.section_('JobType')
 config.JobType.pluginName       = 'Analysis'
 #config.JobType.pluginName       = 'PrivateMC'
-config.JobType.psetName         = 'NtupleMakerWithReReco_Run2015B_cfg.py'
+config.JobType.psetName         = 'NtupleMakerWithReReco_Spring15_cfg.py'
 config.JobType.maxJobRuntimeMin = 2800
 config.JobType.outputFiles      = ['ZeroBias_Run2015B.root']
 config.JobType.allowUndistributedCMSSW = True
@@ -21,7 +21,7 @@ config.Data.inputDBS      = 'global'
 config.Data.splitting     = 'FileBased'
 #config.Data.splitting     = 'LumiBased'
 config.Data.unitsPerJob   = 1 # number of files, lumi sec. or events depending of "splitting"
-config.Data.totalUnits    = 2 # total number of files, lumi sec. or events depending of "splitting"
+config.Data.totalUnits    = 10 # total number of files, lumi sec. or events depending of "splitting"
 #config.Data.unitsPerJob   = 5 # number of files, lumi sec. or events depending of "splitting"
 #config.Data.totalUnits    = 50 # total number of files, lumi sec. or events depending of "splitting"
 config.Data.outLFNDirBase = '/store/group/phys_higgs/cmshww/kropiv/Run2015B/'
