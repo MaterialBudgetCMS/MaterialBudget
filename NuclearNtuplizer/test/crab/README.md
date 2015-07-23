@@ -47,3 +47,10 @@ cd eos/cms/store/group/phys_higgs/cmshww/kropiv
 
 eosumount eos eos ### do not forget unmount
 
+
+How to calculate luminosity for Run2
+===
+
+please follow instructions at
+
+https://twiki.cern.ch/twiki/bin/view/CMS/lcr2
