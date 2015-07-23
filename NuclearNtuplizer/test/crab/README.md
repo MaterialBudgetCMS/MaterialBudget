@@ -27,6 +27,18 @@ MultiCRAB
     cmsenv
 
     python multicrab_data.py samples/samples_Run2015B.py
+    python multicrab_data_LowPileUp.py samples/samples_Run2015B.py
     python multicrab.py samples/samples_spring15.py
  
     crab status -d folder_name
+
+How to acess to /store via mounting
+===
+
+cd /tmp/kropiv ### to have enough place
+mkdir eos
+eosmount eos eos ### mount eos 
+cd eos/cms/store/group/phys_higgs/cmshww/kropiv
+### correct what you want
+eosumount eos eos ### do not forget unmount
+
