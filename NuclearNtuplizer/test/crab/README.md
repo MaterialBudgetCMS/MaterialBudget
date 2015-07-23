@@ -36,9 +36,14 @@ How to acess to /store via mounting
 ===
 
 cd /tmp/kropiv ### to have enough place
+
 mkdir eos
+
 eosmount eos eos ### mount eos 
+
 cd eos/cms/store/group/phys_higgs/cmshww/kropiv
+
 ### correct what you want
+
 eosumount eos eos ### do not forget unmount
 
