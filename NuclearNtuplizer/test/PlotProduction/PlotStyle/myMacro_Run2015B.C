@@ -1,6 +1,6 @@
 TString StyleCol = "BW"; // BW = balk/white, COL = color style
-TString HigtoName = "hPFDV_XY_Map_Pipe"; // hPFDV_XY_Map_Pipe = beam pipe xy; hPFDV_RhoPhi_Map_Pipe = beam pipe rho-phi
-//TString HigtoName = "hPFDV_RhoPhi_Map_Pipe"; // hPFDV_XY_Map_Pipe = beam pipe xy; hPFDV_RhoPhi_Map_Pipe = beam pipe rho-phi
+//TString HigtoName = "hPFDV_XY_Map_Pipe"; // hPFDV_XY_Map_Pipe = beam pipe xy; hPFDV_RhoPhi_Map_Pipe = beam pipe rho-phi
+TString HigtoName = "hPFDV_RhoPhi_Map_Pipe"; // hPFDV_XY_Map_Pipe = beam pipe xy; hPFDV_RhoPhi_Map_Pipe = beam pipe rho-phi
 
 void myMacro_Run2015B()
 {
@@ -15,9 +15,9 @@ void myMacro_Run2015B()
   extraText  = "Preliminary";  // default extra text is "Preliminary"
   lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
-  lumi_13TeV  = "XX pb^{-1}";  // default is "XXX"
+  lumi_13TeV  = "7.3 pb^{-1}";  // default is "XXX"
 
-  int iPeriod = 3;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV 
+  int iPeriod = 13;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 13 = 13TeV 
 
   // second parameter in example_plot is iPos, which drives the position of the CMS logo in the plot
   // iPos=11 : top-left, left-aligned
@@ -180,7 +180,7 @@ gStyle->SetPalette(1,0); //// blue to red false color palette. Use 9 for b/w
   {
     // Observed data
     //TFile file_("histo.root","READ");
-    TFile file_("../Run2015B_GoodMuons.root","READ");
+    TFile file_("/afs/cern.ch/work/k/kropiv/Tracker/Run2015B_GoodMuons.root","READ");
 
     TH2D *data = (TH1*) (file_.Get(HigtoName)->Clone());
     data->SetDirectory(0);
