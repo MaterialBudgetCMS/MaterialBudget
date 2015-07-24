@@ -1,6 +1,7 @@
 TString StyleCol = "BW"; // BW = balk/white, COL = color style
 //TString HigtoName = "hPFDV_XY_Map_Pipe"; // hPFDV_XY_Map_Pipe = beam pipe xy; hPFDV_RhoPhi_Map_Pipe = beam pipe rho-phi
 TString HigtoName = "hPFDV_RhoPhi_Map_Pipe"; // hPFDV_XY_Map_Pipe = beam pipe xy; hPFDV_RhoPhi_Map_Pipe = beam pipe rho-phi
+int PlotBeamPipeAlternative = 0; //0 - don't plot, 1 - plot Alternative mesurement and (0,0)
 
 void myMacro_Run2015B()
 {
@@ -73,6 +74,7 @@ TCanvas* example_plot( int iPeriod, int iPos )
   canvName += iPeriod;
   if(HigtoName == "hPFDV_RhoPhi_Map_Pipe") canvName += "_BeamPipe_RhoPhi";
   if(HigtoName == "hPFDV_XY_Map_Pipe") canvName += "_BeamPipe_XY";
+  if(PlotBeamPipeAlternative == 1) canvName += "_AlternativeBP";
 
   if( writeExtraText ) canvName += "-prelim";
   if( iPos%10==0 ) canvName += "-out";
@@ -219,6 +221,49 @@ TCanvas* example_plot( int iPeriod, int iPos )
     if(StyleCol == "COL")data->Draw("9COLZ");
     if(StyleCol == "BW")data->Draw();
 
+    if(HigtoName == "hPFDV_XY_Map_Pipe" && PlotBeamPipeAlternative == 1){
+       TArc* arc = new TArc( 0.075, 0.015, 2.25);
+       arc->SetFillStyle(0);
+       arc->SetLineColor(TColor::kRed);
+       arc->SetLineWidth(2);
+       arc->Draw("same");
+
+       Double_t x[1], y[1];
+       x[0] = 0.075;
+       y[0] = 0.015;
+       gr = new TGraph(1,x,y);
+       gr->SetMarkerStyle(20);
+       gr->SetMarkerSize(0.5);
+       gr->SetMarkerColor(TColor::kRed);
+       gr->Draw("P");
+
+       TArc* arc00 = new TArc( 0.0, 0.0, 2.25);
+       arc00->SetFillStyle(0);
+       arc00->SetLineColor(TColor::kBlue);
+       arc00->SetLineWidth(2);
+       arc00->Draw("same");
+
+       x[0] = 0.0;
+       y[0] = 0.0;
+       gr00 = new TGraph(1,x,y);
+       gr00->SetMarkerStyle(20);
+       gr00->SetMarkerSize(0.5);
+       gr00->SetMarkerColor(TColor::kBlue);
+       gr00->Draw("P");
+    }
+
+    if(HigtoName == "hPFDV_RhoPhi_Map_Pipe" && PlotBeamPipeAlternative == 1){
+       TF1 *bpAlt = new TF1("bpAlt","sqrt((2.25*cos(x)+0.075)^2 + (2.25*sin(x)+0.015)^2)",-3.15,3.15);
+       bpAlt->SetLineColor(TColor::kRed);
+       bpAlt->SetLineWidth(2);
+       bpAlt ->Draw("same");
+
+       TF1 *bp00 = new TF1("bp00","sqrt((2.25*cos(x)+0.0)^2 + (2.25*sin(x)+0.0)^2)",-3.15,3.15);
+       bp00->SetLineColor(TColor::kBlue);
+       bp00->SetLineWidth(2);
+       bp00 ->Draw("same");
+
+    }
     file_.Close();
   }
 
