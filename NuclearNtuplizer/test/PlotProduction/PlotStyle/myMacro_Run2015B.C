@@ -43,7 +43,6 @@ TCanvas* example_plot( int iPeriod, int iPos )
 { 
   //  if( iPos==0 ) relPosX = 0.12;
 
-gStyle->SetPalette(1,0); //// blue to red false color palette. Use 9 for b/w
   int W = 800;
   //int H = 600;
   int H = 800;
@@ -178,6 +177,12 @@ gStyle->SetPalette(1,0); //// blue to red false color palette. Use 9 for b/w
   }
 
   {
+        gROOT->Clear();
+        gStyle->SetOptStat(0);
+        gStyle->SetPalette(1,0); //// blue to red false color palette. Use 9 for b/w
+        gStyle->SetOptTitle(0);
+
+
     // Observed data
     //TFile file_("histo.root","READ");
     TFile file_("/afs/cern.ch/work/k/kropiv/Tracker/Run2015B_GoodMuons.root","READ");
@@ -188,6 +193,8 @@ gStyle->SetPalette(1,0); //// blue to red false color palette. Use 9 for b/w
     data->SetMarkerSize(markerSize);
     //data->SetMarkerSize(0.15);
     data->GetYaxis()->SetTitleOffset(1.25);
+    data->SetTitle(" ");
+    data->SetStats(0);
     if(StyleCol == "COL"){ 
       canv->SetRightMargin(0.1);
       canv->SetBottomMargin(0.15);
@@ -224,6 +231,7 @@ gStyle->SetPalette(1,0); //// blue to red false color palette. Use 9 for b/w
 
   canv->Print(canvName+".pdf",".pdf");
   canv->Print(canvName+".png",".png");
+  canv->Print(canvName+".root",".root");
 
   return canv;
 }
