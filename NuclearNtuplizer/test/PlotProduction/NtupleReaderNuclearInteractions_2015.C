@@ -1024,6 +1024,11 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
     }
 
+// end MC part
+
+// start RECO part
+
+    if (numberOfPV <= 0) continue; // reject events with 0 reco primary vertices
     if (numberOfPFDV >= 1){
     hPFDV_CountEventsWithNI->Fill(1.);
     }
