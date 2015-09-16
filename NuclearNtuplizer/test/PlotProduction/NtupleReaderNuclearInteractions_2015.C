@@ -168,6 +168,8 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   MC_TrkV_associationPFDVIdx = new std::vector< unsigned int >();
   MC_TrkV_associationPFDV_deltaR2d = new std::vector< double >();
   MC_TrkV_associationPFDV_deltaR3d = new std::vector< double >();
+  MC_TrkV_associationPFDV_deltaR3dPerpendicular = new std::vector< double >();
+  MC_TrkV_associationPFDV_deltaR3dParallel = new std::vector< double >();
 
   if ( inputChain->GetBranchStatus( "numberOfMC_TrkV" ) )
     inputChain->SetBranchAddress( "numberOfMC_TrkV", &numberOfMC_TrkV, &b_numberOfMC_TrkV );
@@ -232,6 +234,12 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   if ( inputChain->GetBranchStatus( "MC_TrkV_associationPFDV_deltaR3d" ) )
     inputChain->SetBranchAddress( "MC_TrkV_associationPFDV_deltaR3d", &MC_TrkV_associationPFDV_deltaR3d, &b_MC_TrkV_associationPFDV_deltaR3d );
   else std::cout << "MC_TrkV_associationPFDV_deltaR3d" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "MC_TrkV_associationPFDV_deltaR3dPerpendicular" ) )
+    inputChain->SetBranchAddress( "MC_TrkV_associationPFDV_deltaR3dPerpendicular", &MC_TrkV_associationPFDV_deltaR3dPerpendicular, &b_MC_TrkV_associationPFDV_deltaR3dPerpendicular );
+  else std::cout << "MC_TrkV_associationPFDV_deltaR3dPerpendicular" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "MC_TrkV_associationPFDV_deltaR3dParallel" ) )
+    inputChain->SetBranchAddress( "MC_TrkV_associationPFDV_deltaR3dParallel", &MC_TrkV_associationPFDV_deltaR3dParallel, &b_MC_TrkV_associationPFDV_deltaR3dParallel );
+  else std::cout << "MC_TrkV_associationPFDV_deltaR3dParallel" << warningString_Branches.data() << std::endl;
 
   /// Displaced Vertices
   PFDV_x = new std::vector< double >();
@@ -456,6 +464,45 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
 
   hMC_TrkV_associationPFDV_deltaR3d_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3d_Forward", "N.I. in Tracker", 100, 0, 5. );
   hMC_TrkV_associationPFDV_deltaR3d_Forward->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular", "N.I. in Tracker", 100, 0, 5.);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel", "N.I. in Tracker", 100, 0, 5. );
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward", "N.I. in Tracker", 100, 0, 5. );
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel", "N.I. in Tracker", 200, 0, 0.5);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dParallel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel", "N.I. in Tracker", 100, 0, 5.);
+  hMC_TrkV_associationPFDV_deltaR3dParallel->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel", "N.I. in Tracker", 100, 0, 5. );
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_Forward", "N.I. in Tracker", 100, 0, 5. );
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Forward->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaR3dParallelRel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallelRel", "N.I. in Tracker", 200, 0, 0.5);
+  hMC_TrkV_associationPFDV_deltaR3dParallelRel->Sumw2();
+
+  hMC_TrkV_associationPFDV_DuplicateR3d = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3d", "N.I. in Tracker", 100, 0, 0.20 );
+  hMC_TrkV_associationPFDV_DuplicateR3d->Sumw2();
+
+  hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular", "N.I. in Tracker", 100, 0, 0.20 );
+  hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular->Sumw2();
+
+  hMC_TrkV_associationPFDV_DuplicateR3dPerpendicularAbs = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3dPerpendicularAbs", "N.I. in Tracker", 100, 0, 10. );
+  hMC_TrkV_associationPFDV_DuplicateR3dPerpendicularAbs->Sumw2();
+
+  hMC_TrkV_associationPFDV_DuplicateR3dParallel = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3dParallel", "N.I. in Tracker", 100, 0, 0.20 );
+  hMC_TrkV_associationPFDV_DuplicateR3dParallel->Sumw2();
+
+  hMC_TrkV_associationPFDV_DuplicateR = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR", "N.I. in Tracker", 100, 0, 0.20 );
+  hMC_TrkV_associationPFDV_DuplicateR->Sumw2();
 
   hMC_TrkV_isNuclearInteraction_Barrel = new TH1D( "hMC_TrkV_isNuclearInteraction_Barrel", "N.I. in Tracker", 10, -5, 5 );
   hMC_TrkV_isNuclearInteraction_Barrel->Sumw2();
@@ -934,6 +981,16 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
     double ni_MC_x, ni_MC_y, ni_MC_z, ni_MC_rho;
  
+    int N_MCassociatePF = 0;
+    double deltaR3dPerpendicular_Previouse = -1.;
+    double deltaR3dParallel_Previouse = -1.;
+
+    //for matching Duplicates
+    std::vector< double > MatchingDuplicates_dR3;                               
+    MatchingDuplicates_dR3.clear();
+    std::vector< double > MatchingDuplicates_R;                               
+    MatchingDuplicates_R.clear();
+
     for ( unsigned int i = 0; i < numberOfMC_TrkV; i++ )
     {
       ni_MC_x = MC_TrkV_x->at(i);
@@ -944,8 +1001,92 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       //check for assosiation MC_TrkV_isAssociatedPF->at(i) is dR3 < 20 is very big, need to do our serlf dR3 < 1 cm
       //bool isMC_assosiated_PF = MC_TrkV_isAssociatedPF->at(i);
       bool isMC_assosiated_PF = false;
-      if (MC_TrkV_isAssociatedPF->at(i) && MC_TrkV_associationPFDV_deltaR2d->at(i) < 1) isMC_assosiated_PF = true;  
+      //if (MC_TrkV_isAssociatedPF->at(i) && MC_TrkV_associationPFDV_deltaR3d->at(i) < 1) isMC_assosiated_PF = true;  
+      if ( MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 2. && MC_TrkV_associationPFDV_deltaR3dParallel->at(i)< 20. ) isMC_assosiated_PF = true;  
+      //if ( MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20. && MC_TrkV_associationPFDV_deltaR3dParallel->at(i)< 20. ) isMC_assosiated_PF = true;  
+
+      // remove very soft vertex:
+      if (MC_TrkV_numberOfChargedParticles_0p2->at(i) < 3 ) continue;
+
+      ///////////     
+      // test for assosiation
+      double deltaMatchingDuplicates = -100;
+      double deltaMatchingDuplicatesR = -100;
+      double MatchDuplicatesCut_dR3 = 0.02;
+      double MatchDuplicatesCut_R = 0.05; MatchDuplicatesCut_R = MatchDuplicatesCut_R;
+
+      //if(isMC_assosiated_PF){
+          //std::cout << "MC_TrkV_associationPFDV_deltaR3d = " << MC_TrkV_associationPFDV_deltaR3d->at(i) << std::endl; 
+          //std::cout << "Radius of MC NI ni_MC_rho = " << ni_MC_rho << std::endl;
+          //std::cout << "MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) << std::endl; 
+          //std::cout << "MC_TrkV_associationPFDV_deltaR3dParallel = " << MC_TrkV_associationPFDV_deltaR3dParallel->at(i) << std::endl; 
+
+          // DeltaR3d matching
+          if (MC_TrkV_associationPFDV_deltaR3d->at(i) > 0) {
+               if (i == 0) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) );
+               double deltaMatching = 100.;
+               if (MatchingDuplicates_dR3.size() > 1){
+                  for ( unsigned int imatch = 0; imatch < MatchingDuplicates_dR3.size(); imatch++ )
+                  {
+                      double deltaMatching_imatch = fabs(MC_TrkV_associationPFDV_deltaR3d->at(i) - MatchingDuplicates_dR3.at(imatch))/(MC_TrkV_associationPFDV_deltaR3d->at(i) > 0);  
+                      if (deltaMatching_imatch < deltaMatching) deltaMatching = deltaMatching_imatch;
+                  } 
+               }
+               if (deltaMatching < 0.2)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(deltaMatching);//check that previouse value exist
+               if (deltaMatching >= 0.2 && deltaMatching < 100.)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(0.1999999);//check that previouse value exist
+               deltaMatchingDuplicates = deltaMatching;
+               if (i != 0 && deltaMatchingDuplicates >= MatchDuplicatesCut_dR3) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) ); //next non Duplicate vertex
+          }
+
+          // Radius matching
+          if ( ni_MC_rho > 0) {
+               if (i == 0) MatchingDuplicates_R.push_back( ni_MC_rho );
+               double deltaMatching = 100.;
+               if (MatchingDuplicates_R.size() > 1){
+                  for ( unsigned int imatch = 0; imatch < MatchingDuplicates_R.size(); imatch++ )
+                  {
+                      double deltaMatching_imatch = fabs(ni_MC_rho - MatchingDuplicates_R.at(imatch))/ni_MC_rho;
+                      if (deltaMatching_imatch < deltaMatching) deltaMatching = deltaMatching_imatch;
+                  }
+               }
+               if (deltaMatching < 0.2)hMC_TrkV_associationPFDV_DuplicateR ->Fill(deltaMatching);//check that previouse value exist
+               if (deltaMatching >= 0.2 && deltaMatching < 100.)hMC_TrkV_associationPFDV_DuplicateR ->Fill(0.1999999);//check that previouse value exist
+               deltaMatchingDuplicatesR = deltaMatching;
+               if (i != 0 && deltaMatchingDuplicatesR >= MatchDuplicatesCut_R) MatchingDuplicates_R.push_back( ni_MC_rho ); //next non Duplicate vertex
+          } 
  
+          if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) > 0) {
+               double deltaMatching = fabs(MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) - deltaR3dPerpendicular_Previouse)/(MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) > 0);
+               if (deltaR3dPerpendicular_Previouse > 0 && deltaMatching < 0.2)hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular ->Fill(deltaMatching);//check that previouse value exist
+               if (deltaR3dPerpendicular_Previouse > 0 && deltaMatching >= 0.2)hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular ->Fill(0.1999999);//check that previouse value exist
+
+               double deltaMatchingAbs = fabs(MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) - deltaR3dPerpendicular_Previouse);
+               if (deltaR3dPerpendicular_Previouse > 0 && deltaMatchingAbs < 10.)hMC_TrkV_associationPFDV_DuplicateR3dPerpendicularAbs ->Fill(deltaMatchingAbs);//check that previouse value exist
+               if (deltaR3dPerpendicular_Previouse > 0 && deltaMatchingAbs >= 10.)hMC_TrkV_associationPFDV_DuplicateR3dPerpendicularAbs ->Fill(9.999999);//check that previouse value exist
+
+               deltaR3dPerpendicular_Previouse = MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i);
+          } 
+          if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) > 0) {
+               double deltaMatching = fabs(MC_TrkV_associationPFDV_deltaR3dParallel->at(i) - deltaR3dParallel_Previouse)/(MC_TrkV_associationPFDV_deltaR3dParallel->at(i) > 0);
+               if (deltaR3dParallel_Previouse > 0 && deltaMatching < 0.2)hMC_TrkV_associationPFDV_DuplicateR3dParallel ->Fill(deltaMatching);//check that previouse value exist
+               if (deltaR3dParallel_Previouse > 0 && deltaMatching >= 0.2)hMC_TrkV_associationPFDV_DuplicateR3dParallel ->Fill(0.1999999);//check that previouse value exist
+               deltaR3dParallel_Previouse = MC_TrkV_associationPFDV_deltaR3dParallel->at(i);
+          } 
+      //} 
+
+      //reject Duplicates:
+      //if ( fabs(deltaMatchingDuplicates) < MatchDuplicatesCut_dR3) continue;
+      if ( fabs(deltaMatchingDuplicates) < MatchDuplicatesCut_dR3 || fabs(deltaMatchingDuplicatesR) < MatchDuplicatesCut_R) continue;
+
+      if(isMC_assosiated_PF) N_MCassociatePF++;
+      if(N_MCassociatePF > 1){
+          //std::cout << "MC_TrkV_associationPFDV_deltaR3d = " << MC_TrkV_associationPFDV_deltaR3d->at(i) << std::endl; 
+          std::cout << "Radius of MC NI ni_MC_rho = " << ni_MC_rho << std::endl;
+          //std::cout << "MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) << std::endl; 
+          //std::cout << "MC_TrkV_associationPFDV_deltaR3dParallel = " << MC_TrkV_associationPFDV_deltaR3dParallel->at(i) << std::endl; 
+      }
+      ///////////
+      
       hMC_TrkV_R->Fill( ni_MC_rho );
  
       hMC_TrkV_numberOftracks_0p2->Fill(MC_TrkV_numberOfChargedParticles_0p2->at(i));
@@ -973,23 +1114,57 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       
       if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 5.)hMC_TrkV_associationPFDV_deltaR2d -> Fill (MC_TrkV_associationPFDV_deltaR2d->at(i));
       else if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 20.)hMC_TrkV_associationPFDV_deltaR2d -> Fill (4.999);
+
       if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3d -> Fill (MC_TrkV_associationPFDV_deltaR3d->at(i));
       else if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3d -> Fill(4.999);
 
+      if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
+      else if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular -> Fill(4.999);
+
+      if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dParallel -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
+      else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallel -> Fill(4.999);
+
+      double Rel_deltaR3dPerp = -1.;
+      if (ni_MC_rho > 0.) Rel_deltaR3dPerp = MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i)/ni_MC_rho;
+      if (Rel_deltaR3dPerp < 0.5 && Rel_deltaR3dPerp > 0.) hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel -> Fill (Rel_deltaR3dPerp);
+      if (Rel_deltaR3dPerp >= 0.5 && MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel -> Fill(0.4999);
+
+      double Rel_deltaR3dPar = -1.;
+      if (ni_MC_rho > 0.) Rel_deltaR3dPar = MC_TrkV_associationPFDV_deltaR3dParallel->at(i)/ni_MC_rho;
+      if (Rel_deltaR3dPar < 0.5 && Rel_deltaR3dPar > 0.) hMC_TrkV_associationPFDV_deltaR3dParallelRel -> Fill (Rel_deltaR3dPar);
+      if (Rel_deltaR3dPar >= 0.5 && MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallelRel -> Fill(0.4999);
+
       hMC_TrkV_associationPFDVIdx -> Fill (MC_TrkV_associationPFDVIdx->at(i));
-     
+
+
       if(fabs(ni_MC_z) <20)
       {
         if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR2d_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR2d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 20.)hMC_TrkV_associationPFDV_deltaR2d_Barrel -> Fill (4.999);
+
         if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3d_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3d_Barrel -> Fill(4.999);
+
+        if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
+        else if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel -> Fill(4.999);
+
+        if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
+        else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill(4.999);
+
+
       }
 
       if(fabs(ni_MC_z) >20)
       {
         if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3d_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3d_Forward -> Fill(4.999);
+
+        if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
+        else if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward -> Fill(4.999);
+
+        if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
+        else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill(4.999);
+
       }
       
       //PIXEL region only 
@@ -1049,7 +1224,11 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
 
     }
-
+    //test for assosiation
+    if(N_MCassociatePF > 1){ 
+       std::cout << "size of MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->size() << std::endl; 
+       std::cout << "N_MCassociatePF per event = " << N_MCassociatePF << endl;
+    }  
 // end MC part
 
 // start RECO part

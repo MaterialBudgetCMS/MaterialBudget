@@ -67,13 +67,29 @@ class NtupleReaderNuclearInteractions_2015
     TH1D* hMC_TrkV_isAssociatedPF_Barrel;
     TH1D* hMC_TrkV_associationPFDVIdx;
     TH1D* hMC_TrkV_associationPFDVIdx_Barrel;
+
     TH1D* hMC_TrkV_associationPFDV_deltaR2d;
     TH1D* hMC_TrkV_associationPFDV_deltaR2d_Barrel;
+
     TH1D* hMC_TrkV_associationPFDV_deltaR3d;
     TH1D* hMC_TrkV_associationPFDV_deltaR3d_Barrel;
-    TH1D* hMC_TrkV_associationPFDV_deltaR3d_Barrel_Rebin;
     TH1D* hMC_TrkV_associationPFDV_deltaR3d_Forward;
-    TH1D* hMC_TrkV_associationPFDV_deltaR3d_Forward_Rebin;
+
+    TH1D* hMC_TrkV_associationPFDV_DuplicateR;
+    TH1D* hMC_TrkV_associationPFDV_DuplicateR3d;
+    TH1D* hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular;
+    TH1D* hMC_TrkV_associationPFDV_DuplicateR3dParallel;
+    TH1D* hMC_TrkV_associationPFDV_DuplicateR3dPerpendicularAbs;
+
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Forward;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallelRel;
+
     TH1D* hMC_TrkV_numberOftracks_0p2;
     TH1D* hMC_TrkV_numberOftracks_0p5;
     TH1D* hMC_TrkV_numberOftracks_1p0;
@@ -275,6 +291,8 @@ class NtupleReaderNuclearInteractions_2015
     std::vector< unsigned int > *MC_TrkV_associationPFDVIdx;
     std::vector< double > *MC_TrkV_associationPFDV_deltaR2d;
     std::vector< double > *MC_TrkV_associationPFDV_deltaR3d;
+    std::vector< double > *MC_TrkV_associationPFDV_deltaR3dPerpendicular;
+    std::vector< double > *MC_TrkV_associationPFDV_deltaR3dParallel;
 
     TBranch *b_numberOfMC_TrkV;
     TBranch *b_MC_TrkV_isNuclearInteraction;
@@ -297,6 +315,8 @@ class NtupleReaderNuclearInteractions_2015
     TBranch *b_MC_TrkV_associationPFDVIdx;
     TBranch *b_MC_TrkV_associationPFDV_deltaR2d;
     TBranch *b_MC_TrkV_associationPFDV_deltaR3d;
+    TBranch *b_MC_TrkV_associationPFDV_deltaR3dPerpendicular;
+    TBranch *b_MC_TrkV_associationPFDV_deltaR3dParallel;
 
     /// Displaced Vertices
     unsigned int numberOfPFDV;
