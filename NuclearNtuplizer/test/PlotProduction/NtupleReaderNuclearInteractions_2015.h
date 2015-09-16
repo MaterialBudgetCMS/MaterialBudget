@@ -50,11 +50,15 @@ class NtupleReaderNuclearInteractions_2015
     TH1D* hMC_TrkV_R_isNuclearInteraction;
     TH1D* hMC_TrkV_R_isNuclearInteraction_Barrel;
     TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel;
-    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tracks;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0;
     TH1D* hMC_TrkV_R_isAssociatedPF;
     TH1D* hMC_TrkV_R_isAssociatedPF_Barrel;
     TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel;
-    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tracks;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0;
     TH1D* hMC_TrkV_R_associationPFDVIdx;
     TH1D* hMC_TrkV_R_associationPFDVIdx_Barrel;
     TH1D* hMC_TrkV_isNuclearInteraction;
@@ -269,8 +273,8 @@ class NtupleReaderNuclearInteractions_2015
 
     std::vector< bool > *MC_TrkV_isAssociatedPF;
     std::vector< unsigned int > *MC_TrkV_associationPFDVIdx;
-    std::vector< unsigned int > *MC_TrkV_associationPFDV_deltaR2d;
-    std::vector< unsigned int > *MC_TrkV_associationPFDV_deltaR3d;
+    std::vector< double > *MC_TrkV_associationPFDV_deltaR2d;
+    std::vector< double > *MC_TrkV_associationPFDV_deltaR3d;
 
     TBranch *b_numberOfMC_TrkV;
     TBranch *b_MC_TrkV_isNuclearInteraction;

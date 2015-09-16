@@ -187,14 +187,17 @@ TCanvas* example_plot( int iPeriod, int iPos )
 
     // Observed data
     //TFile file_("histo.root","READ");
-    TFile file_("/afs/cern.ch/work/k/kropiv/Tracker/Run2015B_GoodMuons.root","READ");
+    //TFile file_("/afs/cern.ch/work/k/kropiv/Tracker/Run2015B_GoodMuons.root","READ");
+    TFile file_("/afs/cern.ch/work/k/kropiv/Tracker/Run2015B_GoodMuons_PrVetx.root","READ");
 
     TH2D *data = (TH1*) (file_.Get(HigtoName)->Clone());
     data->SetDirectory(0);
     //data->SetMarkerStyle(20);
     data->SetMarkerSize(markerSize);
     //data->SetMarkerSize(0.15);
-    data->GetYaxis()->SetTitleOffset(1.25);
+    data->GetYaxis()->SetTitleOffset(1.1);
+    data->GetYaxis()->SetTitleSize(0.045);
+    data->GetXaxis()->SetTitleSize(0.045);
     data->SetTitle(" ");
     data->SetStats(0);
     if(StyleCol == "COL"){ 
