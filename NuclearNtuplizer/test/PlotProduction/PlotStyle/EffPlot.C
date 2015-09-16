@@ -94,20 +94,40 @@ TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2 = (TH1F*)f1->Get("hMC_TrkV_R
 TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5 = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5");
 TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0 = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0");
 
+TH1F* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2 = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2");
+TH1F* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5 = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5");
+TH1F* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0 = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0");
+TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2 = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2");
+TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5 = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5");
+TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0 = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0");
+
 
 ///////////////////////////
 
-TString ExtraTitle = "at least 3 tracks with p_{T} > 0.2 GeV/c";
-TString picName = "Eff_pt0p2";
+TString ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 0.2 GeV/c";
+TString picName = "Eff_Barrel_pt0p2";
 drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2, ExtraTitle, picName);
 
-ExtraTitle = "at least 3 tracks with p_{T} > 0.5 GeV/c";
-picName = "Eff_pt0p5";
+ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 0.5 GeV/c";
+picName = "Eff_Barrel_pt0p5";
 drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5, ExtraTitle, picName);
 
-ExtraTitle = "at least 3 tracks with p_{T} > 1.0 GeV/c";
-picName = "Eff_pt1p0";
+ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 1.0 GeV/c";
+picName = "Eff_Barrel_pt1p0";
 drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0, ExtraTitle, picName);
+
+
+ExtraTitle = "Forward: at least 3 tracks with p_{T} > 0.2 GeV/c";
+picName = "Eff_Forward_pt0p2";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2, ExtraTitle, picName);
+
+ExtraTitle = "Forward: at least 3 tracks with p_{T} > 0.5 GeV/c";
+picName = "Eff_Forward_pt0p5";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5, ExtraTitle, picName);
+
+ExtraTitle = "Forward: at least 3 tracks with p_{T} > 1.0 GeV/c";
+picName = "Eff_Forward_pt1p0";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0, ExtraTitle, picName);
 
 
 ///////////////////////////

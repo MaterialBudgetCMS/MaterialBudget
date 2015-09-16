@@ -53,12 +53,18 @@ class NtupleReaderNuclearInteractions_2015
     TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2;
     TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5;
     TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0;
     TH1D* hMC_TrkV_R_isAssociatedPF;
     TH1D* hMC_TrkV_R_isAssociatedPF_Barrel;
     TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel;
     TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2;
     TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5;
     TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0;
     TH1D* hMC_TrkV_R_associationPFDVIdx;
     TH1D* hMC_TrkV_R_associationPFDVIdx_Barrel;
     TH1D* hMC_TrkV_isNuclearInteraction;

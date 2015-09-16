@@ -530,6 +530,12 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5->Sumw2();
   hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0 = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0", "N.I. in Tracker", 13, Bins );
   hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0->Sumw2();
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2 = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2", "N.I. in Tracker", 13, Bins );
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2->Sumw2();
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5 = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5", "N.I. in Tracker", 13, Bins );
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5->Sumw2();
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0 = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0", "N.I. in Tracker", 13, Bins );
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0->Sumw2();
 
   hMC_TrkV_R_isAssociatedPF = new TH1D( "hMC_TrkV_R_isAssociatedPF", "N.I. in Tracker", 500, 0, 60 );
   hMC_TrkV_R_isAssociatedPF->Sumw2();
@@ -547,6 +553,12 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5->Sumw2();
   hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0 = new TH1D( "hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0","N.I. in Tracker", 13, Bins);
   hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2 = new TH1D( "hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2","N.I. in Tracker", 13, Bins);
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5 = new TH1D( "hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5","N.I. in Tracker", 13, Bins);
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0 = new TH1D( "hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0","N.I. in Tracker", 13, Bins);
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0->Sumw2();
 
   hMC_TrkV_R_associationPFDVIdx = new TH1D( "hMC_TrkV_R_associationPFDVIdx", "N.I. in Tracker", 500, 0, 60 );
   hMC_TrkV_R_associationPFDVIdx->Sumw2();
@@ -1034,6 +1046,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
                }
                if (deltaMatching < 0.2)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(deltaMatching);//check that previouse value exist
                if (deltaMatching >= 0.2 && deltaMatching < 100.)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(0.1999999);//check that previouse value exist
+               //if (deltaMatching >= 0.2)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(0.1999999);//check that previouse value exist
                deltaMatchingDuplicates = deltaMatching;
                if (i != 0 && deltaMatchingDuplicates >= MatchDuplicatesCut_dR3) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) ); //next non Duplicate vertex
           }
@@ -1167,7 +1180,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       }
       
-      //PIXEL region only 
+      //Barrel region only 
       if(fabs(ni_MC_z) <20)
       {
         hMC_TrkV_R_Barrel->Fill( ni_MC_rho );
@@ -1220,7 +1233,33 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
 
       }
-
+      // Forward region only 
+      if(fabs(ni_MC_z) >= 20){
+        if ( MC_TrkV_numberOfChargedParticles_0p2->at(i) > 2){
+          if ( MC_TrkV_isNuclearInteraction->at(i)){
+          hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2->Fill( ni_MC_rho );
+            if ( isMC_assosiated_PF ){
+               hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2 -> Fill ( ni_MC_rho );
+            }
+          }
+        }
+        if ( MC_TrkV_numberOfChargedParticles_0p5->at(i) > 2){
+          if ( MC_TrkV_isNuclearInteraction->at(i)){
+          hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5->Fill( ni_MC_rho );
+            if ( isMC_assosiated_PF ){
+               hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5 -> Fill ( ni_MC_rho );
+            }
+          }
+        }
+        if ( MC_TrkV_numberOfChargedParticles_1p0->at(i) > 2){
+          if ( MC_TrkV_isNuclearInteraction->at(i)){
+          hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0->Fill( ni_MC_rho );
+            if ( isMC_assosiated_PF ){
+               hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0 -> Fill ( ni_MC_rho );
+            }
+          }
+        }
+      } 
 
 
     }
