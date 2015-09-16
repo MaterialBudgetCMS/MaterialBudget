@@ -61,6 +61,8 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     bool isNuclearInteraction( const TrackingVertex& ) const;
     bool isKaonDecay( const TrackingVertex& ) const;
     bool isConversion( const TrackingVertex& ) const;
+    double      VectorParallelR( const TrackingVertex& VecSim, const reco::PFDisplacedVertex& ) const;
+    double VectorPerpendicularR( const TrackingVertex&, const reco::PFDisplacedVertex& ) const;
 
     float getKaonMass( const reco::PFDisplacedVertex& ) const;
     bool isSimVertexOutsideAssCut(const TrackingVertex&, const reco::PFDisplacedVertex&) const;
@@ -120,6 +122,8 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< unsigned int > *MC_TrkV_associationPFDVIdx;
     std::vector< double > *MC_TrkV_associationPFDV_deltaR2d;
     std::vector< double > *MC_TrkV_associationPFDV_deltaR3d;
+    std::vector< double > *MC_TrkV_associationPFDV_deltaR3dPerpendicular;
+    std::vector< double > *MC_TrkV_associationPFDV_deltaR3dParallel;
 /*
     std::vector< double > *MC_TrkV_associationDeltaPt;
     std::vector< double > *MC_TrkV_associationDeltaPhi;

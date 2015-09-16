@@ -73,6 +73,8 @@ void NtupleMakerNuclearInteractions::beginJob()
   MC_TrkV_associationPFDVIdx = new std::vector< unsigned int >;
   MC_TrkV_associationPFDV_deltaR2d= new std::vector< double >;
   MC_TrkV_associationPFDV_deltaR3d= new std::vector< double >;
+  MC_TrkV_associationPFDV_deltaR3dPerpendicular= new std::vector< double >;
+  MC_TrkV_associationPFDV_deltaR3dParallel= new std::vector< double >;
 /*
   MC_TrkV_associationDeltaPt = new std::vector< double >;
   MC_TrkV_associationDeltaPhi = new std::vector< double >;
@@ -201,6 +203,8 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "MC_TrkV_associationPFDVIdx", "std::vector< unsigned int >", &MC_TrkV_associationPFDVIdx );
   outputTree->Branch( "MC_TrkV_associationPFDV_deltaR2d", "std::vector< double >", &MC_TrkV_associationPFDV_deltaR2d );
   outputTree->Branch( "MC_TrkV_associationPFDV_deltaR3d", "std::vector< double >", &MC_TrkV_associationPFDV_deltaR3d );
+  outputTree->Branch( "MC_TrkV_associationPFDV_deltaR3dPerpendicular", "std::vector< double >", &MC_TrkV_associationPFDV_deltaR3dPerpendicular );
+  outputTree->Branch( "MC_TrkV_associationPFDV_deltaR3dParallel", "std::vector< double >", &MC_TrkV_associationPFDV_deltaR3dParallel );
 /*
   outputTree->Branch( "MC_TrkV_associationDeltaPt", "std::vector< double >", &MC_TrkV_associationDeltaPt );
   outputTree->Branch( "MC_TrkV_associationDeltaPhi", "std::vector< double >", &MC_TrkV_associationDeltaPhi );
@@ -374,6 +378,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   MC_TrkV_associationPFDVIdx->clear();
   MC_TrkV_associationPFDV_deltaR2d->clear();
   MC_TrkV_associationPFDV_deltaR3d->clear();
+  MC_TrkV_associationPFDV_deltaR3dPerpendicular->clear();
+  MC_TrkV_associationPFDV_deltaR3dParallel->clear();
 /*
   MC_TrkV_associationDeltaPt->clear();
   MC_TrkV_associationDeltaPhi->clear();
@@ -494,8 +500,10 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       double deltaX = 999;
       double deltaY = 999;
 
-      double distance3D_Ass = 21.; //Start with a big value
-      double deltaR_Ass    = 21.; //Start with a big value
+      double distance3D_Ass = 20.; //Start with a big value
+      double deltaR_Ass     = 20.; //Start with a big value
+      double distance3DParallel_Ass = 20.; //Start with a big value
+      double distance3DPerpendicular_Ass = 20.; //Start with a big value
       deltaR_Ass = deltaR_Ass;
    //      bool assoc = false;
       unsigned int iAssociationIndexLast = 0;
@@ -532,12 +540,14 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
         deltaZ = thisVtx.position().z() - thisDisplacedVtx.position().z();
         deltaR  = sqrt(thisVtx.position().perp2()) - sqrt(thisDisplacedVtx.position().perp2());
         double distance3D = sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
+        double distance3DPer = VectorPerpendicularR(thisVtx, thisDisplacedVtx); //Sim, PF vextecise
+        double distance3DPar = VectorParallelR     (thisVtx, thisDisplacedVtx);
 
-        /// Apply Selection
-        bool isAssociated = true;
-        // very-very loose cut of 20 cm for future test:
-        if (distance3D > 20.) isAssociated = false;
 
+        ///// Apply Selection
+        //bool isAssociated = true;
+        //// very-very loose cut of 20 cm for future test:
+        //if (distance3D > 20.) isAssociated = false;
        // if ( !( ( fabs(thisVtx.position().eta()) < 1.2 && ( deltaR < -1.0 || deltaR > 3.0 ) ) ||
        //         ( fabs(thisVtx.position().eta()) >= 1.2 && ( deltaR < -2.0 || deltaR > 6.0 ) ) ) )
        //   isAssociated = false;
@@ -551,14 +561,16 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
        //   isAssociated = false;
 
         //reject if we don't find association or if our new dR is large then previous
-        if ( !isAssociated  || (distance3D > distance3D_Ass) )
-          continue;
 
-        distance3D_Ass = distance3D;
-        deltaR_Ass = deltaR; 
-        foundAssociated = true;
-	iAssociationIndexLast = j;
-        jAssociationCounterLast = jAssociationCounter;
+        if ( distance3D < distance3D_Ass ){
+           distance3D_Ass = distance3D;
+           foundAssociated = true;
+      	   iAssociationIndexLast = j;
+           jAssociationCounterLast = jAssociationCounter;
+        }
+        if (deltaR < deltaR_Ass) deltaR_Ass = deltaR;
+        if (distance3DPer < distance3DPerpendicular_Ass) distance3DPerpendicular_Ass = distance3DPer;
+        if (distance3DPar < distance3DParallel_Ass) distance3DParallel_Ass = distance3DPar;
       }
 
       /// Do what is needed in case of association
@@ -568,6 +580,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
         MC_TrkV_associationPFDVIdx->push_back( jAssociationCounterLast ); /// This will match the association in the output ntuple
         MC_TrkV_associationPFDV_deltaR2d->push_back( deltaR_Ass ); /// deltaR 2d: xy
         MC_TrkV_associationPFDV_deltaR3d->push_back( distance3D_Ass ); /// deltaR 3d: xyz
+        MC_TrkV_associationPFDV_deltaR3dPerpendicular->push_back( distance3DPerpendicular_Ass ); /// deltaR 3d: Perpendicular to vertex
+        MC_TrkV_associationPFDV_deltaR3dParallel->push_back( distance3DParallel_Ass ); /// deltaR 3d: Parallel to vertex
 
 /*
         MC_TrkV_associationDeltaPt->push_back( deltaPt );
@@ -598,6 +612,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
         MC_TrkV_associationPFDVIdx->push_back( 0 );
         MC_TrkV_associationPFDV_deltaR2d->push_back( deltaR_Ass ); /// deltaR 2d: xy
         MC_TrkV_associationPFDV_deltaR3d->push_back( distance3D_Ass ); /// deltaR 3d: xyz
+        MC_TrkV_associationPFDV_deltaR3dPerpendicular->push_back( distance3DPerpendicular_Ass ); /// deltaR 3d: Perpendicular to vertex
+        MC_TrkV_associationPFDV_deltaR3dParallel->push_back( distance3DParallel_Ass ); /// deltaR 3d: Parallel to vertex
 /*
         MC_TrkV_associationDeltaPt->push_back( 0.0 );
         MC_TrkV_associationDeltaPhi->push_back( 0.0 );
@@ -1055,6 +1071,44 @@ bool NtupleMakerNuclearInteractions::isConversion( const TrackingVertex& v ) con
 
   return false;
 }
+
+double NtupleMakerNuclearInteractions::VectorParallelR( const TrackingVertex& VecSim, const reco::PFDisplacedVertex& VecPF) const
+{
+// find Parallel of dR between vectors
+
+double dVecX = VecSim.position().x() - VecPF.position().x(); 
+double dVecY = VecSim.position().y() - VecPF.position().y(); 
+double dVecZ = VecSim.position().z() - VecPF.position().Z(); 
+double dR_par = VecSim.position().x()*dVecX + VecSim.position().y()*dVecY + VecSim.position().z()*dVecZ;
+double abs_vec = sqrt(VecSim.position().x()*VecSim.position().x() + VecSim.position().y()*VecSim.position().y() + VecSim.position().z()*VecSim.position().z());
+
+if (abs_vec > 0) dR_par = fabs(dR_par/abs_vec);
+else dR_par = 100.;
+
+return dR_par;
+
+}
+
+double NtupleMakerNuclearInteractions::VectorPerpendicularR( const TrackingVertex& VecSim, const reco::PFDisplacedVertex& VecPF) const
+{
+// find Perpendicular of dR between vectors
+
+double dVecX = VecSim.position().x() - VecPF.position().x(); 
+double dVecY = VecSim.position().y() - VecPF.position().y(); 
+double dVecZ = VecSim.position().z() - VecPF.position().Z(); 
+double dR_perX = VecSim.position().y()*dVecZ -VecSim.position().z()*dVecY; 
+double dR_perY = VecSim.position().z()*dVecX -VecSim.position().x()*dVecZ; 
+double dR_perZ = VecSim.position().x()*dVecY -VecSim.position().y()*dVecX; 
+double abs_vec = sqrt(VecSim.position().x()*VecSim.position().x() + VecSim.position().y()*VecSim.position().y() + VecSim.position().z()*VecSim.position().z());
+
+double dR_per = sqrt(dR_perX*dR_perX + dR_perY*dR_perY + dR_perZ*dR_perZ);
+
+if (abs_vec > 0) dR_per = dR_per/abs_vec;
+else dR_per = 100.;
+
+return dR_per;
+}
+
 
 /// Define this as a plug-in
 DEFINE_FWK_MODULE( NtupleMakerNuclearInteractions );
