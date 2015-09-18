@@ -489,7 +489,7 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_associationPFDV_deltaR3dParallelRel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallelRel", "N.I. in Tracker", 200, 0, 0.5);
   hMC_TrkV_associationPFDV_deltaR3dParallelRel->Sumw2();
 
-  hMC_TrkV_associationPFDV_DuplicateR3d = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3d", "N.I. in Tracker", 100, 0, 0.20 );
+  hMC_TrkV_associationPFDV_DuplicateR3d = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3d", "N.I. in Tracker", 100, 0, 1.0 );
   hMC_TrkV_associationPFDV_DuplicateR3d->Sumw2();
 
   hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular", "N.I. in Tracker", 100, 0, 0.20 );
@@ -501,7 +501,7 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_associationPFDV_DuplicateR3dParallel = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3dParallel", "N.I. in Tracker", 100, 0, 0.20 );
   hMC_TrkV_associationPFDV_DuplicateR3dParallel->Sumw2();
 
-  hMC_TrkV_associationPFDV_DuplicateR = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR", "N.I. in Tracker", 100, 0, 0.20 );
+  hMC_TrkV_associationPFDV_DuplicateR = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR", "N.I. in Tracker", 100, 0, 1.0 );
   hMC_TrkV_associationPFDV_DuplicateR->Sumw2();
 
   hMC_TrkV_isNuclearInteraction_Barrel = new TH1D( "hMC_TrkV_isNuclearInteraction_Barrel", "N.I. in Tracker", 10, -5, 5 );
@@ -1024,8 +1024,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       // test for assosiation
       double deltaMatchingDuplicates = -100;
       double deltaMatchingDuplicatesR = -100;
-      double MatchDuplicatesCut_dR3 = 0.02;
-      double MatchDuplicatesCut_R = 0.05; MatchDuplicatesCut_R = MatchDuplicatesCut_R;
+      double MatchDuplicatesCut_dR3 = 0.1;
+      double MatchDuplicatesCut_R = 0.05;
 
       //if(isMC_assosiated_PF){
           //std::cout << "MC_TrkV_associationPFDV_deltaR3d = " << MC_TrkV_associationPFDV_deltaR3d->at(i) << std::endl; 
@@ -1034,38 +1034,49 @@ void NtupleReaderNuclearInteractions_2015::analyze()
           //std::cout << "MC_TrkV_associationPFDV_deltaR3dParallel = " << MC_TrkV_associationPFDV_deltaR3dParallel->at(i) << std::endl; 
 
           // DeltaR3d matching
-          if (MC_TrkV_associationPFDV_deltaR3d->at(i) > 0) {
-               if (i == 0) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) );
+          //if (MC_TrkV_associationPFDV_deltaR3d->at(i) > 0) {
+          //     if (i == 0) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) );
+          if (MC_TrkV_associationPFDV_deltaR3d->at(i) > 0 && MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) {// if it is 20 then no assosiation
+               bool flag_1stFill = false;
+               if (MatchingDuplicates_dR3.size() < 1) {
+                  MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) );
+                  flag_1stFill = true; 
+               }
                double deltaMatching = 100.;
-               if (MatchingDuplicates_dR3.size() > 1){
+               if (MatchingDuplicates_dR3.size() > 0 && !flag_1stFill){
                   for ( unsigned int imatch = 0; imatch < MatchingDuplicates_dR3.size(); imatch++ )
                   {
                       double deltaMatching_imatch = fabs(MC_TrkV_associationPFDV_deltaR3d->at(i) - MatchingDuplicates_dR3.at(imatch))/(MC_TrkV_associationPFDV_deltaR3d->at(i) > 0);  
                       if (deltaMatching_imatch < deltaMatching) deltaMatching = deltaMatching_imatch;
                   } 
                }
-               if (deltaMatching < 0.2)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(deltaMatching);//check that previouse value exist
-               if (deltaMatching >= 0.2 && deltaMatching < 100.)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(0.1999999);//check that previouse value exist
+               if (deltaMatching < 1.0)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(deltaMatching);//check that previouse value exist
+               if (deltaMatching >= 1.0 && deltaMatching < 100.)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(0.999999);//check that previouse value exist
                //if (deltaMatching >= 0.2)hMC_TrkV_associationPFDV_DuplicateR3d ->Fill(0.1999999);//check that previouse value exist
                deltaMatchingDuplicates = deltaMatching;
-               if (i != 0 && deltaMatchingDuplicates >= MatchDuplicatesCut_dR3) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) ); //next non Duplicate vertex
+               //if (i != 0 && deltaMatchingDuplicates >= MatchDuplicatesCut_dR3) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) ); //next non Duplicate vertex
+               if (!flag_1stFill && deltaMatchingDuplicates >= MatchDuplicatesCut_dR3) MatchingDuplicates_dR3.push_back( MC_TrkV_associationPFDV_deltaR3d->at(i) ); //next non Duplicate vertex
           }
 
           // Radius matching
           if ( ni_MC_rho > 0) {
-               if (i == 0) MatchingDuplicates_R.push_back( ni_MC_rho );
+               bool flag_1stFill = false;
+               if (MatchingDuplicates_dR3.size() < 1){
+                  MatchingDuplicates_R.push_back( ni_MC_rho );
+                  flag_1stFill = true;
+               }
                double deltaMatching = 100.;
-               if (MatchingDuplicates_R.size() > 1){
+               if (MatchingDuplicates_R.size() > 0 && !flag_1stFill){
                   for ( unsigned int imatch = 0; imatch < MatchingDuplicates_R.size(); imatch++ )
                   {
                       double deltaMatching_imatch = fabs(ni_MC_rho - MatchingDuplicates_R.at(imatch))/ni_MC_rho;
                       if (deltaMatching_imatch < deltaMatching) deltaMatching = deltaMatching_imatch;
                   }
                }
-               if (deltaMatching < 0.2)hMC_TrkV_associationPFDV_DuplicateR ->Fill(deltaMatching);//check that previouse value exist
-               if (deltaMatching >= 0.2 && deltaMatching < 100.)hMC_TrkV_associationPFDV_DuplicateR ->Fill(0.1999999);//check that previouse value exist
+               if (deltaMatching < 1.0)hMC_TrkV_associationPFDV_DuplicateR ->Fill(deltaMatching);//check that previouse value exist
+               if (deltaMatching >= 1.0 && deltaMatching < 100.)hMC_TrkV_associationPFDV_DuplicateR ->Fill(0.999999);//check that previouse value exist
                deltaMatchingDuplicatesR = deltaMatching;
-               if (i != 0 && deltaMatchingDuplicatesR >= MatchDuplicatesCut_R) MatchingDuplicates_R.push_back( ni_MC_rho ); //next non Duplicate vertex
+               if (!flag_1stFill && deltaMatchingDuplicatesR >= MatchDuplicatesCut_R) MatchingDuplicates_R.push_back( ni_MC_rho ); //next non Duplicate vertex
           } 
  
           if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) > 0) {
