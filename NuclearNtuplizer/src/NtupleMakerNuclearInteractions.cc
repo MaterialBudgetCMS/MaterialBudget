@@ -63,6 +63,7 @@ void NtupleMakerNuclearInteractions::beginJob()
   MC_TrkV_momentumInc_phi = new std::vector< double >;
   MC_TrkV_momentumInc_theta = new std::vector< double >;
   MC_TrkV_Inc_charge = new std::vector< double >;
+  MC_TrkV_Inc_pdgId = new std::vector< int >;
   MC_TrkV_momentumOut_pt = new std::vector< double >;
   MC_TrkV_momentumOut_phi = new std::vector< double >;
   MC_TrkV_momentumOut_theta = new std::vector< double >;
@@ -70,6 +71,9 @@ void NtupleMakerNuclearInteractions::beginJob()
   MC_TrkV_numberOfChargedParticles_0p2 = new std::vector< unsigned int >;
   MC_TrkV_numberOfChargedParticles_0p5 = new std::vector< unsigned int >;
   MC_TrkV_numberOfChargedParticles_1p0 = new std::vector< unsigned int >;
+  MC_TrkV_numberOfChargedParticles_Out0p2 = new std::vector< unsigned int >;
+  MC_TrkV_numberOfChargedParticles_Out0p5 = new std::vector< unsigned int >;
+  MC_TrkV_numberOfChargedParticles_Out1p0 = new std::vector< unsigned int >;
   MC_TrkV_isAssociatedPF = new std::vector< bool >;
   MC_TrkV_associationPFDVIdx = new std::vector< unsigned int >;
   MC_TrkV_associationPFDV_deltaR2d= new std::vector< double >;
@@ -116,6 +120,10 @@ void NtupleMakerNuclearInteractions::beginJob()
   PFDV_numberOfTracks_0p2 = new std::vector< unsigned int >;
   PFDV_numberOfTracks_0p5 = new std::vector< unsigned int >;
   PFDV_numberOfTracks_1p0 = new std::vector< unsigned int >;
+  PFDV_numberOfTracks_Out0p0 = new std::vector< unsigned int >;
+  PFDV_numberOfTracks_Out0p2 = new std::vector< unsigned int >;
+  PFDV_numberOfTracks_Out0p5 = new std::vector< unsigned int >;
+  PFDV_numberOfTracks_Out1p0 = new std::vector< unsigned int >;
   PFDV_isNuclear = new std::vector< bool >;
   PFDV_isNuclearLoose = new std::vector< bool >;
   PFDV_isNuclearKink = new std::vector< bool >;
@@ -193,6 +201,7 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "MC_TrkV_z", "std::vector< double >", &MC_TrkV_z );
   outputTree->Branch( "MC_TrkV_momentumInc_pt", "std::vector< double >", &MC_TrkV_momentumInc_pt );
   outputTree->Branch( "MC_TrkV_Inc_charge", "std::vector< double >", &MC_TrkV_Inc_charge );
+  outputTree->Branch( "MC_TrkV_Inc_pdgId", "std::vector< int >", &MC_TrkV_Inc_pdgId );
   outputTree->Branch( "MC_TrkV_momentumInc_phi", "std::vector< double >", &MC_TrkV_momentumInc_phi );
   outputTree->Branch( "MC_TrkV_momentumInc_theta", "std::vector< double >", &MC_TrkV_momentumInc_theta );
   outputTree->Branch( "MC_TrkV_momentumOut_pt", "std::vector< double >", &MC_TrkV_momentumOut_pt );
@@ -202,6 +211,9 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "MC_TrkV_numberOfChargedParticles_0p2", "std::vector< unsigned int >", &MC_TrkV_numberOfChargedParticles_0p2 );
   outputTree->Branch( "MC_TrkV_numberOfChargedParticles_0p5", "std::vector< unsigned int >", &MC_TrkV_numberOfChargedParticles_0p5 );
   outputTree->Branch( "MC_TrkV_numberOfChargedParticles_1p0", "std::vector< unsigned int >", &MC_TrkV_numberOfChargedParticles_1p0 );
+  outputTree->Branch( "MC_TrkV_numberOfChargedParticles_Out0p2", "std::vector< unsigned int >", &MC_TrkV_numberOfChargedParticles_Out0p2 );
+  outputTree->Branch( "MC_TrkV_numberOfChargedParticles_Out0p5", "std::vector< unsigned int >", &MC_TrkV_numberOfChargedParticles_Out0p5 );
+  outputTree->Branch( "MC_TrkV_numberOfChargedParticles_Out1p0", "std::vector< unsigned int >", &MC_TrkV_numberOfChargedParticles_Out1p0 );
   outputTree->Branch( "MC_TrkV_isAssociatedPF", "std::vector< bool >", &MC_TrkV_isAssociatedPF );
   outputTree->Branch( "MC_TrkV_associationPFDVIdx", "std::vector< unsigned int >", &MC_TrkV_associationPFDVIdx );
   outputTree->Branch( "MC_TrkV_associationPFDV_deltaR2d", "std::vector< double >", &MC_TrkV_associationPFDV_deltaR2d );
@@ -248,6 +260,10 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "PFDV_numberOfTracks_0p2", "std::vector< unsigned int >", &PFDV_numberOfTracks_0p2 );
   outputTree->Branch( "PFDV_numberOfTracks_0p5", "std::vector< unsigned int >", &PFDV_numberOfTracks_0p5 );
   outputTree->Branch( "PFDV_numberOfTracks_1p0", "std::vector< unsigned int >", &PFDV_numberOfTracks_1p0 );
+  outputTree->Branch( "PFDV_numberOfTracks_Out0p0", "std::vector< unsigned int >", &PFDV_numberOfTracks_Out0p0 );
+  outputTree->Branch( "PFDV_numberOfTracks_Out0p2", "std::vector< unsigned int >", &PFDV_numberOfTracks_Out0p2 );
+  outputTree->Branch( "PFDV_numberOfTracks_Out0p5", "std::vector< unsigned int >", &PFDV_numberOfTracks_Out0p5 );
+  outputTree->Branch( "PFDV_numberOfTracks_Out1p0", "std::vector< unsigned int >", &PFDV_numberOfTracks_Out1p0 );
   outputTree->Branch( "PFDV_isNuclear", "std::vector< bool >", &PFDV_isNuclear );
   outputTree->Branch( "PFDV_isNuclearLoose", "std::vector< bool >", &PFDV_isNuclearLoose );
   outputTree->Branch( "PFDV_isNuclearKink", "std::vector< bool >", &PFDV_isNuclearKink );
@@ -370,6 +386,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   MC_TrkV_z->clear();
   MC_TrkV_momentumInc_pt->clear();
   MC_TrkV_Inc_charge->clear();
+  MC_TrkV_Inc_pdgId->clear();
   MC_TrkV_momentumInc_phi->clear();
   MC_TrkV_momentumInc_theta->clear();
   MC_TrkV_momentumOut_pt->clear();
@@ -379,6 +396,9 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   MC_TrkV_numberOfChargedParticles_0p2->clear();
   MC_TrkV_numberOfChargedParticles_0p5->clear();
   MC_TrkV_numberOfChargedParticles_1p0->clear();
+  MC_TrkV_numberOfChargedParticles_Out0p2->clear();
+  MC_TrkV_numberOfChargedParticles_Out0p5->clear();
+  MC_TrkV_numberOfChargedParticles_Out1p0->clear();
   MC_TrkV_isAssociatedPF->clear();
   MC_TrkV_associationPFDVIdx->clear();
   MC_TrkV_associationPFDV_deltaR2d->clear();
@@ -446,23 +466,32 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       unsigned int nTrackingParticles_0p2 = 0;
       unsigned int nTrackingParticles_0p5 = 0;
       unsigned int nTrackingParticles_1p0 = 0;
+      unsigned int nTrackingParticles_Out0p2 = 0;
+      unsigned int nTrackingParticles_Out0p5 = 0;
+      unsigned int nTrackingParticles_Out1p0 = 0;
       TrackingParticleRefVector::iterator trackDaughter;
       for ( trackDaughter = thisVtx.daughterTracks_begin();
             trackDaughter != thisVtx.daughterTracks_end();
             ++trackDaughter )
       {
-        if ( (*trackDaughter)->charge() == 0 )
+        if ( (*trackDaughter)->charge() == 0 ) //reject neutral particles
+        continue;
+
+        if ( fabs((*trackDaughter)->eta()) > 2.5 ) //reject particle out of detector acceptence in eta
         continue;
 
         if( (*trackDaughter)->pt() > 0.2 ){
         thisSimMomentumOut += (*trackDaughter)->p4();
         nTrackingParticles_0p2++;
+        nTrackingParticles_Out0p2++;
         }
         if( (*trackDaughter)->pt() > 0.5 ){
         nTrackingParticles_0p5++;
+        nTrackingParticles_Out0p5++;
         }
         if( (*trackDaughter)->pt() > 1.0 ){
         nTrackingParticles_1p0++;
+        nTrackingParticles_Out1p0++;
         }
       }
 
@@ -479,6 +508,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
       int NumberOfPrimaryTracks = 0;
       double Source_Charge = -10;
+      int Source_pdgId = 0;
+   
       TrackingParticleRefVector::iterator trackSource;
       for ( trackSource = thisVtx.sourceTracks_begin();
             trackSource != thisVtx.sourceTracks_end();
@@ -487,6 +518,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
         NumberOfPrimaryTracks++;
         //std::cout << "PDG ID of Primary Particle = " << (*trackSource)->pdgId() << std::endl;
         Source_Charge = (*trackSource)->charge();
+        Source_pdgId = (*trackSource)->pdgId();
+
         if ( (*trackSource)->charge() == 0 )
         continue;
         if( (*trackSource)->pt() > 0.2 ) nTrackingParticles_0p2++;
@@ -498,7 +531,11 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       MC_TrkV_numberOfChargedParticles_0p2->push_back( nTrackingParticles_0p2 );
       MC_TrkV_numberOfChargedParticles_0p5->push_back( nTrackingParticles_0p5 );
       MC_TrkV_numberOfChargedParticles_1p0->push_back( nTrackingParticles_1p0 );
+      MC_TrkV_numberOfChargedParticles_Out0p2->push_back( nTrackingParticles_Out0p2 );
+      MC_TrkV_numberOfChargedParticles_Out0p5->push_back( nTrackingParticles_Out0p5 );
+      MC_TrkV_numberOfChargedParticles_Out1p0->push_back( nTrackingParticles_Out1p0 );
       MC_TrkV_Inc_charge->push_back(Source_Charge);
+      MC_TrkV_Inc_pdgId->push_back(Source_pdgId);
 
       double deltaR  = 999;
       double deltaZ  = 999;
@@ -668,6 +705,10 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   PFDV_numberOfTracks_0p2->clear();
   PFDV_numberOfTracks_0p5->clear();
   PFDV_numberOfTracks_1p0->clear();
+  PFDV_numberOfTracks_Out0p0->clear();
+  PFDV_numberOfTracks_Out0p2->clear();
+  PFDV_numberOfTracks_Out0p5->clear();
+  PFDV_numberOfTracks_Out1p0->clear();
   PFDV_isNuclear->clear();
   PFDV_isNuclearLoose->clear();
   PFDV_isNuclearKink->clear();
@@ -863,6 +904,10 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     unsigned int nTrackingParticles_PFDV_0p2 = 0;
     unsigned int nTrackingParticles_PFDV_0p5 = 0;
     unsigned int nTrackingParticles_PFDV_1p0 = 0;
+    unsigned int nTrackingParticles_PFDV_Out0p0 = 0;
+    unsigned int nTrackingParticles_PFDV_Out0p2 = 0;
+    unsigned int nTrackingParticles_PFDV_Out0p5 = 0;
+    unsigned int nTrackingParticles_PFDV_Out1p0 = 0;
     double Source_Charge = -10.;
 
     reco::Vertex::trackRef_iterator trackDisplacedVertex;
@@ -871,24 +916,37 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
           ++trackDisplacedVertex )
     {
  
-        nTrackingParticles_PFDV_0p0++;
 
         int QualityTrack = 0;
+        bool Flag_SecondaryTrack = false;
         if( thisDisplacedVtx.isPrimaryTrack((*trackDisplacedVertex))) QualityTrack = 1; 
         if( thisDisplacedVtx.isMergedTrack((*trackDisplacedVertex))) QualityTrack = 1; 
-        if( thisDisplacedVtx.isSecondaryTrack((*trackDisplacedVertex))) QualityTrack = 1; 
-        if( QualityTrack == 0) std::cout << "Error: Track is not Primary, not Merged, not Secondary, see code" << std::endl;
-
+        if( thisDisplacedVtx.isSecondaryTrack((*trackDisplacedVertex))){
+            QualityTrack = 1;
+            Flag_SecondaryTrack = true;
+        } 
+        if( QualityTrack == 0) std::cout << "Error: Track is not Primary, not Merged, not Secondary, it is rejected, see code" << std::endl;
+        if( QualityTrack == 0) continue; //reject unknow type of tracks
 
         if(thisDisplacedVtx.isPrimaryTrack((*trackDisplacedVertex)) || thisDisplacedVtx.isMergedTrack((*trackDisplacedVertex))) 
           Source_Charge = (*trackDisplacedVertex)->charge();
-        if ( (*trackDisplacedVertex)->charge() == 0 )
+        if ( (*trackDisplacedVertex)->charge() == 0 ) //reject nuetral particles
         continue;
+
+        if( fabs((*trackDisplacedVertex)->charge()) > 2.5) continue;// reject particle out of detector acceptence 
+
+        nTrackingParticles_PFDV_0p0++;
+        if(Flag_SecondaryTrack) nTrackingParticles_PFDV_Out0p0++;
 
         if( (*trackDisplacedVertex)->pt() > 0.2 ) nTrackingParticles_PFDV_0p2++;
         if( (*trackDisplacedVertex)->pt() > 0.5 ) nTrackingParticles_PFDV_0p5++;
         if( (*trackDisplacedVertex)->pt() > 1.0 ) nTrackingParticles_PFDV_1p0++;
-
+ 
+        if(Flag_SecondaryTrack) {
+           if( (*trackDisplacedVertex)->pt() > 0.2 ) nTrackingParticles_PFDV_Out0p2++;
+           if( (*trackDisplacedVertex)->pt() > 0.5 ) nTrackingParticles_PFDV_Out0p5++;
+           if( (*trackDisplacedVertex)->pt() > 1.0 ) nTrackingParticles_PFDV_Out1p0++;
+        }
       /// New Track!
       vTrack_pt.push_back( (*trackDisplacedVertex)->pt() );
       vTrack_eta.push_back( (*trackDisplacedVertex)->eta() );
@@ -939,6 +997,10 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     PFDV_numberOfTracks_0p2->push_back( nTrackingParticles_PFDV_0p2 );
     PFDV_numberOfTracks_0p5->push_back( nTrackingParticles_PFDV_0p5 );
     PFDV_numberOfTracks_1p0->push_back( nTrackingParticles_PFDV_1p0 );
+    PFDV_numberOfTracks_Out0p0->push_back( nTrackingParticles_PFDV_Out0p0 );
+    PFDV_numberOfTracks_Out0p2->push_back( nTrackingParticles_PFDV_Out0p2 );
+    PFDV_numberOfTracks_Out0p5->push_back( nTrackingParticles_PFDV_Out0p5 );
+    PFDV_numberOfTracks_Out1p0->push_back( nTrackingParticles_PFDV_Out1p0 );
 
     PFDV_Inc_charge->push_back( Source_Charge );
 
@@ -1099,7 +1161,7 @@ double dR_par = VecSim.position().x()*dVecX + VecSim.position().y()*dVecY + VecS
 double abs_vec = sqrt(VecSim.position().x()*VecSim.position().x() + VecSim.position().y()*VecSim.position().y() + VecSim.position().z()*VecSim.position().z());
 
 if (abs_vec > 0) dR_par = fabs(dR_par/abs_vec);
-else dR_par = 100.;
+else dR_par = 1000.;
 
 return dR_par;
 
@@ -1120,7 +1182,7 @@ double abs_vec = sqrt(VecSim.position().x()*VecSim.position().x() + VecSim.posit
 double dR_per = sqrt(dR_perX*dR_perX + dR_perY*dR_perY + dR_perZ*dR_perZ);
 
 if (abs_vec > 0) dR_per = dR_per/abs_vec;
-else dR_per = 100.;
+else dR_per = 1000.;
 
 return dR_per;
 }

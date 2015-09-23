@@ -112,6 +112,7 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< double > *MC_TrkV_momentumInc_phi;
     std::vector< double > *MC_TrkV_momentumInc_theta;
     std::vector< double > *MC_TrkV_Inc_charge;
+    std::vector< int > *MC_TrkV_Inc_pdgId;
     std::vector< double > *MC_TrkV_momentumOut_pt;
     std::vector< double > *MC_TrkV_momentumOut_phi;
     std::vector< double > *MC_TrkV_momentumOut_theta;
@@ -119,6 +120,9 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_0p2;
     std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_0p5;
     std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_1p0;
+    std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_Out0p2;
+    std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_Out0p5;
+    std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_Out1p0;
     std::vector< bool > *MC_TrkV_isAssociatedPF;
     std::vector< unsigned int > *MC_TrkV_associationPFDVIdx;
     std::vector< double > *MC_TrkV_associationPFDV_deltaR2d;
@@ -165,6 +169,10 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< unsigned int > *PFDV_numberOfTracks_0p2;
     std::vector< unsigned int > *PFDV_numberOfTracks_0p5;
     std::vector< unsigned int > *PFDV_numberOfTracks_1p0;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out0p0;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out0p2;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out0p5;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out1p0;
     std::vector< bool > *PFDV_isNuclear;
     std::vector< bool > *PFDV_isNuclearLoose;
     std::vector< bool > *PFDV_isNuclearKink;
