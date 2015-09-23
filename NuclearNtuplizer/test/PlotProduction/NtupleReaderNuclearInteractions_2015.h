@@ -96,6 +96,9 @@ class NtupleReaderNuclearInteractions_2015
     TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Forward;
     TH1D* hMC_TrkV_associationPFDV_deltaR3dParallelRel;
 
+    TH1D* hMC_TrkV_associationPFDV_deltaChargeSource_Barrel;
+    TH1D* hMC_TrkV_associationPFDV_deltaChargeSource_Forward;
+
     TH1D* hMC_TrkV_numberOftracks_0p2;
     TH1D* hMC_TrkV_numberOftracks_0p5;
     TH1D* hMC_TrkV_numberOftracks_1p0;
@@ -283,6 +286,7 @@ class NtupleReaderNuclearInteractions_2015
     std::vector< double > *MC_TrkV_y;
     std::vector< double > *MC_TrkV_z;
     std::vector< double > *MC_TrkV_momentumInc_pt;
+    std::vector< double > *MC_TrkV_Inc_charge;
     std::vector< double > *MC_TrkV_momentumInc_phi;
     std::vector< double > *MC_TrkV_momentumInc_theta;
     std::vector< double > *MC_TrkV_momentumOut_pt;
@@ -308,6 +312,7 @@ class NtupleReaderNuclearInteractions_2015
     TBranch *b_MC_TrkV_y;
     TBranch *b_MC_TrkV_z;
     TBranch *b_MC_TrkV_momentumInc_pt;
+    TBranch *b_MC_TrkV_Inc_charge;
     TBranch *b_MC_TrkV_momentumInc_phi;
     TBranch *b_MC_TrkV_momentumInc_theta;
     TBranch *b_MC_TrkV_momentumOut_pt;
@@ -330,6 +335,7 @@ class NtupleReaderNuclearInteractions_2015
     std::vector< double > *PFDV_y;
     std::vector< double > *PFDV_z;
     std::vector< double > *PFDV_momentumInc_pt;
+    std::vector< double > *PFDV_Inc_charge;
     std::vector< double > *PFDV_momentumInc_phi;
     std::vector< double > *PFDV_momentumInc_theta;
     std::vector< double > *PFDV_momentumOut_pt;
@@ -376,6 +382,7 @@ class NtupleReaderNuclearInteractions_2015
     TBranch *b_PFDV_y;
     TBranch *b_PFDV_z;
     TBranch *b_PFDV_momentumInc_pt;
+    TBranch *b_PFDV_Inc_charge;
     TBranch *b_PFDV_momentumInc_phi;
     TBranch *b_PFDV_momentumInc_theta;
     TBranch *b_PFDV_momentumOut_pt;

@@ -111,6 +111,7 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< double > *MC_TrkV_momentumInc_pt;
     std::vector< double > *MC_TrkV_momentumInc_phi;
     std::vector< double > *MC_TrkV_momentumInc_theta;
+    std::vector< double > *MC_TrkV_Inc_charge;
     std::vector< double > *MC_TrkV_momentumOut_pt;
     std::vector< double > *MC_TrkV_momentumOut_phi;
     std::vector< double > *MC_TrkV_momentumOut_theta;
@@ -152,6 +153,7 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< double > *PFDV_y;
     std::vector< double > *PFDV_z;
     std::vector< double > *PFDV_momentumInc_pt;
+    std::vector< double > *PFDV_Inc_charge;
     std::vector< double > *PFDV_momentumInc_phi;
     std::vector< double > *PFDV_momentumInc_theta;
     std::vector< double > *PFDV_momentumOut_pt;

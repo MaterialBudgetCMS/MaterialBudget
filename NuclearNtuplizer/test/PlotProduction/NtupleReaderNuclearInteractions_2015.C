@@ -155,6 +155,7 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   MC_TrkV_y = new std::vector< double >();
   MC_TrkV_z = new std::vector< double >();
   MC_TrkV_momentumInc_pt = new std::vector< double >();
+  MC_TrkV_Inc_charge = new std::vector< double >();
   MC_TrkV_momentumInc_phi = new std::vector< double >();
   MC_TrkV_momentumInc_theta = new std::vector< double >();
   MC_TrkV_momentumOut_pt = new std::vector< double >();
@@ -195,6 +196,9 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   if ( inputChain->GetBranchStatus( "MC_TrkV_momentumInc_pt" ) )
     inputChain->SetBranchAddress( "MC_TrkV_momentumInc_pt", &MC_TrkV_momentumInc_pt, &b_MC_TrkV_momentumInc_pt );
   else std::cout << "MC_TrkV_momentumInc_pt" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "MC_TrkV_Inc_charge" ) )
+    inputChain->SetBranchAddress( "MC_TrkV_Inc_charge", &MC_TrkV_Inc_charge, &b_MC_TrkV_Inc_charge );
+  else std::cout << "MC_TrkV_Inc_charge" << warningString_Branches.data() << std::endl;
   if ( inputChain->GetBranchStatus( "MC_TrkV_momentumInc_theta" ) )
     inputChain->SetBranchAddress( "MC_TrkV_momentumInc_theta", &MC_TrkV_momentumInc_theta, &b_MC_TrkV_momentumInc_theta );
   else std::cout <<"MC_TrkV_momentumInc_theta"  << warningString_Branches.data() << std::endl;
@@ -246,6 +250,7 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   PFDV_y = new std::vector< double >();
   PFDV_z = new std::vector< double >();
   PFDV_momentumInc_pt = new std::vector< double >();
+  PFDV_Inc_charge = new std::vector< double >();
   PFDV_momentumInc_phi = new std::vector< double >();
   PFDV_momentumInc_theta = new std::vector< double >();
   PFDV_momentumOut_pt = new std::vector< double >();
@@ -302,6 +307,9 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   if ( inputChain->GetBranchStatus( "PFDV_momentumInc_pt" ) )
     inputChain->SetBranchAddress( "PFDV_momentumInc_pt", &PFDV_momentumInc_pt, &b_PFDV_momentumInc_pt );
   else std::cout <<"PFDV_momentumInc_pt"  << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "PFDV_Inc_charge" ) )
+    inputChain->SetBranchAddress( "PFDV_Inc_charge", &PFDV_Inc_charge, &b_PFDV_Inc_charge );
+  else std::cout <<"PFDV_Inc_charge"  << warningString_Branches.data() << std::endl;
   if ( inputChain->GetBranchStatus( "PFDV_momentumInc_theta" ) )
     inputChain->SetBranchAddress( "PFDV_momentumInc_theta", &PFDV_momentumInc_theta, &b_PFDV_momentumInc_theta );
   else std::cout << "PFDV_momentumInc_theta" << warningString_Branches.data() << std::endl;
@@ -470,9 +478,13 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
 
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel", "N.I. in Tracker", 100, 0, 5. );
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel->Sumw2();
-
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward", "N.I. in Tracker", 100, 0, 5. );
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward->Sumw2();
+
+  hMC_TrkV_associationPFDV_deltaChargeSource_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaChargeSource_Barrel", "N.I. in Tracker", 12, -0.5, 11.5 );
+  hMC_TrkV_associationPFDV_deltaChargeSource_Barrel->Sumw2();
+  hMC_TrkV_associationPFDV_deltaChargeSource_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaChargeSource_Forward", "N.I. in Tracker", 12, -0.5 ,11.5 );
+  hMC_TrkV_associationPFDV_deltaChargeSource_Forward->Sumw2();
 
   hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel", "N.I. in Tracker", 200, 0, 0.5);
   hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel->Sumw2();
@@ -480,10 +492,9 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_associationPFDV_deltaR3dParallel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel", "N.I. in Tracker", 100, 0, 5.);
   hMC_TrkV_associationPFDV_deltaR3dParallel->Sumw2();
 
-  hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel", "N.I. in Tracker", 100, 0, 5. );
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel", "N.I. in Tracker", 200, 0, 500. );
   hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel->Sumw2();
-
-  hMC_TrkV_associationPFDV_deltaR3dParallel_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_Forward", "N.I. in Tracker", 100, 0, 5. );
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_Forward", "N.I. in Tracker", 200, 0, 500. );
   hMC_TrkV_associationPFDV_deltaR3dParallel_Forward->Sumw2();
 
   hMC_TrkV_associationPFDV_deltaR3dParallelRel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallelRel", "N.I. in Tracker", 200, 0, 0.5);
@@ -491,6 +502,7 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
 
   hMC_TrkV_associationPFDV_DuplicateR3d = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3d", "N.I. in Tracker", 100, 0, 1.0 );
   hMC_TrkV_associationPFDV_DuplicateR3d->Sumw2();
+
 
   hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular", "N.I. in Tracker", 100, 0, 0.20 );
   hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular->Sumw2();
@@ -1133,7 +1145,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       hMC_TrkV_isAssociatedPF -> Fill (1.);
       }
       else{
-      hMC_TrkV_isAssociatedPF -> Fill (0.);
+	      hMC_TrkV_isAssociatedPF -> Fill (0.);
       }
       
       if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 5.)hMC_TrkV_associationPFDV_deltaR2d -> Fill (MC_TrkV_associationPFDV_deltaR2d->at(i));
@@ -1160,34 +1172,52 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       hMC_TrkV_associationPFDVIdx -> Fill (MC_TrkV_associationPFDVIdx->at(i));
 
+      // fine min charge between RECO and MC source:
+      //
+      double deltaCharge = 10.;
+      if(numberOfPFDV > 0)for ( unsigned int j = 0; j < numberOfPFDV; j++ )
+      {
+         double dCharge = MC_TrkV_Inc_charge->at(i) - PFDV_Inc_charge->at(j); // MC -1:1, PF: -10:1
+         if (fabs(dCharge) < deltaCharge) deltaCharge = fabs(dCharge); 
+      }
 
       if(fabs(ni_MC_z) <20)
       {
+
         if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR2d_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR2d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 20.)hMC_TrkV_associationPFDV_deltaR2d_Barrel -> Fill (4.999);
 
         if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3d_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3d_Barrel -> Fill(4.999);
 
-        if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
+        if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.) {
+            hMC_TrkV_associationPFDV_deltaChargeSource_Barrel -> Fill (deltaCharge);
+            hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
+            hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
+        }
         else if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel -> Fill(4.999);
 
-        if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
-        else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill(4.999);
+        //if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
+        //else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill(4.999);
 
 
       }
 
       if(fabs(ni_MC_z) >20)
       {
+
         if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3d_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3d_Forward -> Fill(4.999);
 
-        if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
+        if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.){
+            hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
+            hMC_TrkV_associationPFDV_deltaChargeSource_Forward -> Fill (deltaCharge);
+            hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
+        }
         else if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward -> Fill(4.999);
 
-        if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
-        else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill(4.999);
+        //if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
+        //else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill(4.999);
 
       }
       
@@ -1277,7 +1307,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     //test for assosiation
     if(N_MCassociatePF > 1){ 
        std::cout << "size of MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->size() << std::endl; 
-       std::cout << "N_MCassociatePF per event = " << N_MCassociatePF << endl;
+       std::cout << "N_MCassociatePF per event = " << N_MCassociatePF << std::endl;
     }  
 // end MC part
 
