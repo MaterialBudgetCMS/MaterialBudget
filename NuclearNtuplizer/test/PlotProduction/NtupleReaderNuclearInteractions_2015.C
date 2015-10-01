@@ -156,6 +156,7 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   MC_TrkV_z = new std::vector< double >();
   MC_TrkV_momentumInc_pt = new std::vector< double >();
   MC_TrkV_Inc_charge = new std::vector< double >();
+  MC_TrkV_Inc_pdgId = new std::vector< int >();
   MC_TrkV_momentumInc_phi = new std::vector< double >();
   MC_TrkV_momentumInc_theta = new std::vector< double >();
   MC_TrkV_momentumOut_pt = new std::vector< double >();
@@ -165,6 +166,9 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   MC_TrkV_numberOfChargedParticles_0p2 = new std::vector< unsigned int >();
   MC_TrkV_numberOfChargedParticles_0p5 = new std::vector< unsigned int >();
   MC_TrkV_numberOfChargedParticles_1p0 = new std::vector< unsigned int >();
+  MC_TrkV_numberOfChargedParticles_Out0p2 = new std::vector< unsigned int >();
+  MC_TrkV_numberOfChargedParticles_Out0p5 = new std::vector< unsigned int >();
+  MC_TrkV_numberOfChargedParticles_Out1p0 = new std::vector< unsigned int >();
   MC_TrkV_isAssociatedPF = new std::vector< bool >();
   MC_TrkV_associationPFDVIdx = new std::vector< unsigned int >();
   MC_TrkV_associationPFDV_deltaR2d = new std::vector< double >();
@@ -199,6 +203,9 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   if ( inputChain->GetBranchStatus( "MC_TrkV_Inc_charge" ) )
     inputChain->SetBranchAddress( "MC_TrkV_Inc_charge", &MC_TrkV_Inc_charge, &b_MC_TrkV_Inc_charge );
   else std::cout << "MC_TrkV_Inc_charge" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "MC_TrkV_Inc_pdgId" ) )
+    inputChain->SetBranchAddress( "MC_TrkV_Inc_pdgId", &MC_TrkV_Inc_pdgId, &b_MC_TrkV_Inc_pdgId );
+  else std::cout << "MC_TrkV_Inc_pdgId" << warningString_Branches.data() << std::endl;
   if ( inputChain->GetBranchStatus( "MC_TrkV_momentumInc_theta" ) )
     inputChain->SetBranchAddress( "MC_TrkV_momentumInc_theta", &MC_TrkV_momentumInc_theta, &b_MC_TrkV_momentumInc_theta );
   else std::cout <<"MC_TrkV_momentumInc_theta"  << warningString_Branches.data() << std::endl;
@@ -226,6 +233,15 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   if ( inputChain->GetBranchStatus( "MC_TrkV_numberOfChargedParticles_1p0" ) )
     inputChain->SetBranchAddress( "MC_TrkV_numberOfChargedParticles_1p0", &MC_TrkV_numberOfChargedParticles_1p0, &b_MC_TrkV_numberOfChargedParticles_1p0 );
   else std::cout <<"MC_TrkV_numberOfChargedParticles_1p0"  << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "MC_TrkV_numberOfChargedParticles_Out0p2" ) )
+    inputChain->SetBranchAddress( "MC_TrkV_numberOfChargedParticles_Out0p2", &MC_TrkV_numberOfChargedParticles_Out0p2, &b_MC_TrkV_numberOfChargedParticles_Out0p2 );
+  else std::cout <<"MC_TrkV_numberOfChargedParticles_Out0p2"  << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "MC_TrkV_numberOfChargedParticles_Out0p5" ) )
+    inputChain->SetBranchAddress( "MC_TrkV_numberOfChargedParticles_Out0p5", &MC_TrkV_numberOfChargedParticles_Out0p5, &b_MC_TrkV_numberOfChargedParticles_Out0p5 );
+  else std::cout <<"MC_TrkV_numberOfChargedParticles_Out0p5"  << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "MC_TrkV_numberOfChargedParticles_Out1p0" ) )
+    inputChain->SetBranchAddress( "MC_TrkV_numberOfChargedParticles_Out1p0", &MC_TrkV_numberOfChargedParticles_Out1p0, &b_MC_TrkV_numberOfChargedParticles_Out1p0 );
+  else std::cout <<"MC_TrkV_numberOfChargedParticles_Out1p0"  << warningString_Branches.data() << std::endl;
   if ( inputChain->GetBranchStatus( "MC_TrkV_isAssociatedPF" ) )
     inputChain->SetBranchAddress( "MC_TrkV_isAssociatedPF", &MC_TrkV_isAssociatedPF, &b_MC_TrkV_isAssociatedPF );
   else std::cout << "MC_TrkV_isAssociatedPF" << warningString_Branches.data() << std::endl;
@@ -262,6 +278,10 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   PFDV_numberOfTracks_0p2 = new std::vector< unsigned int >();
   PFDV_numberOfTracks_0p5 = new std::vector< unsigned int >();
   PFDV_numberOfTracks_1p0 = new std::vector< unsigned int >();
+  PFDV_numberOfTracks_Out0p0 = new std::vector< unsigned int >();
+  PFDV_numberOfTracks_Out0p2 = new std::vector< unsigned int >();
+  PFDV_numberOfTracks_Out0p5 = new std::vector< unsigned int >();
+  PFDV_numberOfTracks_Out1p0 = new std::vector< unsigned int >();
   PFDV_isNuclear = new std::vector< bool >();
   PFDV_isNuclearLoose = new std::vector< bool >();
   PFDV_isNuclearKink = new std::vector< bool >();
@@ -340,6 +360,18 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   if ( inputChain->GetBranchStatus( "PFDV_numberOfTracks_0p5" ) )
     inputChain->SetBranchAddress( "PFDV_numberOfTracks_0p5", &PFDV_numberOfTracks_0p5, &b_PFDV_numberOfTracks_0p5 );
   else std::cout << "PFDV_numberOfTracks_0p5" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "PFDV_numberOfTracks_1p0" ) )
+    inputChain->SetBranchAddress( "PFDV_numberOfTracks_1p0", &PFDV_numberOfTracks_1p0, &b_PFDV_numberOfTracks_1p0 );
+  else std::cout << "PFDV_numberOfTracks_1p0" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "PFDV_numberOfTracks_Out0p0" ) )
+    inputChain->SetBranchAddress( "PFDV_numberOfTracks_Out0p0", &PFDV_numberOfTracks_Out0p0, &b_PFDV_numberOfTracks_Out0p0 );
+  else std::cout << "PFDV_numberOfTracks_Out0p0" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "PFDV_numberOfTracks_Out0p2" ) )
+    inputChain->SetBranchAddress( "PFDV_numberOfTracks_Out0p2", &PFDV_numberOfTracks_Out0p2, &b_PFDV_numberOfTracks_Out0p2 );
+  else std::cout << "PFDV_numberOfTracks_Out0p2" << warningString_Branches.data() << std::endl;
+  if ( inputChain->GetBranchStatus( "PFDV_numberOfTracks_Out0p5" ) )
+    inputChain->SetBranchAddress( "PFDV_numberOfTracks_Out0p5", &PFDV_numberOfTracks_Out0p5, &b_PFDV_numberOfTracks_Out0p5 );
+  else std::cout << "PFDV_numberOfTracks_Out0p5" << warningString_Branches.data() << std::endl;
   if ( inputChain->GetBranchStatus( "PFDV_numberOfTracks_1p0" ) )
     inputChain->SetBranchAddress( "PFDV_numberOfTracks_1p0", &PFDV_numberOfTracks_1p0, &b_PFDV_numberOfTracks_1p0 );
   else std::cout << "PFDV_numberOfTracks_1p0" << warningString_Branches.data() << std::endl;
@@ -481,10 +513,29 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward", "N.I. in Tracker", 100, 0, 5. );
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward->Sumw2();
 
-  hMC_TrkV_associationPFDV_deltaChargeSource_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaChargeSource_Barrel", "N.I. in Tracker", 12, -0.5, 11.5 );
+  hMC_TrkV_associationPFDV_deltaChargeSource_Barrel = new TH1D( "hMC_TrkV_associationPFDV_deltaChargeSource_Barrel", "N.I. in Tracker", 16, -0.5, 15.5 );
   hMC_TrkV_associationPFDV_deltaChargeSource_Barrel->Sumw2();
-  hMC_TrkV_associationPFDV_deltaChargeSource_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaChargeSource_Forward", "N.I. in Tracker", 12, -0.5 ,11.5 );
+
+  hMC_TrkV_momentumOut_pt_Barrel = new TH1D( "hMC_TrkV_momentumOut_pt_Barrel", "N.I. in Tracker", 105, 0., 105. );
+  hMC_TrkV_momentumOut_pt_Barrel->Sumw2();
+  hMC_TrkV_momentumInc_pt_Barrel = new TH1D( "hMC_TrkV_momentumInc_pt_Barrel", "N.I. in Tracker", 105, 0., 105. );
+  hMC_TrkV_momentumInc_pt_Barrel->Sumw2();
+  hMC_TrkV_momentum_dtheta_Barrel = new TH1D( "hMC_TrkV_momentum_dtheta_Barrel", "N.I. in Tracker", 100, 0., 3.142 );
+  hMC_TrkV_momentum_dtheta_Barrel->Sumw2();
+  hMC_TrkV_momentumOut_mass_Barrel = new TH1D( "hMC_TrkV_momentumOut_mass_Barrel", "N.I. in Tracker", 200, 0., 10.);
+  hMC_TrkV_momentumOut_mass_Barrel->Sumw2();
+
+  hMC_TrkV_associationPFDV_pdgIdSource_Barrel = new TH1D( "hMC_TrkV_associationPFDV_pdgIdSource_Barrel", "N.I. in Tracker", 601, -300.5 ,300.5 );
+  hMC_TrkV_associationPFDV_pdgIdSource_Barrel->Sumw2();
+  hMC_TrkV_associationPFDV_deltaChargeSource_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaChargeSource_Forward", "N.I. in Tracker", 16, -0.5 ,15.5 );
   hMC_TrkV_associationPFDV_deltaChargeSource_Forward->Sumw2();
+  hMC_TrkV_associationPFDV_pdgIdSource_Forward = new TH1D( "hMC_TrkV_associationPFDV_pdgIdSource_Forward", "N.I. in Tracker", 601, -300.5 ,300.5 );
+  hMC_TrkV_associationPFDV_pdgIdSource_Forward->Sumw2();
+
+  hMC_TrkV_pdgIdSource_Barrel = new TH1D( "hMC_TrkV_pdgIdSource_Barrel", "N.I. in Tracker", 601, -300.5 ,300.5 );
+  hMC_TrkV_pdgIdSource_Barrel->Sumw2();
+  hMC_TrkV_pdgIdSource_Forward = new TH1D( "hMC_TrkV_pdgIdSource_Forward", "N.I. in Tracker", 601, -300.5 ,300.5 );
+  hMC_TrkV_pdgIdSource_Forward->Sumw2();
 
   hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel", "N.I. in Tracker", 200, 0, 0.5);
   hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel->Sumw2();
@@ -1022,15 +1073,29 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       ni_MC_z = MC_TrkV_z->at(i);
       ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
 
+      // fine min charge between RECO and MC source:
+      //
+      double deltaCharge = 15.;
+      if(numberOfPFDV > 0)for ( unsigned int j = 0; j < numberOfPFDV; j++ )
+      {
+         double dCharge = MC_TrkV_Inc_charge->at(i) - PFDV_Inc_charge->at(j); // MC -1:1, PF: -10:1
+         if (fabs(dCharge) < deltaCharge) deltaCharge = fabs(dCharge); 
+      }
+
       //check for assosiation MC_TrkV_isAssociatedPF->at(i) is dR3 < 20 is very big, need to do our serlf dR3 < 1 cm
       //bool isMC_assosiated_PF = MC_TrkV_isAssociatedPF->at(i);
       bool isMC_assosiated_PF = false;
       //if (MC_TrkV_isAssociatedPF->at(i) && MC_TrkV_associationPFDV_deltaR3d->at(i) < 1) isMC_assosiated_PF = true;  
       if ( MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 2. && MC_TrkV_associationPFDV_deltaR3dParallel->at(i)< 20. ) isMC_assosiated_PF = true;  
+      //if ( MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 2.) isMC_assosiated_PF = true;  
       //if ( MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20. && MC_TrkV_associationPFDV_deltaR3dParallel->at(i)< 20. ) isMC_assosiated_PF = true;  
+      if (deltaCharge == 1 || deltaCharge == 2 || deltaCharge == 10 || deltaCharge == 15 ) isMC_assosiated_PF = false; // this MC is not assosiaded with PF by charge
 
       // remove very soft vertex:
       if (MC_TrkV_numberOfChargedParticles_0p2->at(i) < 3 ) continue;
+      if (MC_TrkV_momentumOut_pt->at(i) < 0.5 ) continue;
+      //if (MC_TrkV_momentumOut_pt->at(i) >10. ) continue;
+      if (MC_TrkV_momentumInc_pt->at(i) < 90. ) continue;
 
       ///////////     
       // test for assosiation
@@ -1112,14 +1177,12 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       //reject Duplicates:
       //if ( fabs(deltaMatchingDuplicates) < MatchDuplicatesCut_dR3) continue;
-      if ( fabs(deltaMatchingDuplicates) < MatchDuplicatesCut_dR3 || fabs(deltaMatchingDuplicatesR) < MatchDuplicatesCut_R) continue;
+      //if ( fabs(deltaMatchingDuplicates) < MatchDuplicatesCut_dR3 || fabs(deltaMatchingDuplicatesR) < MatchDuplicatesCut_R) continue;
 
       if(isMC_assosiated_PF) N_MCassociatePF++;
       if(N_MCassociatePF > 1){
           //std::cout << "MC_TrkV_associationPFDV_deltaR3d = " << MC_TrkV_associationPFDV_deltaR3d->at(i) << std::endl; 
-          std::cout << "Radius of MC NI ni_MC_rho = " << ni_MC_rho << std::endl;
-          //std::cout << "MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) << std::endl; 
-          //std::cout << "MC_TrkV_associationPFDV_deltaR3dParallel = " << MC_TrkV_associationPFDV_deltaR3dParallel->at(i) << std::endl; 
+          //std::cout << "Radius of MC NI ni_MC_rho = " << ni_MC_rho << std::endl;
       }
       ///////////
       
@@ -1172,17 +1235,21 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       hMC_TrkV_associationPFDVIdx -> Fill (MC_TrkV_associationPFDVIdx->at(i));
 
-      // fine min charge between RECO and MC source:
-      //
-      double deltaCharge = 10.;
-      if(numberOfPFDV > 0)for ( unsigned int j = 0; j < numberOfPFDV; j++ )
-      {
-         double dCharge = MC_TrkV_Inc_charge->at(i) - PFDV_Inc_charge->at(j); // MC -1:1, PF: -10:1
-         if (fabs(dCharge) < deltaCharge) deltaCharge = fabs(dCharge); 
-      }
 
       if(fabs(ni_MC_z) <20)
       {
+
+        if (isMC_assosiated_PF) {
+            hMC_TrkV_associationPFDV_deltaChargeSource_Barrel -> Fill (deltaCharge);
+            if(fabs(MC_TrkV_Inc_pdgId->at(i))< 300)hMC_TrkV_associationPFDV_pdgIdSource_Barrel -> Fill (MC_TrkV_Inc_pdgId->at(i));
+               else {
+                       hMC_TrkV_associationPFDV_pdgIdSource_Barrel -> Fill (300.);
+                       std::cout << "assos. source pdgId = " << MC_TrkV_Inc_pdgId->at(i) << std:: endl;
+                    } 
+        }
+
+        if(fabs(MC_TrkV_Inc_pdgId->at(i))< 300)hMC_TrkV_pdgIdSource_Barrel -> Fill (MC_TrkV_Inc_pdgId->at(i));
+           else hMC_TrkV_pdgIdSource_Barrel -> Fill (300.);
 
         if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR2d_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR2d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR2d->at(i) < 20.)hMC_TrkV_associationPFDV_deltaR2d_Barrel -> Fill (4.999);
@@ -1191,7 +1258,6 @@ void NtupleReaderNuclearInteractions_2015::analyze()
         else if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3d_Barrel -> Fill(4.999);
 
         if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.) {
-            hMC_TrkV_associationPFDV_deltaChargeSource_Barrel -> Fill (deltaCharge);
             hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
             hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
         }
@@ -1205,13 +1271,23 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       if(fabs(ni_MC_z) >20)
       {
+        if (isMC_assosiated_PF) {
+            hMC_TrkV_associationPFDV_deltaChargeSource_Forward -> Fill (deltaCharge);
+            if(fabs(MC_TrkV_Inc_pdgId->at(i))< 300)hMC_TrkV_associationPFDV_pdgIdSource_Forward -> Fill (MC_TrkV_Inc_pdgId->at(i));
+               else {
+                       hMC_TrkV_associationPFDV_pdgIdSource_Forward -> Fill (300.);
+                       //std::cout << "assos. source pdgId = " << MC_TrkV_Inc_pdgId->at(i) << std:: endl;
+                    } 
+        }
+
+        if(fabs(MC_TrkV_Inc_pdgId->at(i))< 300)hMC_TrkV_pdgIdSource_Forward -> Fill (MC_TrkV_Inc_pdgId->at(i));
+           else hMC_TrkV_pdgIdSource_Forward -> Fill (300.);
 
         if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 5.) hMC_TrkV_associationPFDV_deltaR3d_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3d->at(i));
         else if (MC_TrkV_associationPFDV_deltaR3d->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3d_Forward -> Fill(4.999);
 
         if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 5.){
             hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i));
-            hMC_TrkV_associationPFDV_deltaChargeSource_Forward -> Fill (deltaCharge);
             hMC_TrkV_associationPFDV_deltaR3dParallel_Forward -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(i));
         }
         else if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward -> Fill(4.999);
@@ -1247,15 +1323,22 @@ void NtupleReaderNuclearInteractions_2015::analyze()
         hMC_TrkV_isNuclearInteraction_Barrel -> Fill (0.);
         }
         
-        if ( MC_TrkV_numberOfChargedParticles_0p2->at(i) > 2){
+        if ( (MC_TrkV_numberOfChargedParticles_Out0p2->at(i) > 2 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_0p2->at(i) > 2 && ni_MC_rho >= 20 ) ){
+        //if ( (MC_TrkV_numberOfChargedParticles_Out0p2->at(i) > 8 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_0p2->at(i) > 8 && ni_MC_rho >= 20 ) ){
           if ( MC_TrkV_isNuclearInteraction->at(i)){
-          hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2->Fill( ni_MC_rho );
+            hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2->Fill( ni_MC_rho );
+            hMC_TrkV_momentumOut_pt_Barrel-> Fill (MC_TrkV_momentumOut_pt->at(i));
+            hMC_TrkV_momentumInc_pt_Barrel-> Fill (MC_TrkV_momentumInc_pt->at(i));
+            double dtheta = fabs(MC_TrkV_momentumInc_theta->at(i)-MC_TrkV_momentumOut_theta->at(i));
+            if (dtheta > 3.14) dtheta = fabs(2*3.14 - dtheta); 
+            hMC_TrkV_momentum_dtheta_Barrel-> Fill (dtheta);
+            hMC_TrkV_momentumOut_mass_Barrel-> Fill (MC_TrkV_momentumOut_mass->at(i));
             if ( isMC_assosiated_PF ){
                hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2 -> Fill ( ni_MC_rho );
             }
           }
         }
-        if ( MC_TrkV_numberOfChargedParticles_0p5->at(i) > 2){
+        if ( (MC_TrkV_numberOfChargedParticles_Out0p5->at(i) > 2 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_0p5->at(i) > 2 && ni_MC_rho >= 20 )){
           if ( MC_TrkV_isNuclearInteraction->at(i)){
           hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5->Fill( ni_MC_rho );
             if ( isMC_assosiated_PF ){
@@ -1263,7 +1346,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
             }
           }
         }
-        if ( MC_TrkV_numberOfChargedParticles_1p0->at(i) > 2){
+        if ( (MC_TrkV_numberOfChargedParticles_Out1p0->at(i) > 2 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_1p0->at(i) > 2 && ni_MC_rho >= 20 )){
           if ( MC_TrkV_isNuclearInteraction->at(i)){
           hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0->Fill( ni_MC_rho );
             if ( isMC_assosiated_PF ){
@@ -1276,7 +1359,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       }
       // Forward region only 
       if(fabs(ni_MC_z) >= 20){
-        if ( MC_TrkV_numberOfChargedParticles_0p2->at(i) > 2){
+        if ( (MC_TrkV_numberOfChargedParticles_Out0p2->at(i) > 2 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_0p2->at(i) > 2 && ni_MC_rho >= 20 ) ){
           if ( MC_TrkV_isNuclearInteraction->at(i)){
           hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2->Fill( ni_MC_rho );
             if ( isMC_assosiated_PF ){
@@ -1284,7 +1367,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
             }
           }
         }
-        if ( MC_TrkV_numberOfChargedParticles_0p5->at(i) > 2){
+        if ( (MC_TrkV_numberOfChargedParticles_Out0p5->at(i) > 2 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_0p5->at(i) > 2 && ni_MC_rho >= 20 ) ){
           if ( MC_TrkV_isNuclearInteraction->at(i)){
           hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5->Fill( ni_MC_rho );
             if ( isMC_assosiated_PF ){
@@ -1292,7 +1375,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
             }
           }
         }
-        if ( MC_TrkV_numberOfChargedParticles_1p0->at(i) > 2){
+        if ( (MC_TrkV_numberOfChargedParticles_Out1p0->at(i) > 2 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_1p0->at(i) > 2 && ni_MC_rho >= 20 ) ){
           if ( MC_TrkV_isNuclearInteraction->at(i)){
           hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0->Fill( ni_MC_rho );
             if ( isMC_assosiated_PF ){
@@ -1305,10 +1388,10 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
     }
     //test for assosiation
-    if(N_MCassociatePF > 1){ 
-       std::cout << "size of MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->size() << std::endl; 
-       std::cout << "N_MCassociatePF per event = " << N_MCassociatePF << std::endl;
-    }  
+    //if(N_MCassociatePF > 1){ 
+       //std::cout << "size of MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->size() << std::endl; 
+       //std::cout << "N_MCassociatePF per event = " << N_MCassociatePF << std::endl;
+    //}  
 // end MC part
 
 // start RECO part

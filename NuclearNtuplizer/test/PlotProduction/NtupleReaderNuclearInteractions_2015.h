@@ -98,6 +98,15 @@ class NtupleReaderNuclearInteractions_2015
 
     TH1D* hMC_TrkV_associationPFDV_deltaChargeSource_Barrel;
     TH1D* hMC_TrkV_associationPFDV_deltaChargeSource_Forward;
+    TH1D* hMC_TrkV_momentumOut_pt_Barrel;
+    TH1D* hMC_TrkV_momentumInc_pt_Barrel;
+    TH1D* hMC_TrkV_momentum_dtheta_Barrel;
+    TH1D* hMC_TrkV_momentumOut_mass_Barrel;
+    TH1D* hMC_TrkV_associationPFDV_pdgIdSource_Barrel;
+    TH1D* hMC_TrkV_associationPFDV_pdgIdSource_Forward;
+
+    TH1D* hMC_TrkV_pdgIdSource_Barrel;
+    TH1D* hMC_TrkV_pdgIdSource_Forward;
 
     TH1D* hMC_TrkV_numberOftracks_0p2;
     TH1D* hMC_TrkV_numberOftracks_0p5;
@@ -287,6 +296,7 @@ class NtupleReaderNuclearInteractions_2015
     std::vector< double > *MC_TrkV_z;
     std::vector< double > *MC_TrkV_momentumInc_pt;
     std::vector< double > *MC_TrkV_Inc_charge;
+    std::vector< int > *MC_TrkV_Inc_pdgId;
     std::vector< double > *MC_TrkV_momentumInc_phi;
     std::vector< double > *MC_TrkV_momentumInc_theta;
     std::vector< double > *MC_TrkV_momentumOut_pt;
@@ -296,6 +306,9 @@ class NtupleReaderNuclearInteractions_2015
     std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_0p2;
     std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_0p5;
     std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_1p0;
+    std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_Out0p2;
+    std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_Out0p5;
+    std::vector< unsigned int > *MC_TrkV_numberOfChargedParticles_Out1p0;
 
     std::vector< bool > *MC_TrkV_isAssociatedPF;
     std::vector< unsigned int > *MC_TrkV_associationPFDVIdx;
@@ -313,6 +326,7 @@ class NtupleReaderNuclearInteractions_2015
     TBranch *b_MC_TrkV_z;
     TBranch *b_MC_TrkV_momentumInc_pt;
     TBranch *b_MC_TrkV_Inc_charge;
+    TBranch *b_MC_TrkV_Inc_pdgId;
     TBranch *b_MC_TrkV_momentumInc_phi;
     TBranch *b_MC_TrkV_momentumInc_theta;
     TBranch *b_MC_TrkV_momentumOut_pt;
@@ -322,6 +336,9 @@ class NtupleReaderNuclearInteractions_2015
     TBranch *b_MC_TrkV_numberOfChargedParticles_0p2;
     TBranch *b_MC_TrkV_numberOfChargedParticles_0p5;
     TBranch *b_MC_TrkV_numberOfChargedParticles_1p0;
+    TBranch *b_MC_TrkV_numberOfChargedParticles_Out0p2;
+    TBranch *b_MC_TrkV_numberOfChargedParticles_Out0p5;
+    TBranch *b_MC_TrkV_numberOfChargedParticles_Out1p0;
     TBranch *b_MC_TrkV_isAssociatedPF;
     TBranch *b_MC_TrkV_associationPFDVIdx;
     TBranch *b_MC_TrkV_associationPFDV_deltaR2d;
@@ -347,6 +364,10 @@ class NtupleReaderNuclearInteractions_2015
     std::vector< unsigned int > *PFDV_numberOfTracks_0p2;
     std::vector< unsigned int > *PFDV_numberOfTracks_0p5;
     std::vector< unsigned int > *PFDV_numberOfTracks_1p0;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out0p0;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out0p2;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out0p5;
+    std::vector< unsigned int > *PFDV_numberOfTracks_Out1p0;
     std::vector< bool > *PFDV_isNuclear;
     std::vector< bool > *PFDV_isNuclearLoose;
     std::vector< bool > *PFDV_isNuclearKink;
@@ -394,6 +415,10 @@ class NtupleReaderNuclearInteractions_2015
     TBranch *b_PFDV_numberOfTracks_0p2;
     TBranch *b_PFDV_numberOfTracks_0p5;
     TBranch *b_PFDV_numberOfTracks_1p0;
+    TBranch *b_PFDV_numberOfTracks_Out0p0;
+    TBranch *b_PFDV_numberOfTracks_Out0p2;
+    TBranch *b_PFDV_numberOfTracks_Out0p5;
+    TBranch *b_PFDV_numberOfTracks_Out1p0;
     TBranch *b_PFDV_isNuclear;
     TBranch *b_PFDV_isNuclearLoose;
     TBranch *b_PFDV_isNuclearKink;
