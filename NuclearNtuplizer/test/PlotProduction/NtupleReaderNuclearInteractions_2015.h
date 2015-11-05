@@ -144,8 +144,9 @@ class NtupleReaderNuclearInteractions_2015
     TH2D* hPFDV_RhoPhi_Map;
     TH2D* hPFDV_XY_Map_BPix;
     TH2D* hPFDV_RhoPhi_Map_BPix;
-    TH2D* hPFDV_XY_Map_Pipe;
     TH2D* hPFDV_RhoPhi_Map_Pipe;
+
+    TH2D* hPFDV_XY_Map_Pipe;
 
     TH2D* hPFDV_ZR_Map;
 
@@ -160,8 +161,8 @@ class NtupleReaderNuclearInteractions_2015
 //    TH2D* hPFDV_RhoPhi_Map_AbsZ25;
 //    TH2D* hPFDV_XY_Map_BPix_AbsZ25;
 //    TH2D* hPFDV_RhoPhi_Map_BPix_AbsZ25;
-//    TH2D* hPFDV_XY_Map_Pipe_AbsZ25;
-//    TH2D* hPFDV_RhoPhi_Map_Pipe_AbsZ25;
+    TH2D* hPFDV_XY_Map_Pipe_AbsZ25;
+    TH2D* hPFDV_RhoPhi_Map_Pipe_AbsZ25;
 //
 //    TH2D* hPFDV_XY_Map_Corr_AbsZ25;
 //    TH2D* hPFDV_RhoPhi_Map_Corr_AbsZ25;
