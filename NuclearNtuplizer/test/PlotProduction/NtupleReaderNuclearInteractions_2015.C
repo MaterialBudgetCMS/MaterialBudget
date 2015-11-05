@@ -733,10 +733,12 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hPFDV_XY_Map_BPix->Sumw2();
   hPFDV_RhoPhi_Map_BPix->Sumw2();
 
-  hPFDV_XY_Map_Pipe = new TH2D( "hPFDV_XY_Map_Pipe", "CMS work in progress", 200, -5, 5, 200, -5, 5 );
-  hPFDV_RhoPhi_Map_Pipe = new TH2D( "hPFDV_RhoPhi_Map_Pipe", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 5 );
+  hPFDV_XY_Map_Pipe = new TH2D( "hPFDV_XY_Map_Pipe", "CMS work in progress", 1000, -5, 5, 1000, -5, 5 );
+  hPFDV_RhoPhi_Map_Pipe = new TH2D( "hPFDV_RhoPhi_Map_Pipe", "CMS work in progress", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
   hPFDV_XY_Map_Pipe->Sumw2();
   hPFDV_RhoPhi_Map_Pipe->Sumw2();
+
+
 
 //  hPFDV_XY_Map_Corr = new TH2D( "hPFDV_XY_Map_Corr", "N.I. in Tracker, BS Corr", 1000, -100, 100, 1000, -100, 100 );
 //  hPFDV_RhoPhi_Map_Corr = new TH2D( "hPFDV_RhoPhi_Map_Corr", "N.I. in Tracker, BS Corr", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 100 );
@@ -764,10 +766,10 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
 //  hPFDV_XY_Map_BPix_AbsZ25->Sumw2();
 //  hPFDV_RhoPhi_Map_BPix_AbsZ25->Sumw2();
 //
-//  hPFDV_XY_Map_Pipe_AbsZ25 = new TH2D( "hPFDV_XY_Map_Pipe_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 1000, -5, 5, 1000, -5, 5 );
-//  hPFDV_RhoPhi_Map_Pipe_AbsZ25 = new TH2D( "hPFDV_RhoPhi_Map_Pipe_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
-//  hPFDV_XY_Map_Pipe_AbsZ25->Sumw2();
-//  hPFDV_RhoPhi_Map_Pipe_AbsZ25->Sumw2();
+  hPFDV_XY_Map_Pipe_AbsZ25 = new TH2D( "hPFDV_XY_Map_Pipe_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 1000, -5, 5, 1000, -5, 5 );
+  hPFDV_RhoPhi_Map_Pipe_AbsZ25 = new TH2D( "hPFDV_RhoPhi_Map_Pipe_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
+  hPFDV_XY_Map_Pipe_AbsZ25->Sumw2();
+  hPFDV_RhoPhi_Map_Pipe_AbsZ25->Sumw2();
 //
 //  hPFDV_XY_Map_Corr_AbsZ25 = new TH2D( "hPFDV_XY_Map_Corr_AbsZ25", "N.I. in Tracker, BS Corr, |z| < 25 cm", 1000, -100, 100, 1000, -100, 100 );
 //  hPFDV_RhoPhi_Map_Corr_AbsZ25 = new TH2D( "hPFDV_RhoPhi_Map_Corr_AbsZ25", "N.I. in Tracker, BS Corr, |z| < 25 cm", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 100 );
@@ -845,8 +847,8 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
 //  hPFDV_XY_Map_Corr_Pipe_AbsZ25_Weight->Sumw2();
 //  hPFDV_RhoPhi_Map_Corr_Pipe_AbsZ25_Weight->Sumw2();
 //
-//  std::ostringstream histoName;
-//  std::ostringstream histoTitle;
+  std::ostringstream histoName;
+  std::ostringstream histoTitle;
 //
 //  for ( int k = -5; k < 5; k++ )
 //  {
@@ -878,20 +880,20 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
 //    m_hPFDV_RhoPhi_Map_BPix.insert( std::pair<int, TH2D*>( k, h2 ) );
 //  }
 //
-//  for ( int k = -5; k < 5; k++ )
-//  {
-//    histoName.str("");
-//    histoTitle.str("");
-//    histoName << "hPFDV_XY_Map_Pipe_" << k*5 << "_" << (k+1)*5;
-//    histoTitle << "N.I. in Tracker, " << k*5 << " (cm) <= z < " << (k+1)*5 << " (cm)";
-//    TH2D* h1 = new TH2D( histoName.str().c_str(), histoTitle.str().c_str(), 1000, -5, 5, 1000, -5, 5 );
-//    h1->Sumw2();
-//    m_hPFDV_XY_Map_Pipe.insert( std::pair<int, TH2D*>( k, h1 ) );
-//    histoName.str("");
-//    histoName << "hPFDV_RhoPhi_Map_Pipe_" << k*5 << "_" << (k+1)*5;
-//    TH2D* h2 = new TH2D( histoName.str().c_str(), histoTitle.str().c_str(), 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
-//    m_hPFDV_RhoPhi_Map_Pipe.insert( std::pair<int, TH2D*>( k, h2 ) );
-//  }
+  for ( int k = -5; k < 5; k++ )
+  {
+    histoName.str("");
+    histoTitle.str("");
+    histoName << "hPFDV_XY_Map_Pipe_" << k*5 << "_" << (k+1)*5;
+    histoTitle << "N.I. in Tracker, " << k*5 << " (cm) <= z < " << (k+1)*5 << " (cm)";
+    TH2D* h1 = new TH2D( histoName.str().c_str(), histoTitle.str().c_str(), 1000, -5, 5, 1000, -5, 5 );
+    h1->Sumw2();
+    m_hPFDV_XY_Map_Pipe.insert( std::pair<int, TH2D*>( k, h1 ) );
+    histoName.str("");
+    histoName << "hPFDV_RhoPhi_Map_Pipe_" << k*5 << "_" << (k+1)*5;
+    TH2D* h2 = new TH2D( histoName.str().c_str(), histoTitle.str().c_str(), 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
+    m_hPFDV_RhoPhi_Map_Pipe.insert( std::pair<int, TH2D*>( k, h2 ) );
+  }
 //
 //  for ( int k = -5; k < 5; k++ )
 //  {
@@ -1488,26 +1490,26 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
 
 
-//      if ( fabs(ni_z) < 25 )
-//      {
-//        hPFDV_XY_Map_AbsZ25->Fill( ni_x, ni_y );
-//        hPFDV_RhoPhi_Map_AbsZ25->Fill( ni_phi, ni_rho );
-//
-//        hPFDV_XY_Map_BPix_AbsZ25->Fill( ni_x, ni_y );
-//        hPFDV_RhoPhi_Map_BPix_AbsZ25->Fill( ni_phi, ni_rho );
-//
-//        hPFDV_XY_Map_Pipe_AbsZ25->Fill( ni_x, ni_y );
-//        hPFDV_RhoPhi_Map_Pipe_AbsZ25->Fill( ni_phi, ni_rho );
-//
-//        m_hPFDV_XY_Map.find( ni_z_i )->second->Fill( ni_x, ni_y );
-//        m_hPFDV_RhoPhi_Map.find( ni_z_i )->second->Fill( ni_phi, ni_rho );
-//
-//        m_hPFDV_XY_Map_BPix.find( ni_z_i )->second->Fill( ni_x, ni_y );
-//        m_hPFDV_RhoPhi_Map_BPix.find( ni_z_i )->second->Fill( ni_phi, ni_rho );
-//
-//        m_hPFDV_XY_Map_Pipe.find( ni_z_i )->second->Fill( ni_x, ni_y );
-//        m_hPFDV_RhoPhi_Map_Pipe.find( ni_z_i )->second->Fill( ni_phi, ni_rho );
-//      }
+      if ( fabs(ni_z) < 25 )
+      {
+       // hPFDV_XY_Map_AbsZ25->Fill( ni_x, ni_y );
+       // hPFDV_RhoPhi_Map_AbsZ25->Fill( ni_phi, ni_rho );
+
+       // hPFDV_XY_Map_BPix_AbsZ25->Fill( ni_x, ni_y );
+       // hPFDV_RhoPhi_Map_BPix_AbsZ25->Fill( ni_phi, ni_rho );
+
+        hPFDV_XY_Map_Pipe_AbsZ25->Fill( ni_x, ni_y );
+        hPFDV_RhoPhi_Map_Pipe_AbsZ25->Fill( ni_phi, ni_rho );
+
+       // m_hPFDV_XY_Map.find( ni_z_i )->second->Fill( ni_x, ni_y );
+       // m_hPFDV_RhoPhi_Map.find( ni_z_i )->second->Fill( ni_phi, ni_rho );
+
+       // m_hPFDV_XY_Map_BPix.find( ni_z_i )->second->Fill( ni_x, ni_y );
+       // m_hPFDV_RhoPhi_Map_BPix.find( ni_z_i )->second->Fill( ni_phi, ni_rho );
+
+        m_hPFDV_XY_Map_Pipe.find( ni_z_i )->second->Fill( ni_x, ni_y );
+        m_hPFDV_RhoPhi_Map_Pipe.find( ni_z_i )->second->Fill( ni_phi, ni_rho );
+      }
 //
 //      /// Correct for Beamspot Position
 //      ni_x_c = ni_x - BS_x;
