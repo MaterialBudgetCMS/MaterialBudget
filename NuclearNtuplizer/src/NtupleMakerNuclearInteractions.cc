@@ -545,10 +545,10 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       double deltaX = 999;
       double deltaY = 999;
 
-      double distance3D_Ass = 550.; //Start with a big value
-      double deltaR_Ass     = 550.; //Start with a big value
-      double distance3DParallel_Ass = 550.; //Start with a big value
-      double distance3DPerpendicular_Ass = 100.; //Start with a big value
+      double distance3D_Ass = 900.; //Start with a big value
+      double deltaR_Ass     = 900.; //Start with a big value
+      double distance3DParallel_Ass = 900.; //Start with a big value
+      double distance3DPerpendicular_Ass = 900.; //Start with a big value
       deltaR_Ass = deltaR_Ass;
    //      bool assoc = false;
       unsigned int iAssociationIndexLast = 0;
@@ -799,8 +799,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     double deltaX = 999;
     double deltaY = 999;
 
-    double distance3D_Ass = 21.; //Start with a big value
-    double deltaR_Ass = 21.; //Start with a big value
+    double distance3D_Ass = 900.; //Start with a big value
+    double deltaR_Ass = 900.; //Start with a big value
     //    bool assoc = false;
 
     bool foundAssociated = false;
@@ -842,8 +842,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
         /// Apply Selection
         bool isAssociated = true;
 
-        // very-very loose cut of 20 cm for future test:
-        if (distance3D > 20.) isAssociated = false;
+        // very-very loose cut of  distance3D_Ass for future test:
+        if (distance3D > distance3D_Ass) isAssociated = false;
  
        // if ( !( ( fabs(thisVtx.position().eta()) < 1.2 && ( deltaR < -1.0 || deltaR > 3.0 ) ) ||
        //         ( fabs(thisVtx.position().eta()) >= 1.2 && ( deltaR < -2.0 || deltaR > 6.0 ) ) ) )
@@ -1021,8 +1021,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 //if (NumberOfLooseNuclearVertex > 0) std:cout << "NumberOfLooseNuclearVertex = " << NumberOfLooseNuclearVertex << " NumberOfNuclearVertex = " << NumberOfNuclearVertex << std::endl;
 if (FlagLess3TracksFromVertex) std::cout << "NumberOfLooseNuclearVertex = " << NumberOfLooseNuclearVertex << " NumberOfNuclearVertex = " << NumberOfNuclearVertex << std::endl;
 
-  /// Fill Output Tree
-  outputTree->Fill();
+  /// Fill Output Tree for MC all the time, for Data if we have RECO NI vertex
+ if( (!isRealData) || (isRealData && numberOfPFDV > 0) )  outputTree->Fill();
 }
 
 /* Additional methods */
