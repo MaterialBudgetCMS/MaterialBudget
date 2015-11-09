@@ -6,7 +6,7 @@ pyCfgParams = ['outputFile=Run2015C_25ns_RECO.root']
 
 config.section_('General')
 config.General.transferLogs = True
-config.General.workArea     = 'crab_projects_Run2015C_25ns_RECO_v1'  # Make sure you set this parameter
+config.General.workArea     = 'projects_Run2015'  # Make sure you set this parameter
 
 config.section_('JobType')
 config.JobType.pluginName       = 'Analysis'

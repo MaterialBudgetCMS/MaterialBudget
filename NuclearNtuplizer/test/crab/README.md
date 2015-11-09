@@ -29,7 +29,12 @@ MultiCRAB
     python multicrab_data.py samples/samples_Run2015B.py
     python multicrab_data_LowPileUp.py samples/samples_Run2015B.py
     python multicrab.py samples/samples_spring15.py
- 
+
+    python multicrab_Run2015B_RECO.py samples/samples_Run2015B_RECO.py   
+    python multicrab_Run2015C_25ns_RECO.py samples/samples_Run2015C_25ns_RECO.py
+    python multicrab_Run2015C_50ns_RECO.py samples/samples_Run2015C_50ns_RECO.py 
+    python multicrab_Run2015D_25ns_RECO.py samples/samples_Run2015D_25ns_RECO.py
+   
     crab status -d folder_name
 
 How to acess to /store via mounting
