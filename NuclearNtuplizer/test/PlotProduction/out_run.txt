@@ -1,3 +1,56 @@
+
+
+
+***************************************
+******** NEW: correct Global Tag + NI filter **************************
+***************************************
+
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015B_50ns_RECO_NIfilter_56from58.root" to the chain.
+ entries are 243355
+number of events with NI = 243355
+number of NI events = 275580
+***************************************
+***************************************
+***************************************
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015C_50ns_RECO_NIfilter.root" to the chain.
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015C_25ns_RECO_NIfilter.root" to the chain.
+ entries are 213387
+Loop over entry 0/213387.
+number of events with NI = 213387
+number of NI events = 239673
+***************************************
+***************************************
+***************************************
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015D_25ns_RECO_v3_NIfilter_199from206.root" to the chain.
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015D_25ns_RECO_v4_NIfilter_153from216.root" to the chain.
+ entries are 2004554
+Loop over entry 600000/2004554.
+151110 15:53:35 9553 Xrd: XrdClientMessage::ReadRaw: Failed to read header (8 bytes).
+Loop over entry 1100000/2004554.
+151110 15:56:30 8864 Xrd: CheckErrorStatus: Server [eoscms-srv-m1.cern.ch:1094] declared: session not found(error code: 3011)
+number of events with NI = 2.00455e+06
+number of NI events = 2.10745e+06
+
+***************************************
+***************************************
+***************************************
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015C_50ns_RECO_NIfilter.root" to the chain.
+ entries are 132205
+number of events with NI = 132205
+number of NI events = 150325
+***************************************
+***************************************
+***************************************
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015C_25ns_RECO_NIfilter.root" to the chain.
+ entries are 81182
+Loop over entry 0/81182.
+number of events with NI = 81182
+number of NI events = 89348
+root [1] 151110 16:14:30 27906 Xrd: XrdClientMessage::ReadRaw: Failed to read header (8 bytes).
+***************************************
+******** OLD **************************
+***************************************
+
 I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015B_RECO_55from58.root" to the chain.
  entries are 1635756
 number of events with NI = 232062
