@@ -4,11 +4,10 @@
 ***************************************
 ******** NEW: correct Global Tag + NI filter **************************
 ***************************************
-
-I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015B_50ns_RECO_NIfilter_56from58.root" to the chain.
- entries are 243355
-number of events with NI = 243355
-number of NI events = 275580
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015B_50ns_RECO_NIfilter_57from58.root" to the chain.
+ entries are 247822
+number of events with NI = 247822
+number of NI events = 280559
 ***************************************
 ***************************************
 ***************************************
@@ -21,16 +20,11 @@ number of NI events = 239673
 ***************************************
 ***************************************
 ***************************************
-I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015D_25ns_RECO_v3_NIfilter_199from206.root" to the chain.
-I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015D_25ns_RECO_v4_NIfilter_153from216.root" to the chain.
- entries are 2004554
-Loop over entry 600000/2004554.
-151110 15:53:35 9553 Xrd: XrdClientMessage::ReadRaw: Failed to read header (8 bytes).
-Loop over entry 1100000/2004554.
-151110 15:56:30 8864 Xrd: CheckErrorStatus: Server [eoscms-srv-m1.cern.ch:1094] declared: session not found(error code: 3011)
-number of events with NI = 2.00455e+06
-number of NI events = 2.10745e+06
-
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015D_25ns_RECO_v3_NIfilter.root" to the chain.
+I N F O : Adding file "root://eoscms//eos/cms/store/group/phys_higgs/cmshww/kropiv/NI/RECO/SingleMuon/Run2015D_25ns_RECO_v4_NIfilter.root" to the chain.
+ entries are 2434275
+number of events with NI = 2.43428e+06
+number of NI events = 2.55651e+06
 ***************************************
 ***************************************
 ***************************************
