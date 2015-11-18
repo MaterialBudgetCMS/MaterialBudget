@@ -12,7 +12,8 @@
 # 50 ns
 ########
 #        CRAB task name       DAS name                                                                                    Latino name
-samples['50ns_DY_Spring15_RECO']        = ['/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-AsymptNoPURawReco_MCRUN2_74_V9A-v4/GEN-SIM-RECO',  ['globalTag=MCRUN2_74_V9A']]
+samples['MinBiasCastor_Spring15']        = ['/MinBias_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-NoPURawReco_castor_MCRUN2_74_V8B-v1/GEN-SIM-RECO',  ['globalTag=MCRUN2_74_V8B']] # 10^6 events 55 files
+samples['DYJetsToLL_Spring15']        = ['/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-AsymptNoPURawReco_MCRUN2_74_V9A-v4/GEN-SIM-RECO',  ['globalTag=MCRUN2_74_V9A']] # 28*10^6 3142, files
 
 
 
