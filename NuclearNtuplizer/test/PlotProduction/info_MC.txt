@@ -1,0 +1,16 @@
+Sim Vertices: at least 3 tracks with pt > 0.2 GeV
+
+/////////////////////// 
+only 1 sim Vertex and 0 or 1 RECO: number of events with NI = 6224 
+/////////////////////// 
+only 2 sim Vertex and 0 or 1 RECO: number of events with NI = 3565
+/////////////////////// 
+only 3 sim Vertex and 0 or 1 RECO: number of events with NI = 1848
+/////////////////////// 
+only 4 sim Vertex and 0 or 1 RECO: number of events with NI = 874 
+/////////////////////// 
+only 5 sim Vertex and 0 or 1 RECO: number of events with NI = 381
+/////////////////////// 
+only 6 sim Vertex and 0 or 1 RECO: number of events with NI = 143 
+/////////////////////// 
+

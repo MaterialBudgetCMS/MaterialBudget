@@ -165,8 +165,8 @@ process.particleFlowDisplacedVertexCandidate.primaryVertexCut = cms.double(1.8)
 
 ##########################
 process.maxEvents = cms.untracked.PSet(
-    #input = cms.untracked.int32(-1)
-    input = cms.untracked.int32(1000000)
+    input = cms.untracked.int32(-1)
+    #input = cms.untracked.int32(1000000)
 )
 process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
 
