@@ -141,6 +141,7 @@ void NtupleMakerNuclearInteractions::beginJob()
   PFDV_deltaR3d_Associated = new std::vector< double >;
   PFDV_deltaR2d_Associated = new std::vector< double >;
   PFDV_associationMC_TrkVIdx = new std::vector< unsigned int >;
+  PFDV_vTrack_algo = new std::vector< std::vector< int > >;
   PFDV_vTrack_pt = new std::vector< std::vector< double > >;
   PFDV_vTrack_eta = new std::vector< std::vector< double > >;
   PFDV_vTrack_phi = new std::vector< std::vector< double > >;
@@ -281,6 +282,7 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "PFDV_deltaR3d_Associated", "std::vector< double >", &PFDV_deltaR3d_Associated );
   outputTree->Branch( "PFDV_deltaR2d_Associated", "std::vector< double >", &PFDV_deltaR2d_Associated );
   outputTree->Branch( "PFDV_associationMC_TrkVIdx", "std::vector< unsigned int >", &PFDV_associationMC_TrkVIdx );
+  outputTree->Branch( "PFDV_vTrack_algo", "std::vector< std::vector< int > >", &PFDV_vTrack_algo );
   outputTree->Branch( "PFDV_vTrack_pt", "std::vector< std::vector< double > >", &PFDV_vTrack_pt );
   outputTree->Branch( "PFDV_vTrack_eta", "std::vector< std::vector< double > >", &PFDV_vTrack_eta );
   outputTree->Branch( "PFDV_vTrack_phi", "std::vector< std::vector< double > >", &PFDV_vTrack_phi );
@@ -506,6 +508,10 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       MC_TrkV_momentumOut_theta->push_back( thisSimMomentumOut.Theta() );
       MC_TrkV_momentumOut_mass->push_back( thisSimMomentumOut.mass() );
 
+
+      //calculate Radius of Sim vertex
+      double R_SimVer = sqrt( thisVtx.position().x()*thisVtx.position().x() + thisVtx.position().y()*thisVtx.position().y() );
+
       int NumberOfPrimaryTracks = 0;
       double Source_Charge = -10;
       int Source_pdgId = 0;
@@ -522,9 +528,10 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
         if ( (*trackSource)->charge() == 0 )
         continue;
-        if( (*trackSource)->pt() > 0.2 ) nTrackingParticles_0p2++;
-        if( (*trackSource)->pt() > 0.5 ) nTrackingParticles_0p5++;
-        if( (*trackSource)->pt() > 1.0 ) nTrackingParticles_1p0++;
+        // request  R_SimVer > 12. to have possibity to reconstruct charged tracker at least at Pixel region
+        if( (*trackSource)->pt() > 0.2 && R_SimVer > 12. ) nTrackingParticles_0p2++;
+        if( (*trackSource)->pt() > 0.5 && R_SimVer > 12.) nTrackingParticles_0p5++;
+        if( (*trackSource)->pt() > 1.0 && R_SimVer > 12.) nTrackingParticles_1p0++;
       }
       if( NumberOfPrimaryTracks != 1 ) std::cout << " ERROR! CHECK: unusual size for MC of sorce Tracks = " << NumberOfPrimaryTracks << std::endl;
  
@@ -726,6 +733,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   PFDV_deltaR3d_Associated->clear();
   PFDV_deltaR2d_Associated->clear();
   PFDV_associationMC_TrkVIdx->clear();
+  PFDV_vTrack_algo->clear();
   PFDV_vTrack_pt->clear();
   PFDV_vTrack_eta->clear();
   PFDV_vTrack_phi->clear();
@@ -887,6 +895,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     }
 
     /// Tracks
+    std::vector< int > vTrack_algo;                                vTrack_algo.clear();
     std::vector< double > vTrack_pt;                               vTrack_pt.clear();
     std::vector< double > vTrack_eta;                              vTrack_eta.clear();
     std::vector< double > vTrack_phi;                              vTrack_phi.clear();
@@ -949,6 +958,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
         }
       /// New Track!
       vTrack_pt.push_back( (*trackDisplacedVertex)->pt() );
+      vTrack_algo.push_back( (*trackDisplacedVertex)->algo() );
       vTrack_eta.push_back( (*trackDisplacedVertex)->eta() );
       vTrack_phi.push_back( (*trackDisplacedVertex)->phi() );
       vTrack_rho.push_back( (*trackDisplacedVertex)->innerPosition().Rho() );
@@ -1004,6 +1014,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
     PFDV_Inc_charge->push_back( Source_Charge );
 
+    PFDV_vTrack_algo->push_back( vTrack_algo );
     PFDV_vTrack_pt->push_back( vTrack_pt );
     PFDV_vTrack_eta->push_back( vTrack_eta );
     PFDV_vTrack_phi->push_back( vTrack_phi );

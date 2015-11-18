@@ -190,6 +190,7 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< double > *PFDV_deltaR3d_Associated;
     std::vector< double > *PFDV_deltaR2d_Associated;
     std::vector< unsigned int > *PFDV_associationMC_TrkVIdx;
+    std::vector< std::vector< int > > *PFDV_vTrack_algo;
     std::vector< std::vector< double > > *PFDV_vTrack_pt;
     std::vector< std::vector< double > > *PFDV_vTrack_eta;
     std::vector< std::vector< double > > *PFDV_vTrack_phi;

@@ -1136,9 +1136,14 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     else hMC_NumberNI -> Fill (30); 
 
     //if (NumberNI > 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
-    if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    if ( (NumberNI != 2) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 3) ) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //test for assosiation
+
+
+   // find one Sim Verxt with max pT out:
+   int SimVer_MaxCut_Pointer = -100.;
+   bool SimVer_MaxCut_Previous = false;
 
     for ( unsigned int i = 0; i < numberOfMC_TrkV; i++ )
     {
@@ -1180,6 +1185,13 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       //if (MC_TrkV_momentumInc_pt->at(i) < 90. ) continue;
 
       //cout << "eta_VerSim = " << eta_VerSim << endl;  
+
+     // fine min charge between RECO and MC source:
+     if ( !SimVer_MaxCut_Previous ){
+        SimVer_MaxCut_Pointer = i;        
+     }
+
+
 
       ///////////     
       // test for assosiation
@@ -1315,8 +1327,13 @@ void NtupleReaderNuclearInteractions_2015::analyze()
                       //double deltaMatching_imatch = TMath::Sqrt (  (ni_MC_z - MatchingDuplicates_VerZ.at(imatch))*(ni_MC_z - MatchingDuplicates_VerZ.at(imatch))   );
                       if (deltaMatching_imatch < deltaMatching) deltaMatching = deltaMatching_imatch;
                   }
+
+                  //if (numberOfPFDV == 1 && deltaMatching < 100.0)hMC_TrkV_associationPFDV_DuplicateVerR ->Fill(deltaMatching);//check that previouse value exist
+                  //if (numberOfPFDV == 1 && deltaMatching >= 100.0 && deltaMatching < 900.)hMC_TrkV_associationPFDV_DuplicateVerR ->Fill(99.999999);//check that previouse value exist
                   if (deltaMatching < 100.0)hMC_TrkV_associationPFDV_DuplicateVerR ->Fill(deltaMatching);//check that previouse value exist
                   if (deltaMatching >= 100.0 && deltaMatching < 900.)hMC_TrkV_associationPFDV_DuplicateVerR ->Fill(99.999999);//check that previouse value exist
+
+
                   deltaMatchingDuplicatesVerR = deltaMatching;
                   if (deltaMatchingDuplicatesVerR >= MatchDuplicatesCut_R){
                        MatchingDuplicates_VerX.push_back( ni_MC_x ); //next non Duplicate vertex
@@ -1327,7 +1344,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
           }
 
 
-
+          //if (numberOfPFDV == 1 && deltaMatchingDuplicatesVerR >-1) cout << "Sim to Sim dR = " << deltaMatchingDuplicatesVerR << endl;
 
           // this is wrong because make all combination even we don't have assosiation, so at 0 we have some duplicates and a lot of fake non-assosiated with PF RECO vertex 
           if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) > 0) {
