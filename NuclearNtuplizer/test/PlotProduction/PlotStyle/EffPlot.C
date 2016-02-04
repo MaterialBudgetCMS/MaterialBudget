@@ -15,7 +15,8 @@
 #include "TEfficiency.h"
 
 TString NtupleName = "MCplot_100GeVpion";
-TString SimCut = "_nSimEq6";//Eq from 1 to 6
+//TString SimCut = "_nSimEq2";//Eq from 1 to 6
+TString SimCut = "_nSimGE1";//Eq from 1 to 6
 
 
 TCanvas* drawOverlay(TH1F* hMC_isNI, TH1F* hMC_isAssRECO, TString Title, TString TitleX, TString PicName)
@@ -128,6 +129,18 @@ TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0 = (TH1F*)f1->Get("hMC_TrkV_
 TH1F* hMC_TrkV_R_isNuclearInteraction_eta = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_eta");
 TH1F* hMC_TrkV_R_isAssociatedPF_eta = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_eta");
 
+TH1F* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut");
+TH1F* hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut = (TH1F*)f1->Get("hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut");
 ///////////////////////////
 
 TString TitleXasix = "Radius [cm]";
@@ -136,32 +149,61 @@ TString ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 0.2 GeV/c";
 TString picName = "Eff_Barrel_pt0p2";
 drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2, ExtraTitle, TitleXasix, picName);
 
-ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 0.5 GeV/c";
-picName = "Eff_Barrel_pt0p5";
-drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5, ExtraTitle, TitleXasix, picName);
-
-ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 1.0 GeV/c";
-picName = "Eff_Barrel_pt1p0";
-drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0, ExtraTitle, TitleXasix, picName);
+//ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 0.5 GeV/c";
+//picName = "Eff_Barrel_pt0p5";
+//drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5, ExtraTitle, TitleXasix, picName);
+//
+//ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 1.0 GeV/c";
+//picName = "Eff_Barrel_pt1p0";
+//drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0, ExtraTitle, TitleXasix, picName);
 
 
 ExtraTitle = "Forward: at least 3 tracks with p_{T} > 0.2 GeV/c";
 picName = "Eff_Forward_pt0p2";
 drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2, ExtraTitle, TitleXasix, picName);
 
-ExtraTitle = "Forward: at least 3 tracks with p_{T} > 0.5 GeV/c";
-picName = "Eff_Forward_pt0p5";
-drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5, ExtraTitle, TitleXasix, picName);
+//ExtraTitle = "Forward: at least 3 tracks with p_{T} > 0.5 GeV/c";
+//picName = "Eff_Forward_pt0p5";
+//drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5, ExtraTitle, TitleXasix, picName);
+//
+//ExtraTitle = "Forward: at least 3 tracks with p_{T} > 1.0 GeV/c";
+//picName = "Eff_Forward_pt1p0";
+//drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0, ExtraTitle, TitleXasix, picName);
 
-ExtraTitle = "Forward: at least 3 tracks with p_{T} > 1.0 GeV/c";
-picName = "Eff_Forward_pt1p0";
-drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0, ExtraTitle, TitleXasix, picName);
+// For Sim vertex with max pT out
+ExtraTitle = "Barrel: at least 3 tracks with p_{T} > 0.2 GeV/c";
+picName = "Eff_Barrel_pt0p2_MaxCut";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut, hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut, ExtraTitle, TitleXasix, picName);
+
+ExtraTitle = "Forward: at least 3 tracks with p_{T} > 0.2 GeV/c";
+picName = "Eff_Forward_pt0p2_MaxCut";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut, hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut, ExtraTitle, TitleXasix, picName);
+
+
 
 // Eff as eta 
 TitleXasix = "#eta";
+
 ExtraTitle = "at least 3 tracks with p_{T} > 0.2 GeV/c";
 picName = "Eff_Eta_pt0p2";
 drawOverlay(hMC_TrkV_R_isNuclearInteraction_eta, hMC_TrkV_R_isAssociatedPF_eta, ExtraTitle, TitleXasix, picName);
+
+// For Sim vertex with max pT out
+ExtraTitle = "at least 3 tracks with p_{T} > 0.2 GeV/c";
+picName = "Eff_Eta_pt0p2_MaxCut";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut, hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut, ExtraTitle, TitleXasix, picName);
+
+ExtraTitle = "at least 3 tracks with p_{T} > 0.2 GeV/c";
+picName = "Eff_Eta_Rlt4_pt0p2_MaxCut";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut, hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut, ExtraTitle, TitleXasix, picName);
+
+ExtraTitle = "at least 3 tracks with p_{T} > 0.2 GeV/c";
+picName = "Eff_Eta_Rlt15_pt0p2_MaxCut";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut, hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut, ExtraTitle, TitleXasix, picName);
+
+ExtraTitle = "at least 3 tracks with p_{T} > 0.2 GeV/c";
+picName = "Eff_Eta_Rgt15_pt0p2_MaxCut";
+drawOverlay(hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut, hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut, ExtraTitle, TitleXasix, picName);
 
 
 ///////////////////////////

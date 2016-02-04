@@ -565,6 +565,8 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_associationPFDV_deltaR3dParallelRel = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallelRel", "N.I. in Tracker", 200, 0, 0.5);
   hMC_TrkV_associationPFDV_deltaR3dParallelRel->Sumw2();
 
+
+  //Duplicate
   hMC_TrkV_associationPFDV_DuplicateR3d = new TH1D( "hMC_TrkV_associationPFDV_DuplicateR3d", "N.I. in Tracker", 600, 0, 100.0 );
   hMC_TrkV_associationPFDV_DuplicateR3d->Sumw2();
 
@@ -674,6 +676,44 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hMC_TrkV_numberOftracks_1p0 = new TH1D( "hMC_TrkV_numberOftracks_1p0", "N.I. in Tracker", 10, 0, 10 );
   hMC_TrkV_numberOftracks_1p0->Sumw2();
 
+
+  // only for one Sim Vertex with max pT out
+  hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut->Sumw2();
+  
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicularMaxCut", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut->Sumw2();
+
+  hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut->Sumw2();
+  
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut", "N.I. in Tracker", 11, Bins );
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut", "N.I. in Tracker", 11, Bins );
+  hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut","N.I. in Tracker", 11, Bins);
+  hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut->Sumw2();
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut","N.I. in Tracker", 11, Bins);
+  hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut->Sumw2();
+
+  hMC_TrkV_momentumOut_pt_Barrel_MaxCut = new TH1D( "hMC_TrkV_momentumOut_pt_Barrel_MaxCut", "N.I. in Tracker", 125, 0., 105. );
+  hMC_TrkV_momentumOut_pt_Barrel_MaxCut->Sumw2();
+  hMC_TrkV_momentumOut_pt_Forward_MaxCut = new TH1D( "hMC_TrkV_momentumOut_pt_Forward_MaxCut", "N.I. in Tracker", 125, 0., 105. );
+  hMC_TrkV_momentumOut_pt_Forward_MaxCut->Sumw2();
 
   /// Output histograms and graphs etc
   hPFDV_CountEventsWithNI = new TH1D( "hPFDV_CountEventsWithNI", "N.I. in Tracker", 3, 0, 2 );
@@ -1135,8 +1175,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     if (NumberNI <= 30)hMC_NumberNI -> Fill (NumberNI);
     else hMC_NumberNI -> Fill (30); 
 
-    //if (NumberNI > 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
-    if ( (NumberNI != 2) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    //if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 3) ) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //test for assosiation
 
@@ -1186,11 +1226,11 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       //cout << "eta_VerSim = " << eta_VerSim << endl;  
 
-     // fine min charge between RECO and MC source:
-     if ( !SimVer_MaxCut_Previous ){
-        SimVer_MaxCut_Pointer = i;        
-     }
-
+     // find min charge between RECO and MC source:
+     if ( !SimVer_MaxCut_Previous )  SimVer_MaxCut_Pointer = i;        
+     else if (MC_TrkV_momentumOut_pt->at(i) > MC_TrkV_momentumOut_pt->at(SimVer_MaxCut_Pointer)) SimVer_MaxCut_Pointer = i; 
+          
+     SimVer_MaxCut_Previous = true;
 
 
       ///////////     
@@ -1587,6 +1627,77 @@ void NtupleReaderNuclearInteractions_2015::analyze()
        //std::cout << "size of MC_TrkV_associationPFDV_deltaR3dPerpendicular = " << MC_TrkV_associationPFDV_deltaR3dPerpendicular->size() << std::endl; 
        //std::cout << "N_MCassociatePF per event = " << N_MCassociatePF << std::endl;
     //}  
+// end MC cycle
+
+
+  // Calculater Efficiency only with Sim Ver with max pT out with pointer: SimVer_MaxCut_Pointer
+  if (SimVer_MaxCut_Pointer > -1){
+
+     // chech for assosiation
+     bool isMC_assosiated_PF_MaxCut = false;
+     if ( MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(SimVer_MaxCut_Pointer) < 2. 
+          && MC_TrkV_associationPFDV_deltaR3dParallel->at(SimVer_MaxCut_Pointer)< 20. ) isMC_assosiated_PF_MaxCut = true;
+
+     //fill dR per
+     if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(SimVer_MaxCut_Pointer) < dR_xmax) {
+         hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut -> Fill (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(SimVer_MaxCut_Pointer));
+     }
+     else if (MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(SimVer_MaxCut_Pointer) < dR_xmax_Loose) hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut -> Fill(dR_xmax-0.00001);
+
+     //fill dR par
+     if (MC_TrkV_associationPFDV_deltaR3dParallel->at(SimVer_MaxCut_Pointer) < dR_xmax) {
+         hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut -> Fill (MC_TrkV_associationPFDV_deltaR3dParallel->at(SimVer_MaxCut_Pointer));
+     }
+     else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(SimVer_MaxCut_Pointer) < dR_xmax_Loose) hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut -> Fill(dR_xmax-0.00001);
+
+     // calculate vertex parameters: R, eta...
+     ni_MC_x = MC_TrkV_x->at(SimVer_MaxCut_Pointer);
+     ni_MC_y = MC_TrkV_y->at(SimVer_MaxCut_Pointer);
+     ni_MC_z = MC_TrkV_z->at(SimVer_MaxCut_Pointer);
+     ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+
+     TVector3 VerSim;
+     VerSim.SetXYZ(ni_MC_x, ni_MC_y, ni_MC_z);
+     double eta_VerSim = VerSim.Eta();
+
+    //fill eta
+      hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+      if (isMC_assosiated_PF_MaxCut) hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+      if(ni_MC_rho < 4){ //fill only beam pipe region
+         hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+         if (isMC_assosiated_PF_MaxCut) hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+      }
+      if(ni_MC_rho < 15){ //fill only beam pipe region
+         hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+         if (isMC_assosiated_PF_MaxCut) hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+      }
+      if(ni_MC_rho >=15){ //fill only beam pipe region
+         hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+         if (isMC_assosiated_PF_MaxCut) hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut -> Fill (eta_VerSim);
+      }
+
+      if (fabs(ni_MC_z) < 20 ){
+         hMC_TrkV_momentumOut_pt_Barrel_MaxCut-> Fill (MC_TrkV_momentumOut_pt->at(SimVer_MaxCut_Pointer));
+ 
+         if ( (MC_TrkV_numberOfChargedParticles_Out0p2->at(SimVer_MaxCut_Pointer) > 2 && ni_MC_rho < 20 ) 
+                  || (MC_TrkV_numberOfChargedParticles_0p2->at(SimVer_MaxCut_Pointer) > 2 && ni_MC_rho >= 20 ) ){
+            hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut->Fill( ni_MC_rho );
+            if (isMC_assosiated_PF_MaxCut) hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut->Fill( ni_MC_rho );
+         }
+
+      } 
+
+      if (fabs(ni_MC_z) >= 20 ){
+         hMC_TrkV_momentumOut_pt_Forward_MaxCut-> Fill (MC_TrkV_momentumOut_pt->at(SimVer_MaxCut_Pointer));
+
+         if ( (MC_TrkV_numberOfChargedParticles_Out0p2->at(SimVer_MaxCut_Pointer) > 2 && ni_MC_rho < 20 ) 
+                  || (MC_TrkV_numberOfChargedParticles_0p2->at(SimVer_MaxCut_Pointer) > 2 && ni_MC_rho >= 20 ) ){
+            hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut->Fill( ni_MC_rho );
+            if (isMC_assosiated_PF_MaxCut) hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut->Fill( ni_MC_rho );
+         }
+      } 
+
+  }
 // end MC part
 
 // start RECO part

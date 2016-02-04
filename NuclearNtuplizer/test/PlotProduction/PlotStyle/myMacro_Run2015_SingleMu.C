@@ -19,9 +19,9 @@ void myMacro_Run2015_SingleMu()
   lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   //lumi_13TeV  = "7.3 pb^{-1}";  // default is "XXX"
-  //lumi_13TeV  = "Run2015 D";  // default is "XXX"
+  lumi_13TeV  = "Run2015 D";  // default is "XXX"
   //lumi_13TeV  = "Run2015 B";  // default is "XXX"
-  lumi_13TeV  = "Run2015 C";  // default is "XXX"
+  //lumi_13TeV  = "Run2015 C";  // default is "XXX"
 
   int iPeriod = 13;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 13 = 13TeV 
 
@@ -233,8 +233,62 @@ TCanvas* example_plot( int iPeriod, int iPos )
     //MC->Draw("histsame");
     //data->Draw("esamex0");
     //data->Draw("COL"); //without scale for Z axis
+    //data->SetMinimum(20.); 
+    //TH2D* h2 = new TH2D("h2", "h2", 10, -200., 200., 10, 20., 70.);
+    //h2 ->Draw();
     if(StyleCol == "COL")data->Draw("9COLZ");
     if(StyleCol == "BW")data->Draw();
+    if(HigtoName == "hPFDV_ZR_Map"){ 
+
+      TF1 *fa = new TF1("fa"," x*tan( 2*atan(exp(-[0])) )",0,200);
+      fa->SetParameter(0,2.5);
+      fa->SetLineColor(kRed);
+      fa->SetLineWidth(2);
+      fa->Draw("same"); 
+
+      TF1 *fa1 = new TF1("fa1"," x*tan( 2*atan(exp(-[0])) )",0,200);
+      fa1->SetParameter(0,1.4);
+      fa1->SetLineColor(kRed);
+      fa1->SetLineWidth(2);
+      fa1->Draw("same"); 
+
+      TF1 *fa2 = new TF1("fa2"," x*tan( 2*atan(exp(-[0])) )",0,200);
+      fa2->SetParameter(0,1.);
+      fa2->SetLineColor(kRed);
+      fa2->SetLineWidth(2);
+      fa2->Draw("same"); 
+
+      TF1 *fa3 = new TF1("fa3"," x*tan( 2*atan(exp(-[0])) )",0,200);
+      fa3->SetParameter(0,0.4);
+      fa3->SetLineColor(kRed);
+      fa3->SetLineWidth(2);
+      fa3->Draw("same"); 
+
+      TF1 *fa4 = new TF1("fa4"," x*tan( 2*atan(exp(-[0])) )",-200,0);
+      fa4->SetParameter(0,-0.4);
+      fa4->SetLineColor(kRed);
+      fa4->SetLineWidth(2);
+      fa4->Draw("same"); 
+
+      TF1 *fa5 = new TF1("fa5"," x*tan( 2*atan(exp(-[0])) )",-200,0);
+      fa5->SetParameter(0,-1.);
+      fa5->SetLineColor(kRed);
+      fa5->SetLineWidth(2);
+      fa5->Draw("same"); 
+
+      TF1 *fa6 = new TF1("fa6"," x*tan( 2*atan(exp(-[0])) )",-200,0);
+      fa6->SetParameter(0,-1.4);
+      fa6->SetLineColor(kRed);
+      fa6->SetLineWidth(2);
+      fa6->Draw("same"); 
+
+      TF1 *fa7 = new TF1("fa7"," x*tan( 2*atan(exp(-[0])) )",-200,0);
+      fa7->SetParameter(0,-2.5);
+      fa7->SetLineColor(kRed);
+      fa7->SetLineWidth(2);
+      fa7->Draw("same"); 
+
+    }  
 
     if(HigtoName == "hPFDV_XY_Map_Pipe" && PlotBeamPipeAlternative == 1){
        TArc* arc = new TArc( 0.075, 0.015, 2.25);
