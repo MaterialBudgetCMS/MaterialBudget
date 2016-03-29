@@ -124,7 +124,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
   Double_t x1L, x2L, y1L, y2L;
 
   //  for ( int k = -7; k < 5; k++ )
-  for ( int k = -6; k < -5; k++ )
+  for ( int k = -6; k < -5 k++ )
   {
     std::string plot = "hPFDV_XY_Map_Pipe";
     std::string plotBg = "hPFDV_RhoPhi_Map_Pipe";
@@ -201,7 +201,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
 
           Double_t binNum = h->GetBinContent( ix, iy );
 
-          Double_t densityNum = binNum;// * rc*rc / (2.2*2.2);
+          Double_t densityNum = binNum * rc*rc / (2.2*2.2);
 
 	  h->SetBinContent(ix, iy, densityNum);
 
