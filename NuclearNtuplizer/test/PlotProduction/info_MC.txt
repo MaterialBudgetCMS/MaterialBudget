@@ -1,0 +1,36 @@
+Sim Vertices: at least 3 tracks with pt > 0.2 GeV
+
+/////////////////////// 
+only >=1 sim Vertex and 0 or 1 RECO: number of events with NI = 13128
+/////////////////////// 
+only 1 sim Vertex and 0 or 1 RECO: number of events with NI = 6271
+/////////////////////// 
+only 2 sim Vertex and 0 or 1 RECO: number of events with NI = 3577
+/////////////////////// 
+only 3 sim Vertex and 0 or 1 RECO: number of events with NI = 1834
+/////////////////////// 
+only 4 sim Vertex and 0 or 1 RECO: number of events with NI = 855
+/////////////////////// 
+only 5 sim Vertex and 0 or 1 RECO: number of events with NI = 365 
+/////////////////////// 
+only 6 sim Vertex and 0 or 1 RECO: number of events with NI = 138 
+/////////////////////// 
+
+
+
+///// old wrong at least 3 tracks: no cut on R income particle, should be R > 12 cm
+/////////////////////// 
+/////////////////////// 
+only 1 sim Vertex and 0 or 1 RECO: number of events with NI = 6224 
+/////////////////////// 
+only 2 sim Vertex and 0 or 1 RECO: number of events with NI = 3565
+/////////////////////// 
+only 3 sim Vertex and 0 or 1 RECO: number of events with NI = 1848
+/////////////////////// 
+only 4 sim Vertex and 0 or 1 RECO: number of events with NI = 874 
+/////////////////////// 
+only 5 sim Vertex and 0 or 1 RECO: number of events with NI = 381
+/////////////////////// 
+only 6 sim Vertex and 0 or 1 RECO: number of events with NI = 143 
+/////////////////////// 
+

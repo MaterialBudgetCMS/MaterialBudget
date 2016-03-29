@@ -25,6 +25,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TMath.h>
+#include <TVector3.h>
 
 class NtupleReaderNuclearInteractions_2015
 {
@@ -41,13 +42,19 @@ class NtupleReaderNuclearInteractions_2015
 
     TFile* outputFile;
 
-    double Bins[14];
+    double Bins[12];
 
     TH1D* hPFDV_CountEventsWithNI;
+
+    TH1D* hMC_NumberNI;
    
     TH1D* hMC_TrkV_R;
     TH1D* hMC_TrkV_R_Barrel;
     TH1D* hMC_TrkV_R_isNuclearInteraction;
+
+    TH1D* hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2;
+    TH1D* hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2;
+
     TH1D* hMC_TrkV_R_isNuclearInteraction_Barrel;
     TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel;
     TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2;
@@ -82,6 +89,9 @@ class NtupleReaderNuclearInteractions_2015
     TH1D* hMC_TrkV_associationPFDV_deltaR3d_Forward;
 
     TH1D* hMC_TrkV_associationPFDV_DuplicateR;
+    TH1D* hMC_TrkV_associationPFDV_DuplicateVerR;
+    TH1D* hMC_TrkV_associationPFDV_DuplicateVerXY;
+    TH1D* hMC_TrkV_associationPFDV_DuplicateVerZ;
     TH1D* hMC_TrkV_associationPFDV_DuplicateR3d;
     TH1D* hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular;
     TH1D* hMC_TrkV_associationPFDV_DuplicateR3dParallel;
@@ -137,7 +147,23 @@ class NtupleReaderNuclearInteractions_2015
     TH1D* hPFDV_numberOftracks_0p5;
     TH1D* hPFDV_numberOftracks_1p0;
 
-
+    //only for one Sim Vertex with max pT out
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut; 
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut; 
+    TH1D* hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut; 
+    TH1D* hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut; 
+    TH1D* hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut;
+    TH1D* hMC_TrkV_momentumOut_pt_Barrel_MaxCut;
+    TH1D* hMC_TrkV_momentumOut_pt_Forward_MaxCut;
 
     /// Histograms
     TH2D* hPFDV_XY_Map;

@@ -1,1 +1,1 @@
-/afs/cern.ch/work/k/kropiv/Tracker/Data/Ntuple_MC_100GeVpions.root
+../Ntuple_MC_100GeVpions.root
