@@ -29,9 +29,10 @@ TH2D* h;
 TH2D* hrp;
 TCanvas* cPlots;
 
-double FitSup = 3.0, FitInf = 2.4, PipeInf = 2.0, PipeSup = 2.4, Inf = 1.8, Sup = 3.0; 
-double x0 = 1.69759e-01;
-double y0 = 3.86970e-02;
+double FitSup = 3.0, FitInf = 2.4, PipeInf = 2.0, PipeSup = 2.4, Inf = 1.8, Sup = 3.0, PlotSup = 2.6; 
+double x0 =  0.128;//1.69759e-01;
+double y0 = 0.028;//3.86970e-02;
+double r0 = 2.22;
 
 void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
 {
@@ -58,53 +59,24 @@ void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
 
       Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
       Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
-      Double_t r = TMath::Sqrt( x*x + y*y );
+
 //      if ( r > 2.8 && r < 3.04 )
 //      {
         Double_t u = x - par[1];
         Double_t v = y - par[2];
-        diff = par[0] - TMath::Sqrt(u*u + v*v);
-        chiSquare += binNum*diff*diff / ( resoNI*resoNI + halfWidthPipe*halfWidthPipe );
-//      }
+	Double_t r = TMath::Sqrt(u*u + v*v);
+
+	Double_t PhaseSpaceFactor = (r0*r0)/(r*r);
+
+        diff = par[0] - r;
+	chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+	//}
+//	if (fabs(diff) > halfWidthPipe)  chiSquare += binNum*diff*diff / ( resoNI*resoNI);
+	
     }
   }
   f = chiSquare;
 }
-
-
-/*
-void chiSquareBackground( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
-{
-  Int_t numBinsPhi = hrp->GetNbinsX();
-  Int_t numBinsRho = hrp->GetNbinsY();
-  Double_t chiSquare = 0.0;
-  Double_t diff = 0.0;
-  for ( UInt_t iphi = 1; iphi <= numBinsPhi; iphi++ )
-  {
-    for ( UInt_t irho = 1; irho <= numBinsRho; irho++ )
-    {
-      Int_t binNum = hrp->GetBinContent( iphi, irho );
-
-      Double_t rho = hrp->GetYaxis()->GetBinCenter( irho );
-      Double_t phi = hrp->GetXaxis()->GetBinCenter( iphi );
-      Double_t x = rho * TMath::Cos( phi ) - 0.087;
-      Double_t y = rho * TMath::Sin( phi ) + 0.197;
-      Double_t r = TMath::Sqrt( x*x + y*y );
-      if ( ( r > 2.2 && r < 2.5 ) || r > 3.3 && r < 3.6 )
-      {
-        /// Number per unit area!
-        Double_t diff = binNum/( rho*hrp->GetYaxis()->GetBinWidth( iphi )*hrp->GetXaxis()->GetBinWidth( irho ) ) - ( par[0] + rho*par[1] );
-        chiSquare += diff*diff;
-      }
-    }    
-  }
-  f = chiSquare;
-}
-*/
-
-
-
-
 
 
 
@@ -152,7 +124,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
   Double_t x1L, x2L, y1L, y2L;
 
   //  for ( int k = -7; k < 5; k++ )
-  for ( int k = -7; k < 5; k++ )
+  for ( int k = -6; k < -5; k++ )
   {
     std::string plot = "hPFDV_XY_Map_Pipe";
     std::string plotBg = "hPFDV_RhoPhi_Map_Pipe";
@@ -190,8 +162,11 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     h = new TH2D();
     h = (TH2D*)inputFile->Get( plot.c_str() );
     h->Sumw2();
+    h->SetStats(0);
     h->GetXaxis()->SetTitle("x [cm]");
     h->GetYaxis()->SetTitle("y [cm]");
+    h->GetXaxis()->SetRangeUser(-PlotSup, PlotSup);
+    h->GetYaxis()->SetRangeUser(-PlotSup, PlotSup);
     h->Draw("col");
 
     cPlots->Update();
@@ -202,7 +177,45 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str()); 
 
-    /// Step 1: find the background density as a function of phi and rho(x0, y0)
+
+    /// Step 0: apply flux factor
+
+
+
+    Int_t numBinsX = h->GetNbinsX();
+    Int_t numBinsY = h->GetNbinsY();
+
+    for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
+      {
+        for ( UInt_t iy = 1; iy <= numBinsY; iy++ )
+        {
+          Double_t x = h->GetXaxis()->GetBinCenter( ix );
+          Double_t y = h->GetYaxis()->GetBinCenter( iy );
+
+          Double_t xc = x;
+          Double_t yc = y;
+
+          Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
+
+	  //          if ( rc < Inf || rc > Sup ) continue;
+
+          Double_t binNum = h->GetBinContent( ix, iy );
+
+          Double_t densityNum = binNum;// * rc*rc / (2.2*2.2);
+
+	  h->SetBinContent(ix, iy, densityNum);
+
+        }
+      }
+    h->GetXaxis()->SetRangeUser(-PlotSup, PlotSup);
+    h->GetYaxis()->SetRangeUser(-PlotSup, PlotSup);
+    h->Draw("LEGO");
+    cPlots->SaveAs(("Plots/"+plot+"_FluxCorrection_LEGO.pdf").c_str());
+    cPlots->SaveAs(("Plots/"+plot+"_FluxCorrection_LEGO.png").c_str()); 
+
+
+    /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
+
 
     Double_t bgFit0[40];
     Double_t bgFit0Err[40];
@@ -258,6 +271,9 @@ void HistogramFitterNuclearInteractions_BeamPipe()
       cPlots->cd();
       hbgua0->SetMinimum(0);
       hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) [cm]");
+      hbgua0->GetXaxis()->SetRangeUser(PipeInf, FitSup+0.1);
+
+
       hbgua0->Draw();
       cPlots->Update();
 
@@ -322,7 +338,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
 
     cPlots->Delete();
 
-    /// Step 2: calculate background
+    /// -------------------------- Step 2: calculate background --------------------------------
 
     plot = plot + "_Bgk";
     cPlots = new TCanvas(("c_"+plot).c_str(),"");
@@ -384,7 +400,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
     cPlots->Delete();
 
-    /// Step 3: cross check background with original densities used for the fit
+    /// ----------- Step 3: cross check background with original densities used for the fit -------------
 
     for ( UInt_t phiSect = 0; phiSect < 40; phiSect ++ )
     {
@@ -445,6 +461,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
       cPlots->cd();
       hbgua0->SetMinimum(0);
       hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) [cm]");
+      hbgua0->GetXaxis()->SetRangeUser(PipeInf, FitSup+0.1);
       hbgua0->Draw();
       cPlots->Update();
 
@@ -505,7 +522,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
       cPlots->SaveAs(fn.str().c_str());
     }
 
-    /// Step 4: subtract the background from the signal
+    /// ----------------------- Step 4: subtract the background from the signal ---------------
 
     const std::string stBg = "_Bkg";
     if ( plot != stBg &&
@@ -552,9 +569,9 @@ void HistogramFitterNuclearInteractions_BeamPipe()
           Double_t bgDensity = avg0 + avg1*rc;
           Double_t bgNum = h1->GetXaxis()->GetBinWidth( ix ) * h1->GetYaxis()->GetBinWidth( iy ) * bgDensity;
 
-          binNum -= bgNum;
-//          if (binNum > 0)
-            h1->Fill( x, y, binNum );
+          binNum -= (bgNum+2*sqrt(bgNum));
+          if (binNum < 0) binNum = 0;
+	  h1->Fill( x, y, binNum );
         }
       }
     }
@@ -562,6 +579,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     /// Step 5: fit the distribution
 
     h1->SetMinimum(1);
+    h1->SetStats(0);
     h = h1;
 
     /// par[0] = R
@@ -571,15 +589,19 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     TVirtualFitter::SetDefaultFitter("Minuit");
     TVirtualFitter* fitter = TVirtualFitter::Fitter( 0, 3 );
     fitter->SetFCN( chiSquareFunc );
-    fitter->SetParameter( 0,  "R",     2.2, 0.01, 1.9, 2.4 );
-    fitter->SetParameter( 1, "x0",  x0, 0.01, -0.3, 0.3 );
-    fitter->SetParameter( 2, "y0",  y0, 0.01, -0.3, 0.3 );
+    fitter->SetParameter( 0,  "R",   r0, 0.01, 1.9, 2.4 );
+    fitter->SetParameter( 1, "x0",   x0, 0.01, -0.3, 0.3 );
+    fitter->SetParameter( 2, "y0",   y0, 0.01, -0.3, 0.3 );
+    //   fitter->FixParameter(1); fitter->FixParameter(2); 
+
 
     //fitter->SetParameter( 0,  "R", 2.932, 0.01, 2.6, 3.3 );
     //fitter->FixParameter( 0 );
     Double_t arglist[10] = {0.};
     fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
 
+    h->GetXaxis()->SetRangeUser(-PlotSup, PlotSup);
+    h->GetYaxis()->SetRangeUser(-PlotSup, PlotSup);
     h->Draw("col");
 
     TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
@@ -628,12 +650,27 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     cPlots->Update();
     cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+".png").c_str());
+    cPlots->SaveAs(("Plots/"+plot+".root").c_str());
+
+    TFile* f = new TFile(("Plots/"+plot+".root").c_str(), "UPDATE");
+    
+    h->Write("BEAM_PIPE");
+    f->Close();
     cPlots->Delete();
+
+    h->GetXaxis()->SetRangeUser(-PlotSup, PlotSup);
+    h->GetYaxis()->SetRangeUser(-PlotSup, PlotSup);
 
     h->Draw("LEGO");
     cPlots->Update();
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
+    cPlots->Delete();
+
+    h->Draw("COLZ");
+    cPlots->Update();
+    cPlots->SaveAs(("Plots/"+plot+"_COLZ.pdf").c_str());
+    cPlots->SaveAs(("Plots/"+plot+"_COLZ.png").c_str());
     cPlots->Delete();
 
   }
@@ -717,7 +754,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
   pad1->cd();
   //gRfit->SetTitle("fit results");
   //gRfit->GetYaxis()->SetTitle("a, b (cm)");
-  gRfit->GetYaxis()->SetRangeUser(2.7, 3.2);
+  gRfit->GetYaxis()->SetRangeUser(2.0, 2.4);
   gRfit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
   gRfit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
   gRfit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor1);
@@ -744,7 +781,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
 
   pad2->cd();
   gx0fit->SetTitle("");
-  gx0fit->GetYaxis()->SetRangeUser(0.3, 1.3);
+  gx0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
   gx0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
   gx0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
   gx0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor2);
@@ -764,7 +801,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
 
   pad3->cd();
   gy0fit->SetTitle("");
-  gy0fit->GetYaxis()->SetRangeUser(-2.3, -1.3);
+  gy0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
   gy0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
   gy0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
   gy0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor3);
