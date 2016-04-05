@@ -124,7 +124,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
   Double_t x1L, x2L, y1L, y2L;
 
   //  for ( int k = -7; k < 5; k++ )
-  for ( int k = -6; k < -5 k++ )
+  for ( int k = -6; k < -5; k++ )
   {
     std::string plot = "hPFDV_XY_Map_Pipe";
     std::string plotBg = "hPFDV_RhoPhi_Map_Pipe";
