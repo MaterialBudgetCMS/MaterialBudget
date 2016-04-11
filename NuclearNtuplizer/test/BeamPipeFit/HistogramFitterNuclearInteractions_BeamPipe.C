@@ -34,6 +34,7 @@ double x0 =  0.128;//1.69759e-01;
 double y0 = 0.028;//3.86970e-02;
 double r0 = 2.22;
 
+//create function to fit beam pipe in 2D (circle)
 void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
 {
   Double_t resoNI = 0.01;
@@ -54,23 +55,26 @@ void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
       ///          3 entries for 5 cm slices
       /// 2012A+B+C+D: 20 entries for inclusive
       ///              5 entries for 5 cm slices      
-      if ( binNum < 0 ) continue;
       //if ( !skip && binNum < 3 ) continue;
+
+      // skip (??) negative values after background subtracktion: 
+      if ( binNum < 0 ) continue;
 
       Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
       Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
 
-//      if ( r > 2.8 && r < 3.04 )
-//      {
-        Double_t u = x - par[1];
-        Double_t v = y - par[2];
-	Double_t r = TMath::Sqrt(u*u + v*v);
+      // fit only in singnal + BK subtraction region
+      //Double_t Radius = TMath::Sqrt( x*x + y*y  );
+      //if ( Radius > PipeInf && Radius < FitInf )
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+      if ( r > PipeInf && r < FitInf )
+      {
 
 	Double_t PhaseSpaceFactor = (r0*r0)/(r*r);
 
         diff = par[0] - r;
 	chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
-	//}
+      }
 //	if (fabs(diff) > halfWidthPipe)  chiSquare += binNum*diff*diff / ( resoNI*resoNI);
 	
     }
@@ -100,6 +104,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
   /// dummy, kurtosis, skewness, integral, overflows, underflows, rms, mean, entries, name
   /// only combination of 0, 1 and 2: if 2 means error too
   /// dummy should better be 1
+  gStyle->SetPalette(1);
   gStyle->SetOptStat(1000111110);
   gStyle->SetCanvasDefW(980);
   gStyle->SetCanvasDefH(800);
@@ -125,6 +130,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
 
   //  for ( int k = -7; k < 5; k++ )
   for ( int k = -6; k < -5; k++ )
+  //for ( int k = -5; k < -4; k++ ) //for for list of histograms to fit
   {
     std::string plot = "hPFDV_XY_Map_Pipe";
     std::string plotBg = "hPFDV_RhoPhi_Map_Pipe";
@@ -222,6 +228,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     Double_t bgFit1[40];
     Double_t bgFit1Err[40];
 
+    //divide 2D x-y plot into 40 sectors in phi as function of R
     for ( UInt_t phiSect = 0; phiSect < 40; phiSect ++ )
     {
       TH1D* hbgua0 = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", 40, 2, 4 );
@@ -304,6 +311,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
       fitBg->SetParameter(1, -0.9);
       fitBg->SetParName(0, "N0");
       fitBg->SetParName(1, "k");
+      //we  need set limits here to avoid negative values in fit (it will crash)
       fitBg->SetParLimits(0, 0, 1E9);
       fitBg->SetParLimits(1, -1E9, 0);
       fitBg->SetLineWidth(2);
@@ -328,15 +336,23 @@ void HistogramFitterNuclearInteractions_BeamPipe()
 
       gStyle->SetOptStat(1000111110);
 
+// uncomment if you want fit only background plots in slices
+/*
       std::ostringstream fn;
       fn << "Plots/"<<plotBg.c_str()<<"_BGUA" << "_" << phiSect<<".pdf";
       cPlots->SaveAs(fn.str().c_str());
       fn.str("");
       fn << "Plots/"<<plotBg.c_str()<<"_BGUA" << "_" << phiSect<<".png";
       cPlots->SaveAs(fn.str().c_str());
+*/
+      //delete to avoid memory leak:
+      //cPlots->Delete();
+      //if(cPlots)delete cPlots;
+      delete hbgua0;
+      delete hbgua1;
+      delete hbgua2;
     }
 
-    cPlots->Delete();
 
     /// -------------------------- Step 2: calculate background --------------------------------
 
@@ -344,6 +360,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     cPlots = new TCanvas(("c_"+plot).c_str(),"");
     cPlots->cd();
 
+    //create empty 2d histo for backroung estimation in signal region
     TH2D* h0 = new TH2D( plot.c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
                                                       h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
     h0->GetXaxis()->SetTitle("x [cm]");
@@ -376,6 +393,8 @@ void HistogramFitterNuclearInteractions_BeamPipe()
           /// Average over 3 adjacent sectors to smooth differences
           Double_t avg0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
           Double_t avg1 = 1/3. * ( bgFit1[phiSect] + bgFit1[(41+phiSect)%40] + bgFit1[(39+phiSect)%40] );
+          //Double_t avg0 =  bgFit0[phiSect];
+          //Double_t avg1 =  bgFit1[phiSect];
 
           Double_t bgDensity = avg0 + avg1*rc;
           Double_t bgNum = h0->GetXaxis()->GetBinWidth( ix ) * h0->GetYaxis()->GetBinWidth( iy ) * bgDensity;
@@ -388,6 +407,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
 
     h0->Draw("col");
 
+    // plot average estimated background in signal region from PipeInf to PipeSup
     cPlots->Update();
     cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+".png").c_str());
@@ -398,7 +418,8 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     cPlots->Update();
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
-    cPlots->Delete();
+    //cPlots->Delete();
+    //delete cPlots;
 
     /// ----------- Step 3: cross check background with original densities used for the fit -------------
 
@@ -520,6 +541,13 @@ void HistogramFitterNuclearInteractions_BeamPipe()
       fn.str("");
       fn << "Plots/"<<plotBg.c_str()<<"_BGUA_XCk" << "_" << phiSect<<".png";
       cPlots->SaveAs(fn.str().c_str());
+      //delete to avoid memory leak:
+      //cPlots->Delete();
+      //delete cPlots;
+      delete hbgua0;
+      delete hbgua1;
+      delete hbgua2;
+      delete hbgua3;
     }
 
     /// ----------------------- Step 4: subtract the background from the signal ---------------
@@ -534,6 +562,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     cPlots = new TCanvas(("c_"+plot).c_str(),"");
     cPlots->cd();
 
+    //create empty histo for 2D signal (minus backroung minus 2 simgma of background)
     TH2D* h1 = new TH2D( plot.c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
                                                       h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
     h1->GetXaxis()->SetTitle("x [cm]");
@@ -565,11 +594,15 @@ void HistogramFitterNuclearInteractions_BeamPipe()
           /// Average over 3 adjacent sectors to smooth differences
           Double_t avg0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
           Double_t avg1 = 1/3. * ( bgFit1[phiSect] + bgFit1[(41+phiSect)%40] + bgFit1[(39+phiSect)%40] );
+          //Double_t avg0 =  bgFit0[phiSect];
+          //Double_t avg1 =  bgFit1[phiSect];
 
           Double_t bgDensity = avg0 + avg1*rc;
           Double_t bgNum = h1->GetXaxis()->GetBinWidth( ix ) * h1->GetYaxis()->GetBinWidth( iy ) * bgDensity;
 
-          binNum -= (bgNum+2*sqrt(bgNum));
+          //binNum -= bgNum; // subtrackt 1 BG only
+          binNum -= (bgNum+2*sqrt(bgNum)); //sbutrackt BG+2sigmaBF
+          //binNum -= (2*bgNum); // subtrackt 2 BG
           if (binNum < 0) binNum = 0;
 	  h1->Fill( x, y, binNum );
         }
@@ -587,11 +620,12 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     /// par[2] = y0
 
     TVirtualFitter::SetDefaultFitter("Minuit");
+    //                                                  npar
     TVirtualFitter* fitter = TVirtualFitter::Fitter( 0, 3 );
     fitter->SetFCN( chiSquareFunc );
-    fitter->SetParameter( 0,  "R",   r0, 0.01, 1.9, 2.4 );
-    fitter->SetParameter( 1, "x0",   x0, 0.01, -0.3, 0.3 );
-    fitter->SetParameter( 2, "y0",   y0, 0.01, -0.3, 0.3 );
+    fitter->SetParameter( 0,  "R",   r0, 0.01, 2.10, 2.5 ); // in cm
+    fitter->SetParameter( 1, "x0",   x0, 0.001, -0.3, 0.3 ); // in cm
+    fitter->SetParameter( 2, "y0",   y0, 0.001, -0.1, 0.1 ); // in cm
     //   fitter->FixParameter(1); fitter->FixParameter(2); 
 
 
@@ -600,6 +634,8 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     Double_t arglist[10] = {0.};
     fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
 
+    //if small slice, then rebin histo for better view
+    if(k > -6 && k < 5) h->Rebin2D(5,5);
     h->GetXaxis()->SetRangeUser(-PlotSup, PlotSup);
     h->GetYaxis()->SetRangeUser(-PlotSup, PlotSup);
     h->Draw("col");
@@ -656,7 +692,8 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     
     h->Write("BEAM_PIPE");
     f->Close();
-    cPlots->Delete();
+    //cPlots->Delete();
+    //delete cPlots;
 
     h->GetXaxis()->SetRangeUser(-PlotSup, PlotSup);
     h->GetYaxis()->SetRangeUser(-PlotSup, PlotSup);
@@ -665,13 +702,17 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     cPlots->Update();
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
-    cPlots->Delete();
+    //cPlots->Delete();
+    //delete cPlots;
 
     h->Draw("COLZ");
     cPlots->Update();
     cPlots->SaveAs(("Plots/"+plot+"_COLZ.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_COLZ.png").c_str());
-    cPlots->Delete();
+    //cPlots->Delete();
+    //delete cPlots;
+    //plot->Delete();
+    //plotBg->Delete();
 
   }
 
