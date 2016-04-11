@@ -129,8 +129,8 @@ void HistogramFitterNuclearInteractions_BeamPipe()
   Double_t x1L, x2L, y1L, y2L;
 
   //  for ( int k = -7; k < 5; k++ )
-  for ( int k = -6; k < -5; k++ )
-  //for ( int k = -5; k < -4; k++ ) //for for list of histograms to fit
+  //for ( int k = -6; k < -5; k++ )
+  for ( int k = -5; k < -4; k++ ) //for for list of histograms to fit
   {
     std::string plot = "hPFDV_XY_Map_Pipe";
     std::string plotBg = "hPFDV_RhoPhi_Map_Pipe";
@@ -623,7 +623,7 @@ void HistogramFitterNuclearInteractions_BeamPipe()
     //                                                  npar
     TVirtualFitter* fitter = TVirtualFitter::Fitter( 0, 3 );
     fitter->SetFCN( chiSquareFunc );
-    fitter->SetParameter( 0,  "R",   r0, 0.01, 2.10, 2.5 ); // in cm
+    fitter->SetParameter( 0,  "R",   r0, 0.01, 2.10, 2.30 ); // in cm
     fitter->SetParameter( 1, "x0",   x0, 0.001, -0.3, 0.3 ); // in cm
     fitter->SetParameter( 2, "y0",   y0, 0.001, -0.1, 0.1 ); // in cm
     //   fitter->FixParameter(1); fitter->FixParameter(2); 
