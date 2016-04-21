@@ -28,6 +28,8 @@
 TH2D* h;
 TH2D* hrp;
 TCanvas* cPlots;
+TCanvas* cQuality;
+TH1D* hQuality;
 
 //sef parameters for beam pipe fit
 //double FitSup = 3.0, FitInf = 2.4, PipeInf = 2.0, PipeSup = 2.4, Inf = 1.8, Sup = 3.0, PlotSup = 2.6; 
@@ -35,7 +37,21 @@ TCanvas* cPlots;
 //double y0 = 0.028;//3.86970e-02;
 //double r0 = 2.22;
 
-// set parameters for pixel shield
+// set parameters for Pixel Shield
+//TString FitObject = "PixelShield";
+//TString PlotObject = "hPFDV_XY_Map_Pipe";
+//TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+//double Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 4.1;
+//double RangeEstimatorQuality = 0.1; 
+//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+//double x0 = -0.03;// from 2015
+//double y0 = -0.090; // from 2015
+//double r0 = 3.738;  // from 2015
+
+// set parameters for Pixel Support
+TString FitObject = "PixelSupport";
+TString PlotObject = "hPFDV_XY_Map_BPix";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
 double Rmin = 20.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
 double RangeEstimatorQuality = 0.5; 
 int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
@@ -154,8 +170,8 @@ void HistogramFitterNuclearInteractions_PixelSupport()
   for ( int k = -6; k < -5; k++ )
   //for ( int k = -5; k < -4; k++ ) //for for list of histograms to fit
   {
-    std::string plot = "hPFDV_XY_Map_BPix";
-    std::string plotBg = "hPFDV_RhoPhi_Map_BPix";
+    if (FitObject == "PixelSupport")std::string plot = PlotObject;
+    if (FitObject == "PixelSupport")std::string plotBg = PlotObjectBg;
     //std::string plot = "hPFDV_XY_Map_Pipe";
     //std::string plotBg = "hPFDV_RhoPhi_Map_Pipe";
     std::ostringstream plotName;
@@ -168,15 +184,17 @@ void HistogramFitterNuclearInteractions_PixelSupport()
 
     /// k = -7 is the inclusive one
     /// k = -6 is only BPiz (|z| < 25 cm)
-    if ( k == -6 )
-    {
-    //  plotName << "_AbsZ25";
-    //  plotNameBg << "_AbsZ25";
-    }
-    else if ( k != -7 )
-    {
-      plotName << "_" << k*5 << "_" << (k+1)*5;
-      plotNameBg << "_" << k*5 << "_" << (k+1)*5;
+    if ( FitObject == "PixelShield" || FitObject == "BeamPipe"  ) {
+       if ( k == -6 )
+       {
+         plotName << "_AbsZ25";
+         plotNameBg << "_AbsZ25";
+       }
+       else if ( k != -7 )
+      {
+        plotName << "_" << k*5 << "_" << (k+1)*5;
+        plotNameBg << "_" << k*5 << "_" << (k+1)*5;
+      }
     }
 
     plot = std::string( plotName.str().c_str() );
@@ -192,6 +210,9 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     h = new TH2D();
     h = (TH2D*)inputFile->Get( plot.c_str() );
     h->Sumw2();
+    if(FitObject == "PixelSupport")h->Rebin2D(1,1);
+    if(FitObject == "PixelShield") h->Rebin2D(5,5);
+    if(FitObject == "BeamPipe")    h->Rebin2D(5,5);
     h->SetStats(0);
     h->GetXaxis()->SetTitle("x [cm]");
     h->GetYaxis()->SetTitle("y [cm]");
@@ -206,6 +227,11 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     h->Draw("LEGO");
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str()); 
+
+
+   //create quality Histogram
+   hQuality = new TH1D( "hQuality", "BG Quality", 100, 0., 5. );
+   hQuality->Sumw2();
 
 
     /// Step 0: apply flux factor
@@ -260,11 +286,12 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     {
       Int_t numBinsX = h->GetNbinsX();
       Int_t numBinsY = h->GetNbinsY();
+      Double_t Xmax_h = h->GetXaxis()->GetBinCenter(numBinsX ) + h->GetXaxis()->GetBinWidth( numBinsX )/2; 
       if(numBinsX != numBinsY) std::cout << "WARNING numBinsX = " << numBinsX << "is not equal to numBinsY = " << numBinsY << std::endl;
-      TH1D* hbgua0 = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", numBinsX, 0., 25. );
-      TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", numBinsX, 0., 25. );
-      TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", numBinsX, 0., 25. );
-
+      TH1D* hbgua0 = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      //std::cout << "Xmax_h = " << Xmax_h << endl;
 
       for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
       {
@@ -461,13 +488,16 @@ void HistogramFitterNuclearInteractions_PixelSupport()
 
     for ( UInt_t phiSect = 0; phiSect < 40; phiSect ++ )
     {
-      TH1D* hbgua0 = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", numBinsX, 0., 25. );
-      TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", numBinsX, 0., 25. );
-      TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", numBinsX, 0., 25. );
-      TH1D* hbgua3 = new TH1D( (plotBg+"_BGUA3").c_str(), "Counts per Unit Area in transverse plane", numBinsX, 0., 25. );
 
       Int_t numBinsX = h->GetNbinsX();
       Int_t numBinsY = h->GetNbinsY();
+      Double_t Xmax_h = h->GetXaxis()->GetBinCenter(numBinsX ) + h->GetXaxis()->GetBinWidth( numBinsX )/2;
+
+      TH1D* hbgua0 = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      TH1D* hbgua3 = new TH1D( (plotBg+"_BGUA3").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      //std::cout << "Int_t(numBinsX/2) = " << Int_t(numBinsX/2) << std::endl;
 
       for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
       {
@@ -518,7 +548,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
      
       // 
       // estimate if we have other objects in fit region with width = RangeEstimatorQuality
-      Double_t SignalLowEdge = 0.; SignalUpperEdge = 0.; BgUpperEdge =0.;
+      Double_t SignalLowEdge = 0.; Double_t SignalUpperEdge = 0.; Double_t BgUpperEdge =0.;
       for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
       {
         Double_t x = hbgua0->GetXaxis()->GetBinCenter( ix );
@@ -528,8 +558,11 @@ void HistogramFitterNuclearInteractions_PixelSupport()
         if( x > (RBGmax-RangeEstimatorQuality) && x < RBGmax) BgUpperEdge+ = value;
       }
       bgFitQuality[phiSect] = 1; //good phi sector for fit      
+
+      //if(FitObject == "PixelSupport")
       if (SignalLowEdge > 1.5*BgUpperEdge || SignalUpperEdge > 1.5*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-      //if (SignalLowEdge > 2.*BgUpperEdge || SignalUpperEdge > 2.*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+      if(BgUpperEdge > 0.)hQuality->Fill( max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) );
+      //std::cout <<"hQuality fill = " << max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) << std::endl;
 
       cPlots->cd();
       hbgua0->SetMinimum(0);
@@ -604,7 +637,13 @@ void HistogramFitterNuclearInteractions_PixelSupport()
       delete hbgua1;
       delete hbgua2;
       delete hbgua3;
-    }
+    } //end phi cicle
+
+
+    cQuality = new TCanvas("");
+    cQuality->cd();
+    hQuality->Draw("e");
+    cQuality->Print("Plots/Qulaity.png");
 
     /// ----------------------- Step 4: subtract the background from the signal ---------------
 
