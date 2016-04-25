@@ -31,24 +31,35 @@ TCanvas* cPlots;
 TCanvas* cQuality;
 TH1D* hQuality;
 
-//sef parameters for beam pipe fit
-//double FitSup = 3.0, FitInf = 2.4, PipeInf = 2.0, PipeSup = 2.4, Inf = 1.8, Sup = 3.0, PlotSup = 2.6; 
-//double x0 =  0.128;//1.69759e-01;
-//double y0 = 0.028;//3.86970e-02;
-//double r0 = 2.22;
+//*** sef parameters for Beam Pipe fit
+//*** to fit is uncomment this block:
+//TString FitObject = "BeamPipe";
+//TString PlotObject = "hPFDV_XY_Map_Pipe";
+//TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+//double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
+//double RangeEstimatorQuality = 0.1; 
+//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+//double x0 = 0.124;// from 2015
+//double y0 = 0.028; // from 2015
+//double r0 = 2.211;  // from 2015
+//*** end comments for Beam Pipe
 
-// set parameters for Pixel Shield
+//*** set parameters for Pixel Shield
+//*** to fit is uncomment this block:
 //TString FitObject = "PixelShield";
 //TString PlotObject = "hPFDV_XY_Map_Pipe";
 //TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
 //double Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 4.1;
 //double RangeEstimatorQuality = 0.1; 
 //int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
-//double x0 = -0.03;// from 2015
-//double y0 = -0.090; // from 2015
-//double r0 = 3.738;  // from 2015
+//double x0 = -0.025;// from 2015
+//double y0 = -0.083; // from 2015
+//double r0 = 3.723;  // from 2015
+//***  end comments for Pixel Shield
+//*** with all phi sectors: 3.736, x0 = -0.02, y0 = -0.092
 
-// set parameters for Pixel Support
+//*** set parameters for Pixel Support
+//*** to fit is uncomment this block:
 TString FitObject = "PixelSupport";
 TString PlotObject = "hPFDV_XY_Map_BPix";
 TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
@@ -58,6 +69,7 @@ int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
 double x0 = -0.08;// from 2015
 double y0 = -0.34; // from 2015
 double r0 = 21.70;  // from 2015
+//***  end comments for Pixel Support
 
 // good fit values
 // 21.70; -0.08; -0.34
@@ -123,7 +135,7 @@ Double_t func_fitBg(Double_t *x ,Double_t *par)
 }
 
 
-void HistogramFitterNuclearInteractions_PixelSupport()
+void HistogramFitterNuclearInteractions_UniFit()
 {
   //gROOT->SetBatch(1);
   gROOT->ForceStyle();
@@ -170,8 +182,10 @@ void HistogramFitterNuclearInteractions_PixelSupport()
   for ( int k = -6; k < -5; k++ )
   //for ( int k = -5; k < -4; k++ ) //for for list of histograms to fit
   {
-    if (FitObject == "PixelSupport")std::string plot = PlotObject;
-    if (FitObject == "PixelSupport")std::string plotBg = PlotObjectBg;
+    std::string plot = PlotObject;
+    std::string plotBg = PlotObjectBg;
+    //if (FitObject == "PixelSupport")std::string plot = PlotObject;
+    //if (FitObject == "PixelSupport")std::string plotBg = PlotObjectBg;
     //std::string plot = "hPFDV_XY_Map_Pipe";
     //std::string plotBg = "hPFDV_RhoPhi_Map_Pipe";
     std::ostringstream plotName;
@@ -221,11 +235,11 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     h->Draw("col");
 
     cPlots->Update();
-    cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+".png").c_str());
 
     h->Draw("LEGO");
-    cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str()); 
 
 
@@ -266,7 +280,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     h->Draw("LEGO");
-    cPlots->SaveAs(("Plots/"+plot+"_FluxCorrection_LEGO.pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+"_FluxCorrection_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_FluxCorrection_LEGO.png").c_str()); 
 
 
@@ -472,14 +486,14 @@ void HistogramFitterNuclearInteractions_PixelSupport()
 
     // plot average estimated background in signal region from PipeInf to PipeSup
     cPlots->Update();
-    cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+".png").c_str());
 
 
     h0->Draw("LEGO");
 
     cPlots->Update();
-    cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
     //cPlots->Delete();
     //delete cPlots;
@@ -554,7 +568,8 @@ void HistogramFitterNuclearInteractions_PixelSupport()
         Double_t x = hbgua0->GetXaxis()->GetBinCenter( ix );
         Double_t value = hbgua0->GetBinContent(ix);
         if( x > RSmin && x < (RSmin+RangeEstimatorQuality) ) SignalLowEdge+ = value;
-        if( x > RSmax && x < (RSmax+RangeEstimatorQuality)) SignalUpperEdge+ = value;
+        if( (FitObject == "PixelSupport" || FitObject == "BeamPipe") && x > RSmax && x < (RSmax+RangeEstimatorQuality)) SignalUpperEdge+ = value;
+        if( FitObject == "PixelShield" && x > (RSmax-RangeEstimatorQuality) && x < RSmax) SignalUpperEdge+ = value;
         if( x > (RBGmax-RangeEstimatorQuality) && x < RBGmax) BgUpperEdge+ = value;
       }
       bgFitQuality[phiSect] = 1; //good phi sector for fit      
@@ -562,7 +577,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
       //if(FitObject == "PixelSupport")
       if (SignalLowEdge > 1.5*BgUpperEdge || SignalUpperEdge > 1.5*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
       if(BgUpperEdge > 0.)hQuality->Fill( max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) );
-      //std::cout <<"hQuality fill = " << max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) << std::endl;
+      //std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) << std::endl;
 
       cPlots->cd();
       hbgua0->SetMinimum(0);
@@ -599,7 +614,6 @@ void HistogramFitterNuclearInteractions_PixelSupport()
       hbgua3->Draw("same");
 
       //TF1 *fitBg = new TF1( "fitBg","[0] + x*[1]", RBGmin, RBGmax );
-      TF1 *fitBg = new TF1( "fitBg","[0]*[0]*TMath::Exp([1]*x)", RBGmin , RBGmax );
       TF1 *fitBg = new TF1( "fitBg",func_fitBg, RBGmin , RBGmax, 2 );
       fitBg->SetParameter(0, bgFit0[phiSect]);
       fitBg->SetParameter(1, bgFit1[phiSect]);
@@ -609,7 +623,8 @@ void HistogramFitterNuclearInteractions_PixelSupport()
       fitBg->Draw("same");
 
       //TLegend* legBg = new TLegend(x1L, 0.52, x2L, y2L, "");
-      TLegend* legBg = new TLegend(0.45, 0.6, 0.8, 0.9, "");
+      //TLegend* legBg = new TLegend(0.45, 0.6, 0.8, 0.9, "");
+      TLegend* legBg = new TLegend(0.65, 0.6, 1.0, 0.9, "");
       legBg->SetTextFont(42);
       legBg->SetTextSize(0.03);
       legBg->SetFillColor(TColor::kWhite);
@@ -626,7 +641,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
 
       std::ostringstream fn;
       fn << "Plots/"<<plotBg.c_str()<<"_BGUA_XCk" << "_" << phiSect<<".pdf";
-      cPlots->SaveAs(fn.str().c_str());
+      //cPlots->SaveAs(fn.str().c_str());
       fn.str("");
       fn << "Plots/"<<plotBg.c_str()<<"_BGUA_XCk" << "_" << phiSect<<".png";
       cPlots->SaveAs(fn.str().c_str());
@@ -643,7 +658,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     cQuality = new TCanvas("");
     cQuality->cd();
     hQuality->Draw("e");
-    cQuality->Print("Plots/Qulaity.png");
+    cQuality->Print("Plots/Quality.png");
 
     /// ----------------------- Step 4: subtract the background from the signal ---------------
 
@@ -733,7 +748,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
 
     //if small slice, then rebin histo for better view
-    if(k > -6 && k < 5) h->Rebin2D(5,5);
+    //if(k > -6 && k < 5) h->Rebin2D(5,5);
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     h->Draw("col");
@@ -782,7 +797,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
     }
 
     cPlots->Update();
-    cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+".png").c_str());
     cPlots->SaveAs(("Plots/"+plot+".root").c_str());
 
@@ -798,14 +813,14 @@ void HistogramFitterNuclearInteractions_PixelSupport()
 
     h->Draw("LEGO");
     cPlots->Update();
-    cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
     //cPlots->Delete();
     //delete cPlots;
 
     h->Draw("COLZ");
     cPlots->Update();
-    cPlots->SaveAs(("Plots/"+plot+"_COLZ.pdf").c_str());
+    //cPlots->SaveAs(("Plots/"+plot+"_COLZ.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_COLZ.png").c_str());
     //cPlots->Delete();
     //delete cPlots;
@@ -959,7 +974,7 @@ void HistogramFitterNuclearInteractions_PixelSupport()
   //gphi21fit->GetListOfFunctions()->FindObject("stats")->Delete();
 
   pad3->Update();
-  cPlots->SaveAs("Plots/FitResults.pdf");
+  //cPlots->SaveAs("Plots/FitResults.pdf");
   cPlots->SaveAs("Plots/FitResults.png");
 
 }
