@@ -63,7 +63,7 @@ TH1D* hQuality;
 TString FitObject = "PixelSupport";
 TString PlotObject = "hPFDV_XY_Map_BPix";
 TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
-double Rmin = 20.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
+double Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
 double RangeEstimatorQuality = 0.5; 
 int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
 double x0 = -0.08;// from 2015
@@ -133,6 +133,17 @@ Double_t func_fitBg(Double_t *x ,Double_t *par)
  //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
  return value;
 }
+
+//create Circle/Arc function in phi,R plane:
+Double_t func_ArcRhoPhi(Double_t*, Double_t* );
+Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
+{
+ // x[0] is phi here
+ Double_t value = sqrt( (par[0]*cos(x[0])+par[1])**2 + (par[0]*sin(x[0])+par[2])**2 );
+ //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
+ return value;
+}
+
 
 
 void HistogramFitterNuclearInteractions_UniFit()
@@ -217,9 +228,21 @@ void HistogramFitterNuclearInteractions_UniFit()
     //printf(plot.c_str());
     //printf("\n");
 
+    h_RhoPhi = new TH2D();
+    h_RhoPhi = (TH2D*)inputFile->Get( plotBg.c_str() );
+    h_RhoPhi->Sumw2();
+    if(FitObject == "PixelSupport")h_RhoPhi->Rebin2D(1,1);
+    if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(5,5);
+    if(FitObject == "BeamPipe")    h_RhoPhi->Rebin2D(5,5);
+    h_RhoPhi->SetStats(0);
+    //h_RhoPhi->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+    h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
+
+
     cPlots = new TCanvas(("c_"+plot).c_str(),"");
     
     cPlots->cd();
+
 
     h = new TH2D();
     h = (TH2D*)inputFile->Get( plot.c_str() );
@@ -758,6 +781,30 @@ void HistogramFitterNuclearInteractions_UniFit()
     arc->SetLineColor(TColor::kRed);
     arc->SetLineWidth(2);
     arc->Draw("same");
+    Double_t x_arc[1], y_arc[1];
+    x_arc[0] = fitter->GetParameter(1);
+    y_arc[0] = fitter->GetParameter(2);
+    TGraph* gr_arc = new TGraph(1,x_arc,y_arc);
+    gr_arc->SetMarkerStyle(20);
+    gr_arc->SetMarkerSize(0.5);
+    gr_arc->SetMarkerColor(TColor::kRed);
+    gr_arc->Draw("P");
+
+    //plot circle with center at (0.0)
+    TArc* arc0 = new TArc( 0., 0., fitter->GetParameter(0) );
+    arc0->SetFillStyle(0);
+    arc0->SetLineColor(TColor::kBlue);
+    arc0->SetLineWidth(2);
+    //arc0->Draw("same");
+    Double_t x_arc0[1], y_arc0[1];
+    x_arc0[0] = 0.;
+    y_arc0[0] = 0.;
+    TGraph* gr_arc0 = new TGraph(1,x_arc0,y_arc0);
+    gr_arc0->SetMarkerStyle(20);
+    gr_arc0->SetMarkerSize(0.5);
+    gr_arc0->SetMarkerColor(TColor::kBlue);
+    gr_arc0->Draw("P");
+
 
     cPlots->Update();
 
@@ -770,10 +817,10 @@ void HistogramFitterNuclearInteractions_UniFit()
     TPaveText* res = new TPaveText(x1L, y1L-0.22, x2L, y2L-0.42, "brNDC");
     std::ostringstream legEntry;
     legEntry.str("");
-    legEntry << "R (cm) \t = \t" << fitter->GetParameter(0) << " +/- " << fitter->GetParError(0);
+    legEntry << "R (cm) \t = \t" << fixed << setprecision(3) << fitter->GetParameter(0) << " +/- " << fitter->GetParError(0);
     res->AddText( legEntry.str().c_str() );
     legEntry.str("");
-    legEntry << "x_{0} (mm) \t = \t" << fitter->GetParameter(1)*10 << " +/- " << fitter->GetParError(1)*10;
+    legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(1)*10 << " +/- " << fitter->GetParError(1)*10;
     res->AddText( legEntry.str().c_str() );
     legEntry.str("");
     legEntry << "y_{0} (mm) \t = \t" << fitter->GetParameter(2)*10 << " +/- " << fitter->GetParError(2)*10;
@@ -784,6 +831,15 @@ void HistogramFitterNuclearInteractions_UniFit()
     res->SetLineColor(TColot::kRed);
     res->SetTextFont(42);
     res->Draw("same");
+
+      TLegend* legArc = new TLegend(0.75, 0.75, 0.95, 0.9, "");
+      legArc->SetTextFont(42);
+      legArc->SetTextSize(0.03);
+      legArc->SetFillColor(TColor::kWhite);
+      legArc->SetTextColor(TColor::kBlack);
+      legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
+      legArc->AddEntry(gr_arc0,"(0,0)","P");
+      legArc->Draw("same");
 
     if ( k > -6 )
     {
@@ -807,6 +863,18 @@ void HistogramFitterNuclearInteractions_UniFit()
     f->Close();
     //cPlots->Delete();
     //delete cPlots;
+
+    h_RhoPhi->Draw("col");
+    //TF1 *bpAlt = new TF1("bpAlt","sqrt((21.699*cos(x)-0.081)^2 + (21.699*sin(x)-0.345)^2)",-3.15,3.15);
+    TF1 *bpAlt = new TF1("bpAlt",func_ArcRhoPhi,-3.15,3.15,3);
+    bpAlt->SetParameter(0, fitter->GetParameter(0));
+    bpAlt->SetParameter(1, fitter->GetParameter(1));
+    bpAlt->SetParameter(2, fitter->GetParameter(2));
+    bpAlt->SetLineColor(TColor::kRed);
+    bpAlt->SetLineWidth(2);
+    bpAlt ->Draw("same");
+    cPlots->Update();
+    cPlots->SaveAs(("Plots/"+plot+"_RhoPhi.png").c_str());
 
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
