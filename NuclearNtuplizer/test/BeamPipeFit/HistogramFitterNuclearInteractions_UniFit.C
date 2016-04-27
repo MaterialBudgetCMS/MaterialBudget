@@ -30,18 +30,19 @@ TH2D* hrp;
 TCanvas* cPlots;
 TCanvas* cQuality;
 TH1D* hQuality;
+TH1D* hYderivative;
 
 //*** sef parameters for Beam Pipe fit
 //*** to fit is uncomment this block:
-//TString FitObject = "BeamPipe";
-//TString PlotObject = "hPFDV_XY_Map_Pipe";
-//TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
-//double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
-//double RangeEstimatorQuality = 0.1; 
-//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
-//double x0 = 0.124;// from 2015
-//double y0 = 0.028; // from 2015
-//double r0 = 2.211;  // from 2015
+TString FitObject = "BeamPipe";
+TString PlotObject = "hPFDV_XY_Map_Pipe";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
+double RangeEstimatorQuality = 0.1; 
+int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+double x0 = 0.124;// from 2015
+double y0 = 0.028; // from 2015
+double r0 = 2.211;  // from 2015
 //*** end comments for Beam Pipe
 
 //*** set parameters for Pixel Shield
@@ -60,16 +61,33 @@ TH1D* hQuality;
 
 //*** set parameters for Pixel Support
 //*** to fit is uncomment this block:
-TString FitObject = "PixelSupport";
-TString PlotObject = "hPFDV_XY_Map_BPix";
-TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
-double Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
-double RangeEstimatorQuality = 0.5; 
-int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
-double x0 = -0.08;// from 2015
-double y0 = -0.34; // from 2015
-double r0 = 21.70;  // from 2015
+//TString FitObject = "PixelSupport";
+//TString PlotObject = "hPFDV_XY_Map_BPix";
+//TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+//double Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
+//double RangeEstimatorQuality = 0.5; 
+//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+//double x0 = -0.08;// from 2015
+//double y0 = -0.34; // from 2015
+//double r0 = 21.70;  // from 2015
 //***  end comments for Pixel Support
+
+
+//*** set parameters for Pixel Support Rails
+//*** to fit is uncomment this block:
+//TString FitObject = "PixelSupportRails";
+//TString PlotObject = "hPFDV_XY_Map_BPix";
+//TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+//double Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
+//double RangeEstimatorQuality = 0.5; 
+//int flag_ExcludeBadFitSector = 0; // = 1 exclude; = 0 not exclude, for Railse should be 0;
+//double x0 = -0.08;// from 2015
+//double y0 = -0.34; // from 2015
+//double r0 = 21.70;  // from 2015
+//***  end comments for Pixel Support
+
+
+
 
 // good fit values
 // 21.70; -0.08; -0.34
@@ -232,9 +250,11 @@ void HistogramFitterNuclearInteractions_UniFit()
     h_RhoPhi = (TH2D*)inputFile->Get( plotBg.c_str() );
     h_RhoPhi->Sumw2();
     if(FitObject == "PixelSupport")h_RhoPhi->Rebin2D(1,1);
-    if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(5,5);
-    if(FitObject == "BeamPipe")    h_RhoPhi->Rebin2D(5,5);
+    if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(2,2);
+    //if(FitObject == "BeamPipe")    h_RhoPhi->Rebin2D(5,5);
     h_RhoPhi->SetStats(0);
+    h_RhoPhi->GetXaxis()->SetTitle("#phi");
+    h_RhoPhi->GetYaxis()->SetTitle("R [cm]");
     //h_RhoPhi->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
 
@@ -703,9 +723,26 @@ void HistogramFitterNuclearInteractions_UniFit()
 
     Int_t numBinsX = h->GetNbinsX();
     Int_t numBinsY = h->GetNbinsY();
-    for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
+
+    Double_t Ymin_Deriv = h->GetYaxis()->GetBinCenter(1); 
+    Double_t Ymax_Deriv = h->GetYaxis()->GetBinCenter(numBinsY ) + h->GetYaxis()->GetBinWidth( numBinsY );
+    std::cout << "Ymin_Deriv = " << Ymin_Deriv << " Ymax_Deriv = " << Ymax_Deriv << " bin width = " << h->GetYaxis()->GetBinWidth(1) << std::endl; 
+    hYderivative = new TH1D( "hYderivative", "x-integrated derivative as funct. of y", numBinsY, Ymin_Deriv, Ymax_Deriv );
+
+    UInt_t yRailTop = 0.;
+    UInt_t yRailBottom = 0.;
+    Double_t yRailTopDer = 0.;
+    Double_t yRailBottomDer = 0.;
+
+    for ( UInt_t iy = 1; iy <= numBinsY; iy++ )
     {
-      for ( UInt_t iy = 1; iy <= numBinsY; iy++ )
+      Double_t Xmin_int = 0.;
+      Double_t Xmax_int = 0.;
+      Double_t Ywidth = h->GetYaxis()->GetBinWidth( iy );
+      if (Ywidth <= 0 ) std::cout << "Error Ywith = " << Ywidth << std::endl;
+      if (Ywidth <= 0) continue; 
+  
+      for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
       {
         Double_t binNum = h->GetBinContent( ix, iy );
 
@@ -721,6 +758,9 @@ void HistogramFitterNuclearInteractions_UniFit()
         //if ( rc > Rmin && rc < Rmax )
         if ( rc > RSmin && rc < RSmax )
         {
+          Xmin_int += binNum;
+          if (iy < numBinsY) Xmax_int += h->GetBinContent( ix, iy+1 );
+
           UInt_t phiSect = floor( ( pc + TMath::Pi() ) / ( 2*TMath::Pi() ) * 40 );
 
           /// Remove Background
@@ -742,8 +782,15 @@ void HistogramFitterNuclearInteractions_UniFit()
           if (binNum < 0) binNum = 0;
 	  if (bgFitQuality[phiSect] == 1 || flag_ExcludeBadFitSector == 0) h1->Fill( x, y, binNum ); // fill only good phi sectors
         }
-      }
-    }
+      } // end ix cycle
+      //std::cout << "iy = " << iy << "   Xmax_int = " << Xmax_int << "   Xmin_int = " << Xmin_int << "   y Derivative = " << (Xmax_int-Xmin_int)/Ywidth << std::endl; 
+      Double_t Der = (Xmax_int-Xmin_int)/Ywidth;
+      if(yRailTopDer < Der) {yRailTopDer = Der; yRailTop = iy;}
+      if(yRailBottomDer > Der) {yRailBottomDer = Der; yRailBottom = iy;}
+      if(iy < numBinsY) hYderivative -> SetBinContent (iy, Der);
+    } // end iy cycle
+    std::cout << " yRailTop = " << hYderivative->GetXaxis()->GetBinCenter(yRailTop) << " +- " << hYderivative->GetXaxis()->GetBinWidth(yRailTop)/2. << std::endl;
+    std::cout << " yRailBottom = " << hYderivative -> GetXaxis()->GetBinCenter(yRailBottom ) << " +- " << hYderivative->GetXaxis()->GetBinWidth(yRailBottom)/2. << std::endl;
 
     /// Step 5: fit the distribution
 
@@ -864,7 +911,7 @@ void HistogramFitterNuclearInteractions_UniFit()
     //cPlots->Delete();
     //delete cPlots;
 
-    h_RhoPhi->Draw("col");
+    h_RhoPhi->Draw("colz");
     //TF1 *bpAlt = new TF1("bpAlt","sqrt((21.699*cos(x)-0.081)^2 + (21.699*sin(x)-0.345)^2)",-3.15,3.15);
     TF1 *bpAlt = new TF1("bpAlt",func_ArcRhoPhi,-3.15,3.15,3);
     bpAlt->SetParameter(0, fitter->GetParameter(0));
@@ -887,6 +934,46 @@ void HistogramFitterNuclearInteractions_UniFit()
     //delete cPlots;
 
     h->Draw("COLZ");
+    if (FitObject == "PixelSupportRails") {
+       //std::cout << " yRailTop = " << hYderivative->GetXaxis()->GetBinCenter(yRailTop) << " +- " << hYderivative->GetXaxis()->GetBinWidth(yRailTop)/2. << std::endl;
+       Double_t x1 = -RPlot;
+       Double_t x2 = RPlot;
+       Double_t yerr = hYderivative->GetXaxis()->GetBinWidth(yRailTop)/2.;
+       Double_t y1 = hYderivative->GetXaxis()->GetBinCenter(yRailTop);
+       Double_t y2 = y1;
+       TLine * lineTop = new TLine ( x1, y1, x2, y2 );
+       lineTop->SetLineColor(TColor::kRed);
+       lineTop->SetLineWidth(2);
+       lineTop->Draw("same");
+
+       //TText *t_top = new TText(.5,y1+2,Form("Top Rail y = %3.3f #pm %3.3f",y1, yerr));
+       TLatex *t_top = new TLatex(.5,y1+4,Form("Top Rail y = %3.3f #pm %3.3f cm",y1, yerr));
+       t_top->SetTextAlign(22);
+       t_top->SetTextColor(kRed);
+       t_top->SetTextFont(43);
+       t_top->SetTextSize(40);
+       //t_top->SetTextAngle(45);
+       t_top->Draw();
+
+
+       y1 = hYderivative->GetXaxis()->GetBinCenter(yRailBottom);
+       y2 = y1;
+       TLine * lineBottom = new TLine ( x1, y1, x2, y2 );
+       lineBottom->SetLineColor(TColor::kRed);
+       lineBottom->SetLineWidth(2);
+       lineBottom->Draw("same");
+
+       TLatex *t_bottom = new TLatex(.5,y1+4,Form("Bottom Rail y = %3.3f #pm %3.3f cm",y1, yerr));
+       t_bottom->SetTextAlign(22);
+       t_bottom->SetTextColor(kRed);
+       t_bottom->SetTextFont(43);
+       t_bottom->SetTextSize(40);
+       //t_bottom->SetTextAngle(45);
+       t_bottom->Draw();
+
+    }
+
+
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+plot+"_COLZ.pdf").c_str());
     cPlots->SaveAs(("Plots/"+plot+"_COLZ.png").c_str());
@@ -894,6 +981,29 @@ void HistogramFitterNuclearInteractions_UniFit()
     //delete cPlots;
     //plot->Delete();
     //plotBg->Delete();
+      
+   gStyle->SetOptStat(0);
+   hYderivative->GetYaxis()->SetTitleOffset(1.5);
+   hYderivative->GetXaxis()->SetTitle("y [cm]");
+   hYderivative->GetYaxis()->SetTitle("y Deravative");
+   hYderivative->SetLineWidth(2);
+
+   hYderivative ->Draw("e");
+   cPlots->Update();
+   cPlots->SaveAs("Plots/yDerivative.png");
+
+   hYderivative ->GetXaxis()->SetRangeUser(-Rmax, -Rmin);
+   hYderivative ->GetXaxis()->SetRangeUser(Rmin, Rmax);
+   hYderivative ->Draw("e");
+   cPlots->Update();
+   cPlots->SaveAs("Plots/yDerivativeTop.png");
+
+   hYderivative ->GetXaxis()->SetRangeUser(-Rmax, -Rmin);
+   hYderivative ->Draw("e");
+   cPlots->Update();
+   cPlots->SaveAs("Plots/yDerivativeBottom.png");
+
+   gStyle->SetOptStat(1000111110);
 
   }
 
