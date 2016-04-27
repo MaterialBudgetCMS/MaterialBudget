@@ -24,6 +24,7 @@
 #include <TMath.h>
 #include <TVirtualFitter.h>
 #include <TFitter.h>
+#include <TAttLine.h> // for colors and transperent
 
 TH2D* h;
 TH2D* hrp;
@@ -34,15 +35,17 @@ TH1D* hYderivative;
 
 //*** sef parameters for Beam Pipe fit
 //*** to fit is uncomment this block:
-TString FitObject = "BeamPipe";
-TString PlotObject = "hPFDV_XY_Map_Pipe";
-TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
-double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
-double RangeEstimatorQuality = 0.1; 
-int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
-double x0 = 0.124;// from 2015
-double y0 = 0.028; // from 2015
-double r0 = 2.211;  // from 2015
+//TString FitObject = "BeamPipe";
+//TString PlotObject = "hPFDV_XY_Map_Pipe";
+//TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+//double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
+//double RangeEstimatorQuality = 0.1; 
+//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+//int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+//double x_Sys = 0.02; //size of systematics in cm
+//double x0 = 0.124;// from 2015
+//double y0 = 0.028; // from 2015
+//double r0 = 2.211;  // from 2015
 //*** end comments for Beam Pipe
 
 //*** set parameters for Pixel Shield
@@ -53,6 +56,8 @@ double r0 = 2.211;  // from 2015
 //double Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 4.1;
 //double RangeEstimatorQuality = 0.1; 
 //int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+//int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+//double x_Sys = 0.03; //size of systematics in cm
 //double x0 = -0.025;// from 2015
 //double y0 = -0.083; // from 2015
 //double r0 = 3.723;  // from 2015
@@ -61,15 +66,17 @@ double r0 = 2.211;  // from 2015
 
 //*** set parameters for Pixel Support
 //*** to fit is uncomment this block:
-//TString FitObject = "PixelSupport";
-//TString PlotObject = "hPFDV_XY_Map_BPix";
-//TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
-//double Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
-//double RangeEstimatorQuality = 0.5; 
-//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
-//double x0 = -0.08;// from 2015
-//double y0 = -0.34; // from 2015
-//double r0 = 21.70;  // from 2015
+TString FitObject = "PixelSupport";
+TString PlotObject = "hPFDV_XY_Map_BPix";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+double Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
+double RangeEstimatorQuality = 0.5; 
+int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+double x_Sys = 0.1; //size of systematics in cm
+double x0 = -0.08;// from 2015
+double y0 = -0.34; // from 2015
+double r0 = 21.70;  // from 2015
 //***  end comments for Pixel Support
 
 
@@ -81,6 +88,8 @@ double r0 = 2.211;  // from 2015
 //double Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
 //double RangeEstimatorQuality = 0.5; 
 //int flag_ExcludeBadFitSector = 0; // = 1 exclude; = 0 not exclude, for Railse should be 0;
+//int flag_Sys = 0; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+//double x_Sys = 0.02; //size of systematics in cm
 //double x0 = -0.08;// from 2015
 //double y0 = -0.34; // from 2015
 //double r0 = 21.70;  // from 2015
@@ -256,7 +265,6 @@ void HistogramFitterNuclearInteractions_UniFit()
     h_RhoPhi->GetXaxis()->SetTitle("#phi");
     h_RhoPhi->GetYaxis()->SetTitle("R [cm]");
     //h_RhoPhi->GetXaxis()->SetRangeUser(-RPlot, RPlot);
-    h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
 
 
     cPlots = new TCanvas(("c_"+plot).c_str(),"");
@@ -813,6 +821,8 @@ void HistogramFitterNuclearInteractions_UniFit()
 
 
     //fitter->SetParameter( 0,  "R", 2.932, 0.01, 2.6, 3.3 );
+    //fitter->FixParameter( 2 );
+    //fitter->FixParameter( 1 );
     //fitter->FixParameter( 0 );
     Double_t arglist[10] = {0.};
     fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
@@ -911,6 +921,8 @@ void HistogramFitterNuclearInteractions_UniFit()
     //cPlots->Delete();
     //delete cPlots;
 
+    h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
+    //h_RhoPhi->GetYaxis()->SetRangeUser(RSmin, RSmax);
     h_RhoPhi->Draw("colz");
     //TF1 *bpAlt = new TF1("bpAlt","sqrt((21.699*cos(x)-0.081)^2 + (21.699*sin(x)-0.345)^2)",-3.15,3.15);
     TF1 *bpAlt = new TF1("bpAlt",func_ArcRhoPhi,-3.15,3.15,3);
@@ -922,6 +934,76 @@ void HistogramFitterNuclearInteractions_UniFit()
     bpAlt ->Draw("same");
     cPlots->Update();
     cPlots->SaveAs(("Plots/"+plot+"_RhoPhi.png").c_str());
+
+    if (flag_Sys == 1){
+
+       // x variation
+       TF1 *bpAlt_xp = new TF1("bpAlt_xp",func_ArcRhoPhi,-3.15,3.15,3);
+       bpAlt_xp->SetParameter(0, fitter->GetParameter(0));
+       bpAlt_xp->SetParameter(1, fitter->GetParameter(1)+x_Sys);
+       bpAlt_xp->SetParameter(2, fitter->GetParameter(2));
+       bpAlt_xp->SetLineColor(TColor::kBlack);
+       bpAlt_xp->SetLineWidth(2);
+       bpAlt_xp ->Draw("same");
+
+       TF1 *bpAlt_xm = new TF1("bpAlt_xm",func_ArcRhoPhi,-3.15,3.15,3);
+       bpAlt_xm->SetParameter(0, fitter->GetParameter(0));
+       bpAlt_xm->SetParameter(1, fitter->GetParameter(1)-x_Sys);
+       bpAlt_xm->SetParameter(2, fitter->GetParameter(2));
+       bpAlt_xm->SetLineColor(TColor::kBlack);
+       bpAlt_xm->SetLineWidth(2);
+       bpAlt_xm ->Draw("same");
+
+       cPlots->Update();
+       cPlots->SaveAs(("Plots/"+plot+"_RhoPhi_sysX.png").c_str());
+
+       // y variation
+       h_RhoPhi->Draw("colz");
+       bpAlt ->Draw("same");
+
+       TF1 *bpAlt_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,-3.15,3.15,3);
+       bpAlt_yp->SetParameter(0, fitter->GetParameter(0));
+       bpAlt_yp->SetParameter(1, fitter->GetParameter(1));
+       bpAlt_yp->SetParameter(2, fitter->GetParameter(2)+x_Sys);
+       bpAlt_yp->SetLineColor(TColor::kBlack);
+       bpAlt_yp->SetLineWidth(2);
+       bpAlt_yp ->Draw("same");
+
+       TF1 *bpAlt_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,-3.15,3.15,3);
+       bpAlt_ym->SetParameter(0, fitter->GetParameter(0));
+       bpAlt_ym->SetParameter(1, fitter->GetParameter(1));
+       bpAlt_ym->SetParameter(2, fitter->GetParameter(2)-x_Sys);
+       bpAlt_ym->SetLineColor(TColor::kBlack);
+       bpAlt_ym->SetLineWidth(2);
+       bpAlt_ym ->Draw("same");
+
+       cPlots->Update();
+       cPlots->SaveAs(("Plots/"+plot+"_RhoPhi_sysY.png").c_str());
+
+       // R variation
+       h_RhoPhi->Draw("colz");
+       bpAlt ->Draw("same");
+
+       TF1 *bpAlt_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,-3.15,3.15,3);
+       bpAlt_rp->SetParameter(0, fitter->GetParameter(0)+x_Sys);
+       bpAlt_rp->SetParameter(1, fitter->GetParameter(1));
+       bpAlt_rp->SetParameter(2, fitter->GetParameter(2));
+       bpAlt_rp->SetLineColor(TColor::kBlack);
+       bpAlt_rp->SetLineWidth(2);
+       bpAlt_rp ->Draw("same");
+
+       TF1 *bpAlt_rm = new TF1("bpAlt_rm",func_ArcRhoPhi,-3.15,3.15,3);
+       bpAlt_rm->SetParameter(0, fitter->GetParameter(0)-x_Sys);
+       bpAlt_rm->SetParameter(1, fitter->GetParameter(1));
+       bpAlt_rm->SetParameter(2, fitter->GetParameter(2));
+       bpAlt_rm->SetLineColor(TColor::kBlack);
+       bpAlt_rm->SetLineWidth(2);
+       bpAlt_rm ->Draw("same");
+
+       cPlots->Update();
+       cPlots->SaveAs(("Plots/"+plot+"_RhoPhi_sysR.png").c_str());
+    } 
+
 
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
