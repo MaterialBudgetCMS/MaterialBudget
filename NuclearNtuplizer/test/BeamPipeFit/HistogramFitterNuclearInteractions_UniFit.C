@@ -21,10 +21,14 @@
 #include <TFile.h>
 #include <TH1D.h>
 #include <TH2D.h>
+#include "TF2.h"
+#include "TH2.h"
 #include <TMath.h>
 #include <TVirtualFitter.h>
 #include <TFitter.h>
 #include <TAttLine.h> // for colors and transperent
+#include "Fit/DataRange.h"
+#include <TStyle.h>
 
 TH2D* h;
 TH2D* hrp;
@@ -32,6 +36,8 @@ TCanvas* cPlots;
 TCanvas* cQuality;
 TH1D* hQuality;
 TH1D* hYderivative;
+TH2D* hYderivative2D;
+TH2D* hXderivative2D;
 
 //*** sef parameters for Beam Pipe fit
 //*** to fit is uncomment this block:
@@ -71,7 +77,8 @@ TString PlotObject = "hPFDV_XY_Map_BPix";
 TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
 double Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
 double RangeEstimatorQuality = 0.5; 
-int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+int flag_ExcludeBadFitSector = 0; // = 1 exclude; = 0 not exclude;
+//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
 int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
 double x_Sys = 0.1; //size of systematics in cm
 double x0 = -0.08;// from 2015
@@ -161,6 +168,14 @@ Double_t func_fitBg(Double_t *x ,Double_t *par)
  return value;
 }
 
+Double_t fun2(Double_t*, Double_t* );
+Double_t fun2(Double_t *x ,Double_t *par)
+{
+  Double_t value = par[0]+par[1]*x[0];
+  return value;
+}
+
+
 //create Circle/Arc function in phi,R plane:
 Double_t func_ArcRhoPhi(Double_t*, Double_t* );
 Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
@@ -170,6 +185,8 @@ Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
  //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
  return value;
 }
+
+
 
 
 
@@ -286,12 +303,12 @@ void HistogramFitterNuclearInteractions_UniFit()
     h->Draw("col");
 
     cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+".png").c_str());
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
 
     h->Draw("LEGO");
-    //cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str()); 
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Draw_LEGO.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Draw_LEGO.png")); 
 
 
    //create quality Histogram
@@ -331,8 +348,8 @@ void HistogramFitterNuclearInteractions_UniFit()
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     h->Draw("LEGO");
-    //cPlots->SaveAs(("Plots/"+plot+"_FluxCorrection_LEGO.pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+"_FluxCorrection_LEGO.png").c_str()); 
+    //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.png")); 
 
 
     /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
@@ -537,15 +554,15 @@ void HistogramFitterNuclearInteractions_UniFit()
 
     // plot average estimated background in signal region from PipeInf to PipeSup
     cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+".png").c_str());
+    //cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG.png"));
 
 
     h0->Draw("LEGO");
 
     cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
+    //cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG_LEGO.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG_LEGO.png"));
     //cPlots->Delete();
     //delete cPlots;
 
@@ -691,10 +708,11 @@ void HistogramFitterNuclearInteractions_UniFit()
       gStyle->SetOptStat(1000111110);
 
       std::ostringstream fn;
-      fn << "Plots/"<<plotBg.c_str()<<"_BGUA_XCk" << "_" << phiSect<<".pdf";
+      //fn << "Plots/"<<plotBg<<"_BGUA_XCk" << "_" << phiSect<<".pdf";
+      fn << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".pdf";
       //cPlots->SaveAs(fn.str().c_str());
       fn.str("");
-      fn << "Plots/"<<plotBg.c_str()<<"_BGUA_XCk" << "_" << phiSect<<".png";
+      fn << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".png";
       cPlots->SaveAs(fn.str().c_str());
       //delete to avoid memory leak:
       //cPlots->Delete();
@@ -736,6 +754,10 @@ void HistogramFitterNuclearInteractions_UniFit()
     Double_t Ymax_Deriv = h->GetYaxis()->GetBinCenter(numBinsY ) + h->GetYaxis()->GetBinWidth( numBinsY );
     std::cout << "Ymin_Deriv = " << Ymin_Deriv << " Ymax_Deriv = " << Ymax_Deriv << " bin width = " << h->GetYaxis()->GetBinWidth(1) << std::endl; 
     hYderivative = new TH1D( "hYderivative", "x-integrated derivative as funct. of y", numBinsY, Ymin_Deriv, Ymax_Deriv );
+    TH2D* hYderivative2D = new TH2D( "hYderivative2D", "Y Derivative", h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
+    TH2D* hXderivative2D = new TH2D( "hXderivative2D", "X Derivative", h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
 
     UInt_t yRailTop = 0.;
     UInt_t yRailBottom = 0.;
@@ -789,7 +811,28 @@ void HistogramFitterNuclearInteractions_UniFit()
           //binNum -= (2*bgNum); // subtrackt 2 BG
           if (binNum < 0) binNum = 0;
 	  if (bgFitQuality[phiSect] == 1 || flag_ExcludeBadFitSector == 0) h1->Fill( x, y, binNum ); // fill only good phi sectors
-        }
+
+          // calculate y Derivative in 2D, we use 2D histo without BG subtraction
+          // formula is corrent if all bins has the same width. If it is not true then you have to introduce bin width in this formula!
+          if (ix>1 && ix<numBinsX && iy>1 && iy<numBinsY){
+             Double_t u0 = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix, iy-1 ) + h->GetBinContent( ix+1, iy-1 ); 
+             Double_t u2 = h->GetBinContent( ix-1, iy+1 ) + 2*h->GetBinContent( ix, iy+1 ) + h->GetBinContent( ix+1, iy+1 );
+             Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
+             // revert in negative y plain:
+             if (y < 0) fyDer2D = -fyDer2D;
+             hYderivative2D -> Fill (x, y, fyDer2D);
+
+             Double_t u0x = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix-1, iy ) + h->GetBinContent( ix-1, iy+1 ); 
+             Double_t u2x = h->GetBinContent( ix+1, iy-1 ) + 2*h->GetBinContent( ix+1, iy ) + h->GetBinContent( ix+1, iy+1 );
+             Double_t fxDer2D = u2x-u0x;// calculate derivative at iy (y1) point
+             // revert in negative y plain:
+             if (x < 0) fxDer2D = -fxDer2D;
+             hXderivative2D -> Fill (x, y, fxDer2D);
+
+
+
+          }
+        }//end rc cut in signal region
       } // end ix cycle
       //std::cout << "iy = " << iy << "   Xmax_int = " << Xmax_int << "   Xmin_int = " << Xmin_int << "   y Derivative = " << (Xmax_int-Xmin_int)/Ywidth << std::endl; 
       Double_t Der = (Xmax_int-Xmin_int)/Ywidth;
@@ -799,6 +842,7 @@ void HistogramFitterNuclearInteractions_UniFit()
     } // end iy cycle
     std::cout << " yRailTop = " << hYderivative->GetXaxis()->GetBinCenter(yRailTop) << " +- " << hYderivative->GetXaxis()->GetBinWidth(yRailTop)/2. << std::endl;
     std::cout << " yRailBottom = " << hYderivative -> GetXaxis()->GetBinCenter(yRailBottom ) << " +- " << hYderivative->GetXaxis()->GetBinWidth(yRailBottom)/2. << std::endl;
+
 
     /// Step 5: fit the distribution
 
@@ -825,7 +869,7 @@ void HistogramFitterNuclearInteractions_UniFit()
     //fitter->FixParameter( 1 );
     //fitter->FixParameter( 0 );
     Double_t arglist[10] = {0.};
-    fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
+    if(FitObject != "PixelSupportRails") fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
 
     //if small slice, then rebin histo for better view
     //if(k > -6 && k < 5) h->Rebin2D(5,5);
@@ -871,16 +915,16 @@ void HistogramFitterNuclearInteractions_UniFit()
     y1L = s->GetY1NDC();
     y2L = s->GetY2NDC();
 
-    TPaveText* res = new TPaveText(x1L, y1L-0.22, x2L, y2L-0.42, "brNDC");
+    TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
     std::ostringstream legEntry;
     legEntry.str("");
-    legEntry << "R (cm) \t = \t" << fixed << setprecision(3) << fitter->GetParameter(0) << " +/- " << fitter->GetParError(0);
+    legEntry << "R (cm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(0) << " #pm " << fitter->GetParError(0) << " #pm " << x_Sys;
     res->AddText( legEntry.str().c_str() );
     legEntry.str("");
-    legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(1)*10 << " +/- " << fitter->GetParError(1)*10;
+    legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(1)*10 << " #pm " << fitter->GetParError(1)*10 << " #pm " << x_Sys*10;
     res->AddText( legEntry.str().c_str() );
     legEntry.str("");
-    legEntry << "y_{0} (mm) \t = \t" << fitter->GetParameter(2)*10 << " +/- " << fitter->GetParError(2)*10;
+    legEntry << "y_{0} (mm) \t = \t" << fitter->GetParameter(2)*10 << " #pm " << fitter->GetParError(2)*10 << " #pm " << x_Sys*10;
     res->AddText( legEntry.str().c_str() );
     res->SetFillStyle(0);
     res->SetTextAlign(12);
@@ -910,11 +954,11 @@ void HistogramFitterNuclearInteractions_UniFit()
     }
 
     cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+plot+".pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+".png").c_str());
-    cPlots->SaveAs(("Plots/"+plot+".root").c_str());
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Fit.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Fit.png"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Fit.root"));
 
-    TFile* f = new TFile(("Plots/"+plot+".root").c_str(), "UPDATE");
+    TFile* f = new TFile(("Plots/"+FitObject+"_Fit.root"), "UPDATE");
     
     h->Write("BEAM_PIPE");
     f->Close();
@@ -933,7 +977,7 @@ void HistogramFitterNuclearInteractions_UniFit()
     bpAlt->SetLineWidth(2);
     bpAlt ->Draw("same");
     cPlots->Update();
-    cPlots->SaveAs(("Plots/"+plot+"_RhoPhi.png").c_str());
+    cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
 
     if (flag_Sys == 1){
 
@@ -955,7 +999,7 @@ void HistogramFitterNuclearInteractions_UniFit()
        bpAlt_xm ->Draw("same");
 
        cPlots->Update();
-       cPlots->SaveAs(("Plots/"+plot+"_RhoPhi_sysX.png").c_str());
+       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi_sysX.png"));
 
        // y variation
        h_RhoPhi->Draw("colz");
@@ -978,7 +1022,7 @@ void HistogramFitterNuclearInteractions_UniFit()
        bpAlt_ym ->Draw("same");
 
        cPlots->Update();
-       cPlots->SaveAs(("Plots/"+plot+"_RhoPhi_sysY.png").c_str());
+       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi_sysY.png"));
 
        // R variation
        h_RhoPhi->Draw("colz");
@@ -1001,7 +1045,7 @@ void HistogramFitterNuclearInteractions_UniFit()
        bpAlt_rm ->Draw("same");
 
        cPlots->Update();
-       cPlots->SaveAs(("Plots/"+plot+"_RhoPhi_sysR.png").c_str());
+       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi_sysR.png"));
     } 
 
 
@@ -1010,10 +1054,98 @@ void HistogramFitterNuclearInteractions_UniFit()
 
     h->Draw("LEGO");
     cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+plot+"_LEGO.pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+"_LEGO.png").c_str());
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_LEGO.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Fit_LEGO.png"));
     //cPlots->Delete();
     //delete cPlots;
+
+    // Plot Derivative
+    Double_t YRailTop = 0.;
+    Double_t YRailBottom = 0.;
+    if (FitObject == "PixelSupportRails") {
+       gStyle->SetOptStat(0);
+       hYderivative->GetYaxis()->SetTitleOffset(1.5);
+       hYderivative->GetXaxis()->SetTitle("y [cm]");
+       hYderivative->GetYaxis()->SetTitle("y Derivative");
+       hYderivative->SetLineWidth(2);
+
+       hYderivative ->Draw("e");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/yDerivative.png");
+    
+       hYderivative ->GetXaxis()->SetRangeUser(-Rmax, -Rmin);
+       hYderivative ->GetXaxis()->SetRangeUser(Rmin, Rmax);
+       hYderivative ->Draw("e");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/yDerivativeTop.png");
+    
+       hYderivative ->GetXaxis()->SetRangeUser(-Rmax, -Rmin);
+       hYderivative ->Draw("e");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/yDerivativeBottom.png");
+    
+       hYderivative2D->Draw("COLZ");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/yDerivative2D.png");
+    
+       // Draw and Fit Bottom
+       std::cout<<"Fit for Bottom Rail"<<std::endl;
+       TF1 *f2Bottom = new TF1("f2Bottom",fun2,-7,7,2);
+       f2Bottom -> SetParameter(0, -19.7);
+       f2Bottom -> SetParameter(1, 0.);
+       f2Bottom->SetLineWidth(2);
+       f2Bottom->SetLineColor(TColor::kRed);
+       hYderivative2D->GetXaxis()->SetRangeUser(-7., -7.);
+       hYderivative2D->GetYaxis()->SetRangeUser(-20., -19.5);
+       hYderivative2D->Fit("f2Bottom","R");//fit only this Range defind in function
+       YRailBottom = f2Bottom->GetParameter(0);
+       std::cout<<"End Fit for Bottom Rail"<<std::endl;
+    
+       hYderivative2D ->GetYaxis()->SetRangeUser(-RSmax, -Rmin);
+       hYderivative2D ->GetXaxis()->SetRangeUser(-15., 15.);
+       hYderivative2D->Draw("COLZ");
+       f2Bottom ->Draw("same");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/yDerivative2DBottom.png");
+    
+       std::cout<<"Fit for Top Rail"<<std::endl;
+       f2Bottom -> SetParameter(0, 19.);
+       f2Bottom -> SetParameter(1, 0.);
+       hYderivative2D->GetXaxis()->SetRangeUser(-7., -7.);
+       hYderivative2D->GetYaxis()->SetRangeUser(18.8, 19.4);
+       //TBox *tbox = new TBox (-7., 18.8, 7., 19.4);
+       //tbox ->SetFillColorAlpha(kRed,0.);
+       hYderivative2D->Fit("f2Bottom","R");//fit only this Range defind in function
+       YRailTop = f2Bottom->GetParameter(0);
+       std::cout<<"End Fit for Top Rail"<<std::endl;
+    
+       hYderivative2D ->GetYaxis()->SetRangeUser(Rmin, RSmax);
+       hYderivative2D ->GetXaxis()->SetRangeUser(-15., 15.);
+       hYderivative2D->Draw("COLZ");
+       f2Bottom ->Draw("same");
+       //tbox ->Draw("same");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/yDerivative2DTop.png");
+    
+       hXderivative2D->Draw("COLZ");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/xDerivative2D.png");
+    
+       hXderivative2D ->GetYaxis()->SetRangeUser(-RSmax, -Rmin);
+       hXderivative2D ->GetXaxis()->SetRangeUser(-15., 15.);
+       hXderivative2D->Draw("COLZ");
+    
+       cPlots->Update();
+       cPlots->SaveAs("Plots/xDerivative2DBottom.png");
+    
+       hXderivative2D ->GetYaxis()->SetRangeUser(Rmin, RSmax);
+       hXderivative2D->Draw("COLZ");
+       cPlots->Update();
+       cPlots->SaveAs("Plots/xDerivative2DTop.png");
+    
+       gStyle->SetOptStat(1000111110);
+    }
+    // end Plot Derivative
 
     h->Draw("COLZ");
     if (FitObject == "PixelSupportRails") {
@@ -1021,7 +1153,8 @@ void HistogramFitterNuclearInteractions_UniFit()
        Double_t x1 = -RPlot;
        Double_t x2 = RPlot;
        Double_t yerr = hYderivative->GetXaxis()->GetBinWidth(yRailTop)/2.;
-       Double_t y1 = hYderivative->GetXaxis()->GetBinCenter(yRailTop);
+       //Double_t y1 = hYderivative->GetXaxis()->GetBinCenter(yRailTop);//very rude estimation
+       Double_t y1 = YRailTop;//more precize
        Double_t y2 = y1;
        TLine * lineTop = new TLine ( x1, y1, x2, y2 );
        lineTop->SetLineColor(TColor::kRed);
@@ -1029,7 +1162,7 @@ void HistogramFitterNuclearInteractions_UniFit()
        lineTop->Draw("same");
 
        //TText *t_top = new TText(.5,y1+2,Form("Top Rail y = %3.3f #pm %3.3f",y1, yerr));
-       TLatex *t_top = new TLatex(.5,y1+4,Form("Top Rail y = %3.3f #pm %3.3f cm",y1, yerr));
+       TLatex *t_top = new TLatex(.5,y1+3.7,Form("Top Rail y = %3.2f #pm %3.2f cm",y1, yerr));
        t_top->SetTextAlign(22);
        t_top->SetTextColor(kRed);
        t_top->SetTextFont(43);
@@ -1038,14 +1171,15 @@ void HistogramFitterNuclearInteractions_UniFit()
        t_top->Draw();
 
 
-       y1 = hYderivative->GetXaxis()->GetBinCenter(yRailBottom);
+       //y1 = hYderivative->GetXaxis()->GetBinCenter(yRailBottom);//very rude estimation
+       y1 = YRailBottom;//more precize
        y2 = y1;
        TLine * lineBottom = new TLine ( x1, y1, x2, y2 );
        lineBottom->SetLineColor(TColor::kRed);
        lineBottom->SetLineWidth(2);
        lineBottom->Draw("same");
 
-       TLatex *t_bottom = new TLatex(.5,y1+4,Form("Bottom Rail y = %3.3f #pm %3.3f cm",y1, yerr));
+       TLatex *t_bottom = new TLatex(.5,y1+3.7,Form("Bottom Rail y = %3.2f #pm %3.2f cm",y1, yerr));
        t_bottom->SetTextAlign(22);
        t_bottom->SetTextColor(kRed);
        t_bottom->SetTextFont(43);
@@ -1055,37 +1189,11 @@ void HistogramFitterNuclearInteractions_UniFit()
 
     }
 
-
     cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+plot+"_COLZ.pdf").c_str());
-    cPlots->SaveAs(("Plots/"+plot+"_COLZ.png").c_str());
-    //cPlots->Delete();
-    //delete cPlots;
-    //plot->Delete();
-    //plotBg->Delete();
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.png"));
       
-   gStyle->SetOptStat(0);
-   hYderivative->GetYaxis()->SetTitleOffset(1.5);
-   hYderivative->GetXaxis()->SetTitle("y [cm]");
-   hYderivative->GetYaxis()->SetTitle("y Deravative");
-   hYderivative->SetLineWidth(2);
 
-   hYderivative ->Draw("e");
-   cPlots->Update();
-   cPlots->SaveAs("Plots/yDerivative.png");
-
-   hYderivative ->GetXaxis()->SetRangeUser(-Rmax, -Rmin);
-   hYderivative ->GetXaxis()->SetRangeUser(Rmin, Rmax);
-   hYderivative ->Draw("e");
-   cPlots->Update();
-   cPlots->SaveAs("Plots/yDerivativeTop.png");
-
-   hYderivative ->GetXaxis()->SetRangeUser(-Rmax, -Rmin);
-   hYderivative ->Draw("e");
-   cPlots->Update();
-   cPlots->SaveAs("Plots/yDerivativeBottom.png");
-
-   gStyle->SetOptStat(1000111110);
 
   }
 
