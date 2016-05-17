@@ -1,7 +1,7 @@
 CRAB3
 ====
 
-For Data Run2015B use CMSSW_7_4_7_patch2
+For Data Run2015D use CMSSW_7_6_3
 
 See details here:
 
@@ -26,15 +26,9 @@ MultiCRAB
 
     cmsenv
 
-    python multicrab_data.py samples/samples_Run2015B.py
-    python multicrab_data_LowPileUp.py samples/samples_Run2015B.py
+    python multicrab_Run2015D_25ns_RECO.py samples/samples_Run2015D_25ns_reRECO.py
 
-    python multicrab_Spring15.py samples/samples_spring15.py
 
-    python multicrab_Run2015B_RECO.py samples/samples_Run2015B_RECO.py   
-    python multicrab_Run2015C_25ns_RECO.py samples/samples_Run2015C_25ns_RECO.py
-    python multicrab_Run2015C_50ns_RECO.py samples/samples_Run2015C_50ns_RECO.py 
-    python multicrab_Run2015D_25ns_RECO.py samples/samples_Run2015D_25ns_RECO.py
 
     crab status -d folder_name
 
