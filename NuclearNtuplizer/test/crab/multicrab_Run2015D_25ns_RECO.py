@@ -22,7 +22,10 @@ config.Data.inputDBS      = 'global'
 config.Data.splitting     = 'LumiBased'
 config.Data.unitsPerJob   = 50 # number of files, lumi sec. or events depending of "splitting"
 #config.Data.totalUnits    = 50 # total number of files, lumi sec. or events depending of "splitting"
-config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+# Silver json file (problem in HF, no effect on NI):
+config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_Silver_v2.txt'
+# golden json file:
+#config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt'
 config.Data.outLFNDirBase = '/store/group/phys_higgs/cmshww/kropiv/NI/RECO'
 
 config.section_('Site')
