@@ -13,7 +13,7 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 # In teh line below 'analysis' is an instance of VarParsing object 
 options = VarParsing ('analysis')
 options.register ('globalTag',
-                  '74X_dataRun2_Prompt_v1',
+                  '76X_dataRun2_16Dec2015_v0',
                    VarParsing.multiplicity.singleton,
                    VarParsing.varType.string,
                   'GlobalTag')
@@ -111,11 +111,11 @@ process.TFileService = cms.Service("TFileService",
 
 
 # Path and EndPath definitions
-#process.niReReconstruction_step = cms.Path(process.particleFlowDisplacedVertexCandidate
-#                                           +process.particleFlowDisplacedVertex
-#                                           +process.MyNtupleMaking)
-process.niReReconstruction_step = cms.Path(
-                                           process.MyNtupleMaking)
+process.niReReconstruction_step = cms.Path(process.particleFlowDisplacedVertexCandidate
+                                           +process.particleFlowDisplacedVertex
+                                           +process.MyNtupleMaking)
+#process.niReReconstruction_step = cms.Path(
+#                                           process.MyNtupleMaking)
 
 process.AODoutput_step = cms.EndPath(process.AODoutput)
 

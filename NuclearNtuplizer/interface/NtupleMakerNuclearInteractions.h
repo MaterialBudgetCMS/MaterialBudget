@@ -37,7 +37,9 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "SimTracker/Records/interface/TrackAssociatorRecord.h"
-#include "SimTracker/TrackAssociation/interface/TrackAssociatorBase.h"
+//#include "SimTracker/TrackAssociation/interface/ParametersDefinerForTP.h"
+//#include "SimTracker/TrackAssociation/interface/TrackAssociatorBase.h" // not exist anymore
+#include "TrackAssociatorBase.h"
 #include "DataFormats/Common/interface/RefToBaseVector.h"
 
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"

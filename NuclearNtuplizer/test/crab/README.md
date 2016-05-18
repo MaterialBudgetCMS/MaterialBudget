@@ -1,7 +1,7 @@
 CRAB3
 ====
 
-For Data Run2015D use CMSSW_7_6_3
+For Data Run2015D use CMSSW_7_6_5
 
 See details here:
 
