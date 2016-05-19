@@ -1,9 +1,10 @@
 CRAB3
 ====
 
-export SCRAM_ARCH=slc6_amd64_gcc493
+For Data Run2015D use CMSSW_7_6_5 make if neccessary:
 
-For Data Run2015D use CMSSW_7_6_5
+     export SCRAM_ARCH=slc6_amd64_gcc493
+
 
 See details here:
 
