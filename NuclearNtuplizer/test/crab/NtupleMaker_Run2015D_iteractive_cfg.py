@@ -65,8 +65,8 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    #fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/k/kropiv/public/SingleMu_Run2015D_16Dec2015_v1_XX.root'),
-    fileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/k/kropiv/public/SingleMu_Run2015D_16Dec2015_v1_XX.root'),
+    #fileNames = cms.untracked.vstring()
     #secondaryFileNames = cms.untracked.vstring()
 )
 
