@@ -7,8 +7,9 @@ For Data Run2015D use CMSSW_7_6_5
 
 See details here:
 
-    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial#CRAB_configuration_parameters
-    https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial#CRAB_configuration_parameters
+
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
 
 Check if you have writing permissions:
 
@@ -18,7 +19,7 @@ Check if you have writing permissions:
     crab checkwrite --site=T2_CH_CERN
     crab checkwrite --site=T2_CH_CERN --lfn=/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/
 
-Send the jobs:
+Usual send the jobs:
 
     crab submit -c crab_example1.py
     crab status
@@ -26,35 +27,44 @@ Send the jobs:
 MultiCRAB
 ====
 
-    =cmsenv=
+Set enviroment:
+
+    cmsenv
+
+Send crab job with python:
 
     python multicrab_Run2015D_25ns_RECO.py samples/samples_Run2015D_25ns_reRECO.py
 
 
+Check crab status:
 
     crab status -d folder_name
-
     crab status -d projects_Run2015/crab_Run2015D_16Dec2015_v1_25ns_SingleMuon/
+
+Resubmit jobs which are failed:
+
+    crab resubmit --dir/-d <CRAB-project-directory>
+    crab resubmit -d projects_Run2015/crab_Run2015D_16Dec2015_v1_25ns_SingleMuon/
 
 How to acess to /store via mounting
 ===
 
-cd /tmp/kropiv ### to have enough place
+    cd /tmp/kropiv ### to have enough place
+    mkdir eos
+    eosmount eos eos ### mount eos 
+    cd eos/cms/store/group/phys_higgs/cmshww/kropiv
+you could make link to your current working directory
+    cd <WokingDirectory>
+    ln -s /tmp/<nice-login>/eos 
 
-mkdir eos
+Correct what you want and unmount it: 
 
-eosmount eos eos ### mount eos 
-
-cd eos/cms/store/group/phys_higgs/cmshww/kropiv
-
-### correct what you want
-
-eosumount eos eos ### do not forget unmount
+    eosumount eos eos ### do not forget unmount
 
 
 How to calculate luminosity for Run2
 ===
 
-please follow instructions at
+please follow instructions at (OLD):
 
-https://twiki.cern.ch/twiki/bin/view/CMS/lcr2
+     https://twiki.cern.ch/twiki/bin/view/CMS/lcr2
