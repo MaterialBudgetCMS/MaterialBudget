@@ -11,7 +11,7 @@ config.General.workArea     = 'projects_Run2015'  # Make sure you set this param
 config.section_('JobType')
 config.JobType.pluginName       = 'Analysis'
 #config.JobType.pluginName       = 'PrivateMC'
-config.JobType.psetName         = 'NtupleMakerWithReReco_Run2015B_cfg.py'
+config.JobType.psetName         = 'NtupleMaker_Run2015D_cfg.py'
 config.JobType.maxJobRuntimeMin = 2800
 config.JobType.outputFiles      = ['Run2015D_25ns_RECO.root']
 config.JobType.allowUndistributedCMSSW = True
@@ -26,7 +26,8 @@ config.Data.unitsPerJob   = 50 # number of files, lumi sec. or events depending 
 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_Silver_v2.txt'
 # golden json file:
 #config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt'
-config.Data.outLFNDirBase = '/store/group/phys_higgs/cmshww/kropiv/NI/RECO'
+#config.Data.outLFNDirBase = '/store/group/phys_higgs/cmshww/kropiv/NI/RECO'
+config.Data.outLFNDirBase = '/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D'
 
 config.section_('Site')
 config.Site.storageSite = 'T2_CH_CERN'
