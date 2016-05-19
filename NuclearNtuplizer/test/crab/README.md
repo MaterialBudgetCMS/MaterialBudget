@@ -16,7 +16,7 @@ Check if you have writing permissions:
     source /cvmfs/cms.cern.ch/crab3/crab.csh
 
     crab checkwrite --site=T2_CH_CERN
-    crab checkwrite --site=T2_CH_CERN --lfn=/store/group/phys_higgs/cmshww/amassiro/RunII/test/
+    crab checkwrite --site=T2_CH_CERN --lfn=/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/
 
 Send the jobs:
 
@@ -26,13 +26,15 @@ Send the jobs:
 MultiCRAB
 ====
 
-    cmsenv
+    =cmsenv=
 
     python multicrab_Run2015D_25ns_RECO.py samples/samples_Run2015D_25ns_reRECO.py
 
 
 
     crab status -d folder_name
+
+    crab status -d projects_Run2015/crab_Run2015D_16Dec2015_v1_25ns_SingleMuon/
 
 How to acess to /store via mounting
 ===
