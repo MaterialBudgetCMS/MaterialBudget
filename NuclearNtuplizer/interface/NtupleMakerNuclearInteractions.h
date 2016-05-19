@@ -18,6 +18,7 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -28,6 +29,7 @@
 
 #include "DataFormats/ParticleFlowReco/interface/PFDisplacedVertex.h"
 #include "DataFormats/ParticleFlowReco/interface/PFDisplacedVertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
@@ -68,6 +70,14 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
 
     float getKaonMass( const reco::PFDisplacedVertex& ) const;
     bool isSimVertexOutsideAssCut(const TrackingVertex&, const reco::PFDisplacedVertex&) const;
+
+
+    //Data members for consumes
+    edm::EDGetTokenT<reco::VertexCollection> recoVertexToken;
+    edm::EDGetTokenT<std::vector<PileupSummaryInfo>> addPileupInfoToken;
+    edm::EDGetTokenT<reco::BeamSpot> offlineBeamSpotToken;
+    edm::EDGetTokenT<reco::PFDisplacedVertexCollection> particleFlowDisplacedVertexToken;   
+    edm::EDGetTokenT<TrackingVertexCollection> trackingParticlesToken;
 
     TTree* outputTree;
 

@@ -15,11 +15,21 @@
 NtupleMakerNuclearInteractions::NtupleMakerNuclearInteractions( const edm::ParameterSet& )
 {
 
+  // data members for consumes:
+  recoVertexToken                  = consumes<reco::VertexCollection>(edm::InputTag("offlinePrimaryVertices"));
+  addPileupInfoToken               = consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("addPileupInfo"));
+  offlineBeamSpotToken             = consumes<reco::BeamSpot>(edm::InputTag("offlineBeamSpot"));
+  particleFlowDisplacedVertexToken = consumes< reco::PFDisplacedVertexCollection >(edm::InputTag("particleFlowDisplacedVertex"));
+
+  edm::InputTag trackingParticlesTag ("mix","MergedTrackTruth");
+  trackingParticlesToken           = consumes< TrackingVertexCollection > (trackingParticlesTag);
+
 }
 
 /* Begin Job */
 void NtupleMakerNuclearInteractions::beginJob()
 {
+
   /// Initialize Event Number etc...
   isRealData = true;
   eventNumber = 0;
@@ -323,7 +333,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
   /// Get Primary Vertices
   edm::Handle< reco::VertexCollection > primaryVerticesHandle;
-  iEvent.getByLabel( "offlinePrimaryVertices", primaryVerticesHandle );
+  //iEvent.getByLabel( "offlinePrimaryVertices", primaryVerticesHandle );
+  iEvent.getByToken( recoVertexToken, primaryVerticesHandle );
 
   numberOfPV = primaryVerticesHandle->size();
 
@@ -345,7 +356,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   {
     /// Get PileUp
     edm::Handle< std::vector< PileupSummaryInfo > > pileUpInfoHandle;
-    iEvent.getByLabel( edm::InputTag("addPileupInfo"), pileUpInfoHandle );
+    //iEvent.getByLabel( edm::InputTag("addPileupInfo"), pileUpInfoHandle );
+    iEvent.getByToken( addPileupInfoToken, pileUpInfoHandle );
 
     numberOfMC_PUInfo = pileUpInfoHandle->size();
 
@@ -358,7 +370,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
   /// Get BeamSpot
   edm::Handle< reco::BeamSpot > beamSpotHandle;
-  iEvent.getByLabel( "offlineBeamSpot", beamSpotHandle );
+  //iEvent.getByLabel( "offlineBeamSpot", beamSpotHandle );
+  iEvent.getByToken( offlineBeamSpotToken, beamSpotHandle );
 
   if ( beamSpotHandle.isValid() )
   {
@@ -377,7 +390,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   /// Prepare for PF stuff
   /// Get PF Displaced vertices
   edm::Handle< reco::PFDisplacedVertexCollection > displacedVtxHandle;
-  iEvent.getByLabel( edm::InputTag("particleFlowDisplacedVertex"), displacedVtxHandle );
+  //iEvent.getByLabel( edm::InputTag("particleFlowDisplacedVertex"), displacedVtxHandle );
+  iEvent.getByToken( particleFlowDisplacedVertexToken, displacedVtxHandle );
 
   /// Prepare for MC stuff
   MC_TrkV_isNuclearInteraction->clear();
@@ -433,7 +447,8 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
 
   bool isGoodSimulation = false;
   if ( !isRealData )
-    isGoodSimulation = iEvent.getByLabel( "mix", "MergedTrackTruth", trackingVtxHandle );
+    //isGoodSimulation = iEvent.getByLabel( "mix", "MergedTrackTruth", trackingVtxHandle );
+    isGoodSimulation = iEvent.getByToken( trackingParticlesToken, trackingVtxHandle );
 
   if ( isGoodSimulation )
   {
