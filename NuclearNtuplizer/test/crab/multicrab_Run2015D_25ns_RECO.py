@@ -12,7 +12,7 @@ config.section_('JobType')
 config.JobType.pluginName       = 'Analysis'
 #config.JobType.pluginName       = 'PrivateMC'
 config.JobType.psetName         = 'NtupleMaker_Run2015D_cfg.py'
-config.JobType.maxJobRuntimeMin = 2800
+config.JobType.maxJobRuntimeMin = 2750
 config.JobType.outputFiles      = ['Run2015D_25ns_RECO.root']
 config.JobType.allowUndistributedCMSSW = True
 
