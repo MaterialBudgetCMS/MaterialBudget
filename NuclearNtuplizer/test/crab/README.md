@@ -63,6 +63,18 @@ Correct what you want and unmount it:
     eosumount eos eos ### do not forget unmount
 
 
+How to merger all output root files in one
+===
+
+After mounting eos, go to directory with root files and run:
+
+    hadd new.root *root
+
+All root-file will be merged to new.root. Move it to 
+
+    /store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/
+    
+
 How to calculate luminosity for Run2
 ===
 
