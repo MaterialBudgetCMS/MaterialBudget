@@ -70,6 +70,8 @@ After mounting eos, go to directory with root files and run:
 
     hadd new.root *root
 
+If hadd doesn't work, then you have to run cmsenv from any CMSSW and try again. hadd is part of the root commands. 
+
 All root-file will be merged to new.root. Move it to 
 
     /store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/
