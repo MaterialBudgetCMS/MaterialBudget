@@ -1175,7 +1175,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     if (NumberNI <= 30)hMC_NumberNI -> Fill (NumberNI);
     else hMC_NumberNI -> Fill (30); 
 
-    if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    //if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 3) ) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //test for assosiation
