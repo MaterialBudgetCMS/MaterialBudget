@@ -39,71 +39,182 @@ TH1D* hYderivative;
 TH2D* hYderivative2D;
 TH2D* hXderivative2D;
 
+// fit mesurements: 
+double x0_PixelShieldPlus = -0.104;
+double y0_PixelShieldPlus = -0.094;
+double r0_PixelShieldPlus = 3.78;
+
+double x0_PixelShieldMinus = 0.04;
+double y0_PixelShieldMinus = -0.10;
+double r0_PixelShieldMinus = 3.77;
+
+
 //*** sef parameters for Beam Pipe fit
 //*** to fit is uncomment this block:
-//TString FitObject = "BeamPipe";
-//TString PlotObject = "hPFDV_XY_Map_Pipe";
-//TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
-//double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
-//double RangeEstimatorQuality = 0.1; 
-//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
-//int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
-//double x_Sys = 0.02; //size of systematics in cm
-//double x0 = 0.124;// from 2015
-//double y0 = 0.028; // from 2015
-//double r0 = 2.211;  // from 2015
+/*TString FitObject = "BeamPipe";
+TString PlotObject = "hPFDV_XY_Map_Pipe";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
+double RangeEstimatorQuality = 0.1; 
+int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+double x_Sys = 0.02; //size of systematics in cm
+double x0 = 0.124;// from previous fits using this program that were based on 2015
+double y0 = 0.026; // from previous fits using this program that were based on 2015
+double r0 = 2.211;*/  // from previous fits using this program that were based on 2015
 //*** end comments for Beam Pipe
 
 //*** set parameters for Pixel Shield
 //*** to fit is uncomment this block:
-//TString FitObject = "PixelShield";
-//TString PlotObject = "hPFDV_XY_Map_Pipe";
-//TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
-//double Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 4.1;
-//double RangeEstimatorQuality = 0.1; 
-//int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
-//int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
-//double x_Sys = 0.03; //size of systematics in cm
-//double x0 = -0.025;// from 2015
-//double y0 = -0.083; // from 2015
-//double r0 = 3.723;  // from 2015
-//***  end comments for Pixel Shield
+/*TString FitObject = "PixelShield";
+TString PlotObject = "hPFDV_XY_Map_Pipe";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+double Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 4.1;
+double RangeEstimatorQuality = 0.1; 
+int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+double x_Sys = 0.03; //size of systematics in cm
+// Values for fit with a circle
+double x0 = -0.029;// from previous fits using this program that were based on 2015
+double y0 = -0.079; // from previous fits using this program that were based on 2015
+double r0 = 3.72;*/  // from previous fits using this program that were based on 2015
+//*** end comments for Pixel Shield
+
+//*** set parameters for Pixel Shield Plus
+//*** to fit uncomment this block
+/*TString FitObject = "PixelShieldPlus";
+TString PlotObject = "hPFDV_XY_Map_Pipe";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+double Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
+double RangeEstimatorQuality = 0.1;
+int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+double x_Sys = 0.03; // size of systematics in cm
+double x0 = -0.10; // in cm
+double y0 = -0.09; // in cm
+double r0 = 3.78;*/ // in cm
+//*** end comments for Pixel Shield Plus
 //*** with all phi sectors: 3.736, x0 = -0.02, y0 = -0.092
+
+//*** set parameters for Pixel Shield Minus
+//*** to fit uncomment this block
+//*** to superimpose the fits for the Pxiel Shield Plus and Minus sides run this
+TString FitObject = "PixelShieldMinus";
+TString PlotObject = "hPFDV_XY_Map_Pipe";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
+double Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
+double RangeEstimatorQuality = 0.1;
+int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
+int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+double x_Sys = 0.01; // size of systematics in cm
+double x0 = 0.05; // in cm
+double y0 = -0.10; // in cm
+double r0 = 3.78; // in cm
+//*** end comments for Pixel Shield Minus
 
 //*** set parameters for Pixel Support
 //*** to fit is uncomment this block:
-TString FitObject = "PixelSupport";
+/*TString FitObject = "PixelSupport";
 TString PlotObject = "hPFDV_XY_Map_BPix";
 TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
 double Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
 double RangeEstimatorQuality = 0.5; 
-int flag_ExcludeBadFitSector = 0; // = 1 exclude; = 0 not exclude;
+int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
 //int flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
 int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
 double x_Sys = 0.1; //size of systematics in cm
-double x0 = -0.08;// from 2015
-double y0 = -0.34; // from 2015
-double r0 = 21.70;  // from 2015
+double x0 = -0.083;// from previous fits using this program that were based on 2015
+double y0 = -0.324; // from previous fits using this program that were based on 2015
+double r0 = 21.73;*/  // from previous fits using this program that were based on 2015
 //***  end comments for Pixel Support
 
 
 //*** set parameters for Pixel Support Rails
 //*** to fit is uncomment this block:
-//TString FitObject = "PixelSupportRails";
-//TString PlotObject = "hPFDV_XY_Map_BPix";
-//TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
-//double Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
-//double RangeEstimatorQuality = 0.5; 
-//int flag_ExcludeBadFitSector = 0; // = 1 exclude; = 0 not exclude, for Railse should be 0;
-//int flag_Sys = 0; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
-//double x_Sys = 0.02; //size of systematics in cm
-//double x0 = -0.08;// from 2015
-//double y0 = -0.34; // from 2015
-//double r0 = 21.70;  // from 2015
+/*TString FitObject = "PixelSupportRails";
+TString PlotObject = "hPFDV_XY_Map_BPix";
+TString PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+double Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
+double RangeEstimatorQuality = 0.5; 
+int flag_ExcludeBadFitSector = 0; // = 1 exclude; = 0 not exclude, for Rails should be 0;
+int flag_Sys = 0; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
+double x_Sys = 0.02; //size of systematics in cm
+double x0 = -0.083;// from previous fits using this program that were based on 2015
+double y0 = -0.324; // from previous fits using this program that were based on 2015
+double r0 = 21.73;*/  // from previous fits using this program that were based on 2015
 //***  end comments for Pixel Support
 
 
+// create function to fit the plus semicircle of the pixel shield
+void funArcPlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+Double_t resoNI = 0.01;
+Double_t halfWidthPipe = 0.025;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
 
+//Bool_t skip = h->Integral() > 500000;
+for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
+   {
+   for ( UInt_t iy = 1; iy <= numBinsY; iy++ ) 
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0 ) continue;
+ 
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      // fit only in singnal + BK subtraction region
+      //Double_t Radius = TMath::Sqrt( x*x + y*y  );
+      //if ( Radius > PipeInf && Radius < FitInf )
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+ 
+     if ( r > RSmin && r < RSmax && x > 0)
+        {
+	Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
+  
+        diff = par[0] - r;
+	chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+        }
+      }
+   }
+f  = chiSquare;
+}// end funArcPlus
+
+// create function to fit the minus semicircle of the pixel shield
+void funArcMinus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+Double_t resoNI = 0.01;
+Double_t halfWidthPipe = 0.025;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
+
+//Bool_t skip = h->Integral() > 500000;
+for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
+   {
+   for ( UInt_t iy = 1; iy <= numBinsY; iy++ ) 
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0 ) continue;
+
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+
+     if ( r > RSmin && r < RSmax && x < 0)
+        {
+	Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
+
+        diff = par[0] - r;
+	chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+        }
+      }
+    }
+f  = chiSquare;
+} // end funArcMinus
 
 // good fit values
 // 21.70; -0.08; -0.34
@@ -195,7 +306,7 @@ void HistogramFitterNuclearInteractions_UniFit()
   //gROOT->SetBatch(1);
   gROOT->ForceStyle();
 
-  TFile* inputFile = TFile::Open("MCplot_Run2015D.root");
+  TFile* inputFile = TFile::Open("Run2015DreReco.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -275,8 +386,10 @@ void HistogramFitterNuclearInteractions_UniFit()
     h_RhoPhi = new TH2D();
     h_RhoPhi = (TH2D*)inputFile->Get( plotBg.c_str() );
     h_RhoPhi->Sumw2();
-    if(FitObject == "PixelSupport")h_RhoPhi->Rebin2D(1,1);
+    if(FitObject == "PixelSupport")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(2,2);
+    if(FitObject == "PixelShieldPlus")h_RhoPhi->Rebin2D(2,2);
+    if(FitObject == "PixelShieldMinus")h_RhoPhi->Rebin2D(2,2);
     //if(FitObject == "BeamPipe")    h_RhoPhi->Rebin2D(5,5);
     h_RhoPhi->SetStats(0);
     h_RhoPhi->GetXaxis()->SetTitle("#phi");
@@ -292,9 +405,12 @@ void HistogramFitterNuclearInteractions_UniFit()
     h = new TH2D();
     h = (TH2D*)inputFile->Get( plot.c_str() );
     h->Sumw2();
-    if(FitObject == "PixelSupport")h->Rebin2D(1,1);
+    if(FitObject == "PixelSupport")h->Rebin2D(3,3);
     if(FitObject == "PixelShield") h->Rebin2D(5,5);
+    if(FitObject == "PixelShieldPlus") h->Rebin2D(5,5);
+    if(FitObject == "PixelShieldMinus")h->Rebin2D(5,5);
     if(FitObject == "BeamPipe")    h->Rebin2D(5,5);
+    //if(FitObject == "PixelSupportRails")h->Rebin2D(2,2);
     h->SetStats(0);
     h->GetXaxis()->SetTitle("x [cm]");
     h->GetYaxis()->SetTitle("y [cm]");
@@ -382,18 +498,25 @@ void HistogramFitterNuclearInteractions_UniFit()
           Double_t x = h->GetXaxis()->GetBinCenter( ix );
           Double_t y = h->GetYaxis()->GetBinCenter( iy );
 
-          Double_t xc = x - x0;
-          Double_t yc = y - y0;
-
+          // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
+          // positions of the two halves so that the background subtraction is cleaner.
+          Double_t x0ref = x0;
+          Double_t y0ref = y0;
+          if (FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus; 
+          //if (FitObject == "PixelShieldMinus" && x < 0) x0ref = x0_PixelShieldMinus, y0ref = y0_PixelShieldMinus; 
+          Double_t xc = x - x0ref;
+          Double_t yc = y - y0ref;
+          
           Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
 
           if ( rc < Rmin || rc > Rmax ) continue;
 
           Double_t pc = TMath::ATan2( yc, xc );
-
-          Int_t thisPhiSect = floor( ( pc + TMath::Pi() ) / ( 2*TMath::Pi() ) * 40 );
+          if(pc < 0) pc = pc + 2*TMath::Pi();
+          Int_t thisPhiSect = floor(  pc  / ( 2*TMath::Pi() ) * 40 );
 
           if ( thisPhiSect != phiSect ) continue;
+          //if(thisPhiSect == 0)std::cout << "thisPhiSect = " << thisPhiSect << " pc = " << pc << std::endl;
 
           Double_t binNum = h->GetBinContent( ix, iy );
 
@@ -518,18 +641,25 @@ void HistogramFitterNuclearInteractions_UniFit()
         Double_t x = h->GetXaxis()->GetBinCenter( ix );
         Double_t y = h->GetYaxis()->GetBinCenter( iy );
 
-        Double_t xc = x - x0;
-        Double_t yc = y - y0;
-
+        // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
+        // positions of the two halves so that the background subtraction is cleaner.
+        Double_t x0ref = x0;
+        Double_t y0ref = y0;
+        if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
+        //if(FitObject == "PixelShieldMinus" && x < 0) x0ref = x0_PixelShieldMinus, y0ref = y0_PixelShieldMinus;
+        Double_t xc = x - x0ref;
+        Double_t yc = y - y0ref;
+        
         Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
 
         if ( rc < Rmin || rc > Rmax ) continue;
 
         Double_t pc = TMath::ATan2( yc, xc );
+        if(pc < 0) pc = pc + 2*TMath::Pi();
 
         if ( rc > RSmin && rc < RSmax )
         {
-          UInt_t phiSect = floor( ( pc + TMath::Pi() ) / ( 2*TMath::Pi() ) * 40 );
+          UInt_t phiSect = floor(  pc   / ( 2*TMath::Pi() ) * 40 );
 
           /// Average over 3 adjacent sectors to smooth differences
           //Double_t avg0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
@@ -588,18 +718,28 @@ void HistogramFitterNuclearInteractions_UniFit()
           Double_t x = h->GetXaxis()->GetBinCenter( ix );
           Double_t y = h->GetYaxis()->GetBinCenter( iy );
 
-          Double_t xc = x - x0;
-          Double_t yc = y - y0;
-
+          // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
+          // positions of the two halves so that the background subtraction is cleaner.
+          Double_t x0ref = x0;
+          Double_t y0ref = y0;
+          if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
+          //if(FitObject == "PixelShieldMinus" && x < 0) x0ref = x0_PixelShieldMinus, y0ref = y0_PixelShieldMinus;
+          
+          Double_t xc = x - x0ref;
+          Double_t yc = y - y0ref;
+          
           Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
 
           if ( rc < Rmin || rc > Rmax ) continue;
 
           Double_t pc = TMath::ATan2( yc, xc );
+          if(pc < 0) pc = pc + 2*TMath::Pi();
 
-          Int_t thisPhiSect = floor( ( pc + TMath::Pi() ) / ( 2*TMath::Pi() ) * 40 );
+          Int_t thisPhiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
 
           if ( thisPhiSect != phiSect ) continue;
+
+          //if (thisPhiSect == 0) std::cout << "thisPhiSect = " << thisPhiSect << " pc = " << pc << " x = " << x << " y = " << y << std::endl;
 
           Double_t binNum = h->GetBinContent( ix, iy );
 
@@ -626,26 +766,46 @@ void HistogramFitterNuclearInteractions_UniFit()
           }
 
         }
-      }
+      } // end cycle by h
      
       // 
       // estimate if we have other objects in fit region with width = RangeEstimatorQuality
       Double_t SignalLowEdge = 0.; Double_t SignalUpperEdge = 0.; Double_t BgUpperEdge =0.;
-      for ( UInt_t ix = 1; ix <= numBinsX; ix++ )
+      //std::cout << " Int_t(numBinsX/2) = " << Int_t(numBinsX/2) << " hbgua0->GetNbinsX() = " << hbgua0->GetNbinsX() << std::endl;
+      for ( UInt_t ix = 1; ix <= Int_t(numBinsX/2); ix++ )
       {
         Double_t x = hbgua0->GetXaxis()->GetBinCenter( ix );
         Double_t value = hbgua0->GetBinContent(ix);
         if( x > RSmin && x < (RSmin+RangeEstimatorQuality) ) SignalLowEdge+ = value;
         if( (FitObject == "PixelSupport" || FitObject == "BeamPipe") && x > RSmax && x < (RSmax+RangeEstimatorQuality)) SignalUpperEdge+ = value;
-        if( FitObject == "PixelShield" && x > (RSmax-RangeEstimatorQuality) && x < RSmax) SignalUpperEdge+ = value;
+        if( (FitObject == "PixelShield" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus") && x > (RSmax-RangeEstimatorQuality) && x < RSmax) SignalUpperEdge+ = value;
         if( x > (RBGmax-RangeEstimatorQuality) && x < RBGmax) BgUpperEdge+ = value;
       }
       bgFitQuality[phiSect] = 1; //good phi sector for fit      
 
-      //if(FitObject == "PixelSupport")
-      if (SignalLowEdge > 1.5*BgUpperEdge || SignalUpperEdge > 1.5*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+      // Flag phi sectors to be excluded from the fit using bin contents in the signal and background region
+      if(FitObject == "PixelSupport")
+        {
+         if (SignalLowEdge > .60*BgUpperEdge || SignalUpperEdge > 1.3*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+        }
+      if(FitObject == "PixelShield")
+        {
+        if (SignalUpperEdge > 1.3*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+        std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
+        }
+      if(FitObject == "PixelShieldPlus")
+        {
+        if (SignalUpperEdge > 1.3*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+        std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
+        }
+      if(FitObject == "PixelShieldMinus")
+        {
+        if (SignalUpperEdge > 1.28*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+        std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl; 
+        }
       if(BgUpperEdge > 0.)hQuality->Fill( max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) );
-      //std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) << std::endl;
+      //if(FitObject == "PixelShield")std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
+      if( FitObject == "PixelSupport" )std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalLowEdge/BgUpperEdge << std::endl;
 
       cPlots->cd();
       hbgua0->SetMinimum(0);
@@ -654,6 +814,7 @@ void HistogramFitterNuclearInteractions_UniFit()
       hbgua0->Draw();
       cPlots->Update();
 
+      // Format the plots of the phi sectors
       TPaveStats* sBg = (TPaveStats*)hbgua0->GetListOfFunctions()->FindObject("stats");
       x1L = sBg->GetX1NDC();
       x2L = sBg->GetX2NDC();
@@ -779,11 +940,19 @@ void HistogramFitterNuclearInteractions_UniFit()
         Double_t x = h->GetXaxis()->GetBinCenter( ix );
         Double_t y = h->GetYaxis()->GetBinCenter( iy );
 
-        Double_t xc = x - x0;
-        Double_t yc = y - y0;
+        // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
+        // positions of the two halves so that the background subtraction is cleaner.
+        Double_t x0ref = x0;
+        Double_t y0ref = y0;
+        if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
+        //if(FitObject == "PixelShieldMinus" && x < 0) x0ref = x0_PixelShieldMinus, y0ref = y0_PixelShieldMinus;
+        
+        Double_t xc = x - x0ref;
+        Double_t yc = y - y0ref;
 
         Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
         Double_t pc = TMath::ATan2( yc, xc );
+        if(pc < 0) pc = pc + 2*TMath::Pi();
 
         //if ( rc > Rmin && rc < Rmax )
         if ( rc > RSmin && rc < RSmax )
@@ -791,7 +960,7 @@ void HistogramFitterNuclearInteractions_UniFit()
           Xmin_int += binNum;
           if (iy < numBinsY) Xmax_int += h->GetBinContent( ix, iy+1 );
 
-          UInt_t phiSect = floor( ( pc + TMath::Pi() ) / ( 2*TMath::Pi() ) * 40 );
+          UInt_t phiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
 
           /// Remove Background
           /// Average over 3 adjacent sectors to smooth differences
@@ -812,26 +981,25 @@ void HistogramFitterNuclearInteractions_UniFit()
           if (binNum < 0) binNum = 0;
 	  if (bgFitQuality[phiSect] == 1 || flag_ExcludeBadFitSector == 0) h1->Fill( x, y, binNum ); // fill only good phi sectors
 
-          // calculate y Derivative in 2D, we use 2D histo without BG subtraction
-          // formula is corrent if all bins has the same width. If it is not true then you have to introduce bin width in this formula!
-          if (ix>1 && ix<numBinsX && iy>1 && iy<numBinsY){
-             Double_t u0 = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix, iy-1 ) + h->GetBinContent( ix+1, iy-1 ); 
-             Double_t u2 = h->GetBinContent( ix-1, iy+1 ) + 2*h->GetBinContent( ix, iy+1 ) + h->GetBinContent( ix+1, iy+1 );
-             Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
-             // revert in negative y plain:
-             if (y < 0) fyDer2D = -fyDer2D;
-             hYderivative2D -> Fill (x, y, fyDer2D);
+           // calculate y Derivative in 2D, we use 2D histo without BG subtraction
+           // formula is correct if all bins has the same width. If it is not true then you have to introduce bin width in this formula!
+           if (ix>1 && ix<numBinsX && iy>1 && iy<numBinsY){
+              Double_t u0 = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix, iy-1 ) + h->GetBinContent( ix+1, iy-1 ); 
+              Double_t u2 = h->GetBinContent( ix-1, iy+1 ) + 2*h->GetBinContent( ix, iy+1 ) + h->GetBinContent( ix+1, iy+1 );
+              Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
+              // revert in negative y plain:
+              if (y < 0) fyDer2D = -fyDer2D;
+              hYderivative2D -> Fill (x, y, fyDer2D);
 
-             Double_t u0x = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix-1, iy ) + h->GetBinContent( ix-1, iy+1 ); 
-             Double_t u2x = h->GetBinContent( ix+1, iy-1 ) + 2*h->GetBinContent( ix+1, iy ) + h->GetBinContent( ix+1, iy+1 );
-             Double_t fxDer2D = u2x-u0x;// calculate derivative at iy (y1) point
-             // revert in negative y plain:
-             if (x < 0) fxDer2D = -fxDer2D;
-             hXderivative2D -> Fill (x, y, fxDer2D);
+              Double_t u0x = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix-1, iy ) + h->GetBinContent( ix-1, iy+1 ); 
+              Double_t u2x = h->GetBinContent( ix+1, iy-1 ) + 2*h->GetBinContent( ix+1, iy ) + h->GetBinContent( ix+1, iy+1 );
+              Double_t fxDer2D = u2x-u0x;// calculate derivative at iy (y1) point
+              // revert in negative y plain:
+              if (x < 0) fxDer2D = -fxDer2D;
+              hXderivative2D -> Fill (x, y, fxDer2D);
+              }
 
-
-
-          }
+             
         }//end rc cut in signal region
       } // end ix cycle
       //std::cout << "iy = " << iy << "   Xmax_int = " << Xmax_int << "   Xmin_int = " << Xmin_int << "   y Derivative = " << (Xmax_int-Xmin_int)/Ywidth << std::endl; 
@@ -850,26 +1018,36 @@ void HistogramFitterNuclearInteractions_UniFit()
     h1->SetStats(0);
     h = h1;
 
+
     /// par[0] = R
     /// par[1] = x0
     /// par[2] = y0
 
     TVirtualFitter::SetDefaultFitter("Minuit");
-    //                                                  npar
+
+    // Here is where everything but the plus and minus sides of the pixel shield is fit with a circle
+    // Create the general fitter
     TVirtualFitter* fitter = TVirtualFitter::Fitter( 0, 3 );
-    fitter->SetFCN( chiSquareFunc );
-    fitter->SetParameter( 0,  "R",   r0, 0.01, RSmin, RSmax ); // in cm
-    fitter->SetParameter( 1, "x0",   x0, 0.01, -0.6, 0.6 ); // in cm
-    fitter->SetParameter( 2, "y0",   y0, 0.01, -0.6, 0.6 ); // in cm
-    //   fitter->FixParameter(1); fitter->FixParameter(2); 
+    if(FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus")
+      {
+      //                                                  npar
+      //TVirtualFitter* fitter = TVirtualFitter::Fitter( 0, 3 );
+      // Set the function that the fitter will use and set the parameters
+      fitter->SetFCN( chiSquareFunc );
+      fitter->SetParameter( 0,  "R",   r0, 0.01, RSmin, RSmax ); // in cm
+      fitter->SetParameter( 1, "x0",   x0, 0.01, -0.6, 0.6 ); // in cm
+      fitter->SetParameter( 2, "y0",   y0, 0.01, -0.6, 0.6 ); // in cm
+      //   fitter->FixParameter(1); fitter->FixParameter(2); 
+      
 
-
-    //fitter->SetParameter( 0,  "R", 2.932, 0.01, 2.6, 3.3 );
-    //fitter->FixParameter( 2 );
-    //fitter->FixParameter( 1 );
-    //fitter->FixParameter( 0 );
-    Double_t arglist[10] = {0.};
-    if(FitObject != "PixelSupportRails") fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
+      //fitter->SetParameter( 0,  "R", 2.932, 0.01, 2.6, 3.3 );
+      //fitter->FixParameter( 2 );
+      //fitter->FixParameter( 1 );
+      //fitter->FixParameter( 0 );
+      Double_t arglist[10] = {0.};
+      // Execute the fit
+      if(FitObject != "PixelSupportRails") fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
+      }
 
     //if small slice, then rebin histo for better view
     //if(k > -6 && k < 5) h->Rebin2D(5,5);
@@ -877,19 +1055,98 @@ void HistogramFitterNuclearInteractions_UniFit()
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     h->Draw("col");
 
-    TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
-    arc->SetFillStyle(0);
-    arc->SetLineColor(TColor::kRed);
-    arc->SetLineWidth(2);
-    arc->Draw("same");
-    Double_t x_arc[1], y_arc[1];
-    x_arc[0] = fitter->GetParameter(1);
-    y_arc[0] = fitter->GetParameter(2);
-    TGraph* gr_arc = new TGraph(1,x_arc,y_arc);
-    gr_arc->SetMarkerStyle(20);
-    gr_arc->SetMarkerSize(0.5);
-    gr_arc->SetMarkerColor(TColor::kRed);
-    gr_arc->Draw("P");
+    // Here is where the plus semicircle of the pixel shield is fit
+    if ( FitObject == "PixelShieldPlus")
+       {
+       // create the fitter, set the function that it will use,  and set the parameters
+       TVirtualFitter* fitterArcPlus = TVirtualFitter::Fitter( 0, 3 );
+       fitterArcPlus->SetFCN(funArcPlus);
+       fitterArcPlus->SetParameter( 0, "R",  r0, 0.01, RSmin, RSmax ); // in cm
+       fitterArcPlus->SetParameter( 1, "x0", x0, 0.01, -0.3, 0.1 ); // in cm
+       fitterArcPlus->SetParameter( 2, "y0", y0, 0.01, -0.3,  0.1 ); // in cm
+   
+       Double_t arglistArcPlus[10] = {0.};
+       // Execute the fit
+       fitterArcPlus->ExecuteCommand( "MIGRAD", arglistArcPlus, 0 );
+
+       // Draw an arc from -90 degrees to 90 degrees using the parameters of the fit
+       TArc* arcPlus = new TArc( fitterArcPlus->GetParameter(1), fitterArcPlus->GetParameter(2), fitterArcPlus->GetParameter(0), -90, 90);
+       arcPlus->SetFillStyle(0);
+       arcPlus->SetLineColor(TColor::kRed);
+       arcPlus->SetLineWidth(2);
+       arcPlus->Draw("same");
+       Double_t x_arcPlus[1], y_arcPlus[1];
+       x_arcPlus[0] = fitterArcPlus->GetParameter(1);
+       y_arcPlus[0] = fitterArcPlus->GetParameter(2);
+       TGraph* gr_arcPlus = new TGraph(1,x_arcPlus,y_arcPlus);
+       gr_arcPlus->SetMarkerStyle(20);
+       gr_arcPlus->SetMarkerSize(0.5);
+       gr_arcPlus->SetMarkerColor(TColor::kRed);
+       gr_arcPlus->Draw("P");
+       }
+
+    // Here is where the minus semicircle of the pixel shield is fit
+    if (FitObject == "PixelShieldMinus")
+       {
+       // create the fitter, set the function that it will use, and set the parameters
+       TVirtualFitter* fitterArcMinus = TVirtualFitter::Fitter( 0, 3 );
+       fitterArcMinus->SetFCN(funArcMinus);
+       fitterArcMinus->SetParameter( 0, "R",  r0, 0.01, RSmin, RSmax ); // in cm
+       fitterArcMinus->SetParameter( 1, "x0", x0, 0.01, 0.,  0.1 ); // in cm
+       fitterArcMinus->SetParameter( 2, "y0", y0, 0.01, -0.15,  -0.05 ); // in cm
+
+       Double_t arglistArcPlus[10] = {0.};
+       // Execute the fit
+       fitterArcMinus->ExecuteCommand( "MIGRAD", arglistArcPlus, 0 );
+
+       // Draw an arc from 90 degrees to 270 degrees using the parameters from the fit
+       TArc* arcMinus = new TArc( fitterArcMinus->GetParameter(1), fitterArcMinus->GetParameter(2), fitterArcMinus->GetParameter(0), 90, 270);
+       arcMinus->SetFillStyle(0);
+       arcMinus->SetLineColor(TColor::kBlack);
+       arcMinus->SetLineWidth(2);
+       arcMinus->Draw("same");
+       Double_t x_arcMinus[1], y_arcMinus[1];
+       x_arcMinus[0] = fitterArcMinus->GetParameter(1);
+       y_arcMinus[0] = fitterArcMinus->GetParameter(2);
+       TGraph* gr_arcMinus = new TGraph(1,x_arcMinus,y_arcMinus);
+       gr_arcMinus->SetMarkerStyle(20);
+       gr_arcMinus->SetMarkerSize(0.5);
+       gr_arcMinus->SetMarkerColor(TColor::kBlack);
+       gr_arcMinus->Draw("P");
+
+       // Draw an arc from -90 degrees to 90 degrees using previously determined values from the fit for the plus side of the pixel shield
+       TArc* arcMinusPlus = new TArc( x0_PixelShieldPlus, y0_PixelShieldPlus, r0_PixelShieldPlus, -90, 90);
+       arcMinusPlus->SetFillStyle(0);
+       arcMinusPlus->SetLineColor(TColor::kRed);
+       arcMinusPlus->SetLineWidth(2);
+       arcMinusPlus->Draw("same");
+       Double_t x_arcMinusPlus[1], y_arcMinusPlus[1];
+       x_arcMinusPlus[0] = x0_PixelShieldPlus;
+       y_arcMinusPlus[0] = y0_PixelShieldPlus;
+       TGraph* gr_arcMinusPlus = new TGraph(1,x_arcMinusPlus,y_arcMinusPlus);
+       gr_arcMinusPlus->SetMarkerStyle(20);
+       gr_arcMinusPlus->SetMarkerSize(0.5);
+       gr_arcMinusPlus->SetMarkerColor(TColor::kRed);
+       gr_arcMinusPlus->Draw("P");
+       }
+
+    // If the object is not the plus or minus sides of the pixel shield, draw a circle using the parameters from the fit
+    if ( FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus")
+      {
+      TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
+      arc->SetFillStyle(0);
+      arc->SetLineColor(TColor::kRed);
+      arc->SetLineWidth(2);
+      arc->Draw("same");
+      Double_t x_arc[1], y_arc[1];
+      x_arc[0] = fitter->GetParameter(1);
+      y_arc[0] = fitter->GetParameter(2);
+      TGraph* gr_arc = new TGraph(1,x_arc,y_arc);
+      gr_arc->SetMarkerStyle(20);
+      gr_arc->SetMarkerSize(0.5);
+      gr_arc->SetMarkerColor(TColor::kRed);
+      gr_arc->Draw("P");
+      }
 
     //plot circle with center at (0.0)
     TArc* arc0 = new TArc( 0., 0., fitter->GetParameter(0) );
@@ -915,33 +1172,95 @@ void HistogramFitterNuclearInteractions_UniFit()
     y1L = s->GetY1NDC();
     y2L = s->GetY2NDC();
 
-    TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
-    std::ostringstream legEntry;
-    legEntry.str("");
-    legEntry << "R (cm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(0) << " #pm " << fitter->GetParError(0) << " #pm " << x_Sys;
-    res->AddText( legEntry.str().c_str() );
-    legEntry.str("");
-    legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(1)*10 << " #pm " << fitter->GetParError(1)*10 << " #pm " << x_Sys*10;
-    res->AddText( legEntry.str().c_str() );
-    legEntry.str("");
-    legEntry << "y_{0} (mm) \t = \t" << fitter->GetParameter(2)*10 << " #pm " << fitter->GetParError(2)*10 << " #pm " << x_Sys*10;
-    res->AddText( legEntry.str().c_str() );
-    res->SetFillStyle(0);
-    res->SetTextAlign(12);
-    res->SetTextColor(TColot::kRed);
-    res->SetLineColor(TColot::kRed);
-    res->SetTextFont(42);
-    res->Draw("same");
+    // Create the stats box for everything that is not the minus side of the pixel shield
+    if(FitObject != "PixelShieldMinus")
+      {
+      TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
+      std::ostringstream legEntry;
+      legEntry.str("");
+      legEntry << "R (cm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(0) << " #pm " << fitter->GetParError(0) << " #pm " << x_Sys;
+      res->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitter->GetParameter(1)*10 << " #pm " << fitter->GetParError(1)*10 << " #pm " << x_Sys*10;
+      res->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      legEntry << "y_{0} (mm) \t = \t" << fitter->GetParameter(2)*10 << " #pm " << fitter->GetParError(2)*10 << " #pm " << x_Sys*10;
+      res->AddText( legEntry.str().c_str() );
+      res->SetFillStyle(0);
+      res->SetTextAlign(12);
+      res->SetTextColor(TColor::kRed);
+      res->SetLineColor(TColor::kRed);
+      res->SetTextFont(42);
+      res->Draw("same");
+      }
 
+      // Format the 2D map for the pixel shield
+      if(FitObject == "PixelShieldMinus")
+      {
+      // Create the stats box entries for the minus side
+      TPaveText* resMinus = new TPaveText(x1L-0.01, y1L-0.32, x2L+0.02, y2L-0.50, "brNDC");
+      std::ostringstream legEntry;
+      legEntry.str("");
+      legEntry << "R (cm) \t = \t" << fixed << setprecision(2) << fitterArcMinus->GetParameter(0) << " #pm " << fitterArcMinus->GetParError(0) << " #pm " << x_Sys;
+      resMinus->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterArcMinus->GetParameter(1)*10 << " #pm " << fitterArcMinus->GetParError(1)*10 << " #pm " << x_Sys*10;
+      resMinus->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      legEntry << "y_{0} (mm) \t = \t" << fitterArcMinus->GetParameter(2)*10 << " #pm " << fitterArcMinus->GetParError(2)*10 << " #pm " << x_Sys*10;
+      resMinus->AddText( legEntry.str().c_str() );
+      resMinus->SetFillStyle(0);
+      resMinus->SetTextAlign(12);
+      resMinus->SetTextColor(TColor::kBlack);
+      resMinus->SetLineColor(TColor::kBlack);
+      resMinus->SetTextFont(42);
+      resMinus->Draw("same");
+
+      // Create the stats box entries for the plus side
+      TPaveText* resPlus = new TPaveText(x1L-0.01, y1L-0.12, x2L+0.02, y2L-0.30, "brNDC");
+      std::ostringstream legEntry;
+      legEntry.str("");
+      legEntry << "R (cm) \t = \t" << fixed << setprecision(2) << r0_PixelShieldPlus << " #pm " << fitter->GetParError(0) << " #pm " << x_Sys;
+      resPlus->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << x0_PixelShieldPlus*10 << " #pm " << fitter->GetParError(1)*10 << " #pm " << x_Sys*10;
+      resPlus->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      legEntry << "y_{0} (mm) \t = \t" << y0_PixelShieldPlus*10 << " #pm " << fitter->GetParError(2)*10 << " #pm " << x_Sys*10;
+      resPlus->AddText( legEntry.str().c_str() );
+      resPlus->SetFillStyle(0);
+      resPlus->SetTextAlign(12);
+      resPlus->SetTextColor(TColor::kRed);
+      resPlus->SetLineColor(TColor::kRed);
+      resPlus->SetTextFont(42);
+      resPlus->Draw("same");
+      }
+
+      // Create the legend for all 2D XY map plots, include (0,0) point
       TLegend* legArc = new TLegend(0.75, 0.75, 0.95, 0.9, "");
       legArc->SetTextFont(42);
       legArc->SetTextSize(0.03);
       legArc->SetFillColor(TColor::kWhite);
       legArc->SetTextColor(TColor::kBlack);
-      legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
+      //legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
       legArc->AddEntry(gr_arc0,"(0,0)","P");
       legArc->Draw("same");
 
+      // Add entries according to the object that was fit
+      if(FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus")
+        {
+        legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
+        }
+      if(FitObject == "PixelShieldPlus")
+        {
+        legArc->AddEntry(gr_arcPlus,"x_{0}, y_{0} from fit","P");
+        }
+      if(FitObject == "PixelShieldMinus")
+        {
+        // include entry for the plus side of the pixel shield since it will be superimposed on the same plot
+        legArc->AddEntry(gr_arcMinus,"x_{0}, y_{0} for Minus","P");
+        legArc->AddEntry(gr_arcMinusPlus,"x_{0}, y_{0} for Plus","P");
+        }
     if ( k > -6 )
     {
       resZ[k+5] = 0.5*(k*5 + (k+1)*5);
@@ -968,36 +1287,141 @@ void HistogramFitterNuclearInteractions_UniFit()
     h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
     //h_RhoPhi->GetYaxis()->SetRangeUser(RSmin, RSmax);
     h_RhoPhi->Draw("colz");
+
     //TF1 *bpAlt = new TF1("bpAlt","sqrt((21.699*cos(x)-0.081)^2 + (21.699*sin(x)-0.345)^2)",-3.15,3.15);
+    // Create function that will be plotted on the Rho-Phi plots, but not on the plots for the minus side of the pixel shield
     TF1 *bpAlt = new TF1("bpAlt",func_ArcRhoPhi,-3.15,3.15,3);
-    bpAlt->SetParameter(0, fitter->GetParameter(0));
-    bpAlt->SetParameter(1, fitter->GetParameter(1));
-    bpAlt->SetParameter(2, fitter->GetParameter(2));
-    bpAlt->SetLineColor(TColor::kRed);
-    bpAlt->SetLineWidth(2);
-    bpAlt ->Draw("same");
-    cPlots->Update();
-    cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+    if(FitObject != "PixelShieldMinus")
+      {
+      // use parameters from the fitter
+      bpAlt->SetParameter(0, fitter->GetParameter(0));
+      bpAlt->SetParameter(1, fitter->GetParameter(1));
+      bpAlt->SetParameter(2, fitter->GetParameter(2));
+      bpAlt->SetLineColor(TColor::kRed);
+      bpAlt->SetLineWidth(2);
+      bpAlt ->Draw("same");
+      cPlots->Update();
+      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+      }
 
-    if (flag_Sys == 1){
+    // Create functions that will be plotted on the Rho-Phi plots for the minus side of the pixel shield
+    // The functions for the minus side are split in two because the plot is centered on the plus side
+    TF1 *bpAltMinus1 = new TF1("bpAlt",func_ArcRhoPhi,1.575, 3.15,3);
+    TF1 *bpAltMinus2 = new TF1("bpAlt",func_ArcRhoPhi,-3.15, -1.575,3);
+    TF1 *bpAltPlus = new TF1("bpAlt",func_ArcRhoPhi,-1.575, 1.575,3);
+    if(FitObject == "PixelShieldMinus")
+      {
+      // set parameters for half of the minus side from the fitter
+      bpAltMinus1->SetParameter(0, fitterArcMinus->GetParameter(0));
+      bpAltMinus1->SetParameter(1, fitterArcMinus->GetParameter(1));
+      bpAltMinus1->SetParameter(2, fitterArcMinus->GetParameter(2));
+      bpAltMinus1->SetLineColor(TColor::kRed);
+      bpAltMinus1->SetLineWidth(2);
+      bpAltMinus1->Draw("same");
 
+      // set parameters for the other half of the minus side from the fitter
+      bpAltMinus2->SetParameter(0, fitterArcMinus->GetParameter(0));
+      bpAltMinus2->SetParameter(1, fitterArcMinus->GetParameter(1));
+      bpAltMinus2->SetParameter(2, fitterArcMinus->GetParameter(2));
+      bpAltMinus2->SetLineColor(TColor::kRed);
+      bpAltMinus2->SetLineWidth(2);
+      bpAltMinus2->Draw("same");
+
+      // set parameters for the plus side using stored values from the previous fit
+      bpAltPlus->SetParameter(0, r0_PixelShieldPlus);
+      bpAltPlus->SetParameter(1, x0_PixelShieldPlus);
+      bpAltPlus->SetParameter(2, y0_PixelShieldPlus);
+      bpAltPlus->SetLineColor(TColor::kRed);
+      bpAltPlus->SetLineWidth(2);
+      bpAltPlus->Draw("same");
+
+      cPlots->Update();
+      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+      }
+
+    if (flag_Sys == 1)
+       {
        // x variation
+       // create the functions for the systematic variation of x, but not for the minus side of the pixel shield
        TF1 *bpAlt_xp = new TF1("bpAlt_xp",func_ArcRhoPhi,-3.15,3.15,3);
-       bpAlt_xp->SetParameter(0, fitter->GetParameter(0));
-       bpAlt_xp->SetParameter(1, fitter->GetParameter(1)+x_Sys);
-       bpAlt_xp->SetParameter(2, fitter->GetParameter(2));
-       bpAlt_xp->SetLineColor(TColor::kBlack);
-       bpAlt_xp->SetLineWidth(2);
-       bpAlt_xp ->Draw("same");
-
        TF1 *bpAlt_xm = new TF1("bpAlt_xm",func_ArcRhoPhi,-3.15,3.15,3);
-       bpAlt_xm->SetParameter(0, fitter->GetParameter(0));
-       bpAlt_xm->SetParameter(1, fitter->GetParameter(1)-x_Sys);
-       bpAlt_xm->SetParameter(2, fitter->GetParameter(2));
-       bpAlt_xm->SetLineColor(TColor::kBlack);
-       bpAlt_xm->SetLineWidth(2);
-       bpAlt_xm ->Draw("same");
+       if(FitObject != "PixelShieldMinus")
+         {
+         // set parameters using values from the fitter
+         bpAlt_xp->SetParameter(0, fitter->GetParameter(0));
+         bpAlt_xp->SetParameter(1, fitter->GetParameter(1)+x_Sys);
+         bpAlt_xp->SetParameter(2, fitter->GetParameter(2));
+         bpAlt_xp->SetLineColor(TColor::kBlack);
+         bpAlt_xp->SetLineWidth(2);
+         bpAlt_xp ->Draw("same");
 
+         //TF1 *bpAlt_xm = new TF1("bpAlt_xm",func_ArcRhoPhi,-3.15,3.15,3);
+         bpAlt_xm->SetParameter(0, fitter->GetParameter(0));
+         bpAlt_xm->SetParameter(1, fitter->GetParameter(1)-x_Sys);
+         bpAlt_xm->SetParameter(2, fitter->GetParameter(2));
+         bpAlt_xm->SetLineColor(TColor::kBlack);
+         bpAlt_xm->SetLineWidth(2);
+         bpAlt_xm ->Draw("same");
+         }
+
+       // Create the functions for the x variation of the minus side of the pixel shield
+       // The minus side is split in two because the plot centers on the plus side of the pixel shield
+       TF1 *bpAltMinus1_xp = new TF1("bpAlt_xp",func_ArcRhoPhi,1.575,3.15,3);
+       TF1 *bpAltMinus2_xp = new TF1("bpAlt_xp",func_ArcRhoPhi,-3.15,-1.575,3);
+       TF1 *bpAltMinus1_xm = new TF1("bpAlt_xp",func_ArcRhoPhi,1.575,3.15,3);
+       TF1 *bpAltMinus2_xm = new TF1("bpAlt_xp",func_ArcRhoPhi,-3.15,-1.575,3);
+       TF1 *bpAltPlus_xp = new TF1("bpAlt_xp",func_ArcRhoPhi,-1.575,1.575,3);
+       TF1 *bpAltPlus_xm = new TF1("bpAlt_xp",func_ArcRhoPhi,-1.575,1.575,3);
+       if(FitObject == "PixelShieldMinus")
+         {
+         // set the parameters for the positive deviation of half of the minus side
+         bpAltMinus1_xp->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus1_xp->SetParameter(1, fitterArcMinus->GetParameter(1)+x_Sys);
+         bpAltMinus1_xp->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus1_xp->SetLineColor(TColor::kBlack);
+         bpAltMinus1_xp->SetLineWidth(2);
+         bpAltMinus1_xp ->Draw("same");
+
+         // set the parameters for the positive deviation of the other half of the minus side
+         bpAltMinus2_xp->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus2_xp->SetParameter(1, fitterArcMinus->GetParameter(1)+x_Sys);
+         bpAltMinus2_xp->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus2_xp->SetLineColor(TColor::kBlack);
+         bpAltMinus2_xp->SetLineWidth(2);
+         bpAltMinus2_xp ->Draw("same");
+
+         // set the parameters for the negative deviation of the first half of the minus side
+         bpAltMinus1_xm->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus1_xm->SetParameter(1, fitterArcMinus->GetParameter(1)-x_Sys);
+         bpAltMinus1_xm->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus1_xm->SetLineColor(TColor::kBlack);
+         bpAltMinus1_xm->SetLineWidth(2);
+         bpAltMinus1_xm ->Draw("same");
+
+         // set the parameters for the negative deviation of the other half of the minus side
+         bpAltMinus2_xm->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus2_xm->SetParameter(1, fitterArcMinus->GetParameter(1)-x_Sys);
+         bpAltMinus2_xm->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus2_xm->SetLineColor(TColor::kBlack);
+         bpAltMinus2_xm->SetLineWidth(2);
+         bpAltMinus2_xm ->Draw("same");
+
+         // set the parameters for the positive deviation of the plus side
+         bpAltPlus_xp->SetParameter(0, r0_PixelShieldPlus);
+         bpAltPlus_xp->SetParameter(1, x0_PixelShieldPlus+x_Sys);
+         bpAltPlus_xp->SetParameter(2, y0_PixelShieldPlus);
+         bpAltPlus_xp->SetLineColor(TColor::kBlack);
+         bpAltPlus_xp->SetLineWidth(2);
+         bpAltPlus_xp ->Draw("same");
+
+         // set the parameters for the negative deviation of the minus side
+         bpAltPlus_xm->SetParameter(0, r0_PixelShieldPlus);
+         bpAltPlus_xm->SetParameter(1, x0_PixelShieldPlus-x_Sys);
+         bpAltPlus_xm->SetParameter(2, y0_PixelShieldPlus);
+         bpAltPlus_xm->SetLineColor(TColor::kBlack);
+         bpAltPlus_xm->SetLineWidth(2);
+         bpAltPlus_xm->Draw("same");
+         }
        cPlots->Update();
        cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi_sysX.png"));
 
@@ -1005,21 +1429,92 @@ void HistogramFitterNuclearInteractions_UniFit()
        h_RhoPhi->Draw("colz");
        bpAlt ->Draw("same");
 
+       // Create the functions for the systematic variation of y, but not for the minus side of the pixel shield 
        TF1 *bpAlt_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,-3.15,3.15,3);
-       bpAlt_yp->SetParameter(0, fitter->GetParameter(0));
-       bpAlt_yp->SetParameter(1, fitter->GetParameter(1));
-       bpAlt_yp->SetParameter(2, fitter->GetParameter(2)+x_Sys);
-       bpAlt_yp->SetLineColor(TColor::kBlack);
-       bpAlt_yp->SetLineWidth(2);
-       bpAlt_yp ->Draw("same");
-
        TF1 *bpAlt_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,-3.15,3.15,3);
-       bpAlt_ym->SetParameter(0, fitter->GetParameter(0));
-       bpAlt_ym->SetParameter(1, fitter->GetParameter(1));
-       bpAlt_ym->SetParameter(2, fitter->GetParameter(2)-x_Sys);
-       bpAlt_ym->SetLineColor(TColor::kBlack);
-       bpAlt_ym->SetLineWidth(2);
-       bpAlt_ym ->Draw("same");
+       if(FitObject != "PixelShieldMinus")
+         {
+         // set parameters for the positive deviation
+         bpAlt_yp->SetParameter(0, fitter->GetParameter(0));
+         bpAlt_yp->SetParameter(1, fitter->GetParameter(1));
+         bpAlt_yp->SetParameter(2, fitter->GetParameter(2)+x_Sys);
+         bpAlt_yp->SetLineColor(TColor::kBlack);
+         bpAlt_yp->SetLineWidth(2);
+         bpAlt_yp ->Draw("same");
+
+         // set parameters for the negative deviation
+         //TF1 *bpAlt_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,-3.15,3.15,3);
+         bpAlt_ym->SetParameter(0, fitter->GetParameter(0));
+         bpAlt_ym->SetParameter(1, fitter->GetParameter(1));
+         bpAlt_ym->SetParameter(2, fitter->GetParameter(2)-x_Sys);
+         bpAlt_ym->SetLineColor(TColor::kBlack);
+         bpAlt_ym->SetLineWidth(2);
+         bpAlt_ym ->Draw("same");
+         }
+
+       // Create the functions for the systematic variation of y for the minus side of the pixel shield
+       // The functions for the minus side are split in two because the plot centers on the plus side
+       TF1 *bpAltMinus1_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,1.575,3.15,3);
+       TF1 *bpAltMinus2_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,-3.15,-1.575,3);
+       TF1 *bpAltMinus1_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,1.575,3.15,3);
+       TF1 *bpAltMinus2_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,-3.15,-1.575,3);
+       TF1 *bpAltPlus_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,-1.575,1.575,3);
+       TF1 *bpAltPlus_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,-1.575,1.575,3);
+       if(FitObject == "PixelShieldMinus")
+         {
+         // set the parameters for the positive deviation of one of the halves of the minus side
+         bpAltMinus1_yp->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus1_yp->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus1_yp->SetParameter(2, fitterArcMinus->GetParameter(2)+x_Sys);
+         bpAltMinus1_yp->SetLineColor(TColor::kBlack);
+         bpAltMinus1_yp->SetLineWidth(2);
+         bpAltMinus1_yp ->Draw("same");
+
+         // set the parameters for the positive deviation of the other half of the minus side
+         bpAltMinus2_yp->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus2_yp->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus2_yp->SetParameter(2, fitterArcMinus->GetParameter(2)+x_Sys);
+         bpAltMinus2_yp->SetLineColor(TColor::kBlack);
+         bpAltMinus2_yp->SetLineWidth(2);
+         bpAltMinus2_yp ->Draw("same");
+
+         // set the parameters for the negative deviation of one of the halves of the minus side
+         bpAltMinus1_ym->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus1_ym->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus1_ym->SetParameter(2, fitterArcMinus->GetParameter(2)-x_Sys);
+         bpAltMinus1_ym->SetLineColor(TColor::kBlack);
+         bpAltMinus1_ym->SetLineWidth(2);
+         bpAltMinus1_ym ->Draw("same");
+
+         // set the parameters for the negative deviation of the other half of the minus side
+         bpAltMinus2_ym->SetParameter(0, fitterArcMinus->GetParameter(0));
+         bpAltMinus2_ym->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus2_ym->SetParameter(2, fitterArcMinus->GetParameter(2)-x_Sys);
+         bpAltMinus2_ym->SetLineColor(TColor::kBlack);
+         bpAltMinus2_ym->SetLineWidth(2);
+         bpAltMinus2_ym ->Draw("same");
+
+         // set the parameters for the positive deviation of the plus side
+         bpAltPlus_yp->SetParameter(0, r0_PixelShieldPlus);
+         bpAltPlus_yp->SetParameter(1, x0_PixelShieldPlus);
+         bpAltPlus_yp->SetParameter(2, y0_PixelShieldPlus+x_Sys);
+         bpAltPlus_yp->SetLineColor(TColor::kBlack);
+         bpAltPlus_yp->SetLineWidth(2);
+         bpAltPlus_yp ->Draw("same");
+
+         // set the parameters for the negative deviation of the minus side
+         bpAltPlus_ym->SetParameter(0, r0_PixelShieldPlus);
+         bpAltPlus_ym->SetParameter(1, x0_PixelShieldPlus);
+         bpAltPlus_ym->SetParameter(2, y0_PixelShieldPlus-x_Sys);
+         bpAltPlus_ym->SetLineColor(TColor::kBlack);
+         bpAltPlus_ym->SetLineWidth(2);
+         bpAltPlus_ym ->Draw("same");
+
+         // Draw the central functions
+         bpAltMinus1->Draw("same");
+         bpAltMinus2->Draw("same");
+         bpAltPlus->Draw("same");
+         }
 
        cPlots->Update();
        cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi_sysY.png"));
@@ -1028,25 +1523,98 @@ void HistogramFitterNuclearInteractions_UniFit()
        h_RhoPhi->Draw("colz");
        bpAlt ->Draw("same");
 
+       // Create the functions for the systematic variation of rho, but not for the minus side of the pixel shield
        TF1 *bpAlt_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,-3.15,3.15,3);
-       bpAlt_rp->SetParameter(0, fitter->GetParameter(0)+x_Sys);
-       bpAlt_rp->SetParameter(1, fitter->GetParameter(1));
-       bpAlt_rp->SetParameter(2, fitter->GetParameter(2));
-       bpAlt_rp->SetLineColor(TColor::kBlack);
-       bpAlt_rp->SetLineWidth(2);
-       bpAlt_rp ->Draw("same");
-
        TF1 *bpAlt_rm = new TF1("bpAlt_rm",func_ArcRhoPhi,-3.15,3.15,3);
-       bpAlt_rm->SetParameter(0, fitter->GetParameter(0)-x_Sys);
-       bpAlt_rm->SetParameter(1, fitter->GetParameter(1));
-       bpAlt_rm->SetParameter(2, fitter->GetParameter(2));
-       bpAlt_rm->SetLineColor(TColor::kBlack);
-       bpAlt_rm->SetLineWidth(2);
-       bpAlt_rm ->Draw("same");
+       if(FitObject != "PixelShieldMinus")
+         {
+         // set the parameters for the positive deviation
+         //TF1 *bpAlt_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,-3.15,3.15,3);
+         bpAlt_rp->SetParameter(0, fitter->GetParameter(0)+x_Sys);
+         bpAlt_rp->SetParameter(1, fitter->GetParameter(1));
+         bpAlt_rp->SetParameter(2, fitter->GetParameter(2));
+         bpAlt_rp->SetLineColor(TColor::kBlack);
+         bpAlt_rp->SetLineWidth(2);
+         bpAlt_rp ->Draw("same");
+
+         // set the parameters for the negative deviation
+         //TF1 *bpAlt_rm = new TF1("bpAlt_rm",func_ArcRhoPhi,-3.15,3.15,3);
+         bpAlt_rm->SetParameter(0, fitter->GetParameter(0)-x_Sys);
+         bpAlt_rm->SetParameter(1, fitter->GetParameter(1));
+         bpAlt_rm->SetParameter(2, fitter->GetParameter(2));
+         bpAlt_rm->SetLineColor(TColor::kBlack);
+         bpAlt_rm->SetLineWidth(2);
+         bpAlt_rm ->Draw("same");
+         }
+
+       // Create the functions for the systematic variation of rho for the minus side of the pixel shield
+       // The minus side is split into two because the plot centers on the plus side
+       TF1 *bpAltMinus1_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,1.575,3.15,3);
+       TF1 *bpAltMinus2_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,-3.15,-1.575,3);
+       TF1 *bpAltMinus1_rm = new TF1("bpAlt_rm",func_ArcRhoPhi,1.575,3.15,3);
+       TF1 *bpAltMinus2_rm = new TF1("bpAlt_rm",func_ArcRhoPhi,-3.15,-1.575,3);
+       TF1 *bpAltPlus_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,-1.575,1.575,3);
+       TF1 *bpAltPlus_rm = new TF1("bpAlt_rm",func_ArcRhoPhi,-1.575,1.575,3);
+       if(FitObject == "PixelShieldMinus")
+         {
+         // Draw the central functoins
+         bpAltMinus1->Draw("same");
+         bpAltMinus2->Draw("same");
+         bpAltPlus->Draw("same");
+
+         // set the parameters for the positive deviation of rho for one of the halves of the minus side
+         bpAltMinus1_rp->SetParameter(0, fitterArcMinus->GetParameter(0)+x_Sys);
+         bpAltMinus1_rp->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus1_rp->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus1_rp->SetLineColor(TColor::kBlack);
+         bpAltMinus1_rp->SetLineWidth(2);
+         bpAltMinus1_rp->Draw("same");
+
+         // set the parameters for the positive deviation of rho for the other half of the minus side
+         bpAltMinus2_rp->SetParameter(0, fitterArcMinus->GetParameter(0)+x_Sys);
+         bpAltMinus2_rp->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus2_rp->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus2_rp->SetLineColor(TColor::kBlack);
+         bpAltMinus2_rp->SetLineWidth(2);
+         bpAltMinus2_rp->Draw("same");
+
+         // set the parameters for the negative deviation of rho for one of the halves of the minus side
+         bpAltMinus1_rm->SetParameter(0, fitterArcMinus->GetParameter(0)-x_Sys);
+         bpAltMinus1_rm->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus1_rm->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus1_rm->SetLineColor(TColor::kBlack);
+         bpAltMinus1_rm->SetLineWidth(2);
+         bpAltMinus1_rm->Draw("same");
+
+         // set the parameters for the negative deviation of rho for the other half of the minus side
+         bpAltMinus2_rm->SetParameter(0, fitterArcMinus->GetParameter(0)-x_Sys);
+         bpAltMinus2_rm->SetParameter(1, fitterArcMinus->GetParameter(1));
+         bpAltMinus2_rm->SetParameter(2, fitterArcMinus->GetParameter(2));
+         bpAltMinus2_rm->SetLineColor(TColor::kBlack);
+         bpAltMinus2_rm->SetLineWidth(2);
+         bpAltMinus2_rm->Draw("same");
+
+         // set the parameters for the positive deviation of rho for the plus side
+         bpAltPlus_rp->SetParameter(0, r0_PixelShieldPlus+x_Sys);
+         bpAltPlus_rp->SetParameter(1, x0_PixelShieldPlus);
+         bpAltPlus_rp->SetParameter(2, y0_PixelShieldPlus);
+         bpAltPlus_rp->SetLineColor(TColor::kBlack);
+         bpAltPlus_rp->SetLineWidth(2);
+         bpAltPlus_rp->Draw("same");
+
+         // set the parameters for the negative deviation of rho for the plus side
+         bpAltPlus_rm->SetParameter(0, r0_PixelShieldPlus-x_Sys);
+         bpAltPlus_rm->SetParameter(1, x0_PixelShieldPlus);
+         bpAltPlus_rm->SetParameter(2, y0_PixelShieldPlus);
+         bpAltPlus_rm->SetLineColor(TColor::kBlack);
+         bpAltPlus_rm->SetLineWidth(2);
+         bpAltPlus_rm->Draw("same");
+         }
 
        cPlots->Update();
        cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi_sysR.png"));
-    } 
+    }
+    
 
 
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
