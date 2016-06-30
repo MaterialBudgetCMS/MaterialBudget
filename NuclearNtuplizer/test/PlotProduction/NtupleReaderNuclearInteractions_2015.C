@@ -792,12 +792,12 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hPFDV_ZR_Map = new TH2D( "hPFDV_ZR_Map", "CMS work in progress", 800, -200, 200, 140, 0, 70 );
   hPFDV_ZR_Map->Sumw2();
 
-  hPFDV_XY_Map = new TH2D( "hPFDV_XY_Map", "CMS work in progress", 1000, -70, 70, 100, -70, 70 );
+  hPFDV_XY_Map = new TH2D( "hPFDV_XY_Map", "CMS work in progress", 280, -70, 70, 280, -70, 70 );
   hPFDV_RhoPhi_Map = new TH2D( "hPFDV_RhoPhi_Map", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 280, 0, 70 );
   hPFDV_XY_Map->Sumw2();
   hPFDV_RhoPhi_Map->Sumw2();
 
-  hPFDV_XY_Map_BPix = new TH2D( "hPFDV_XY_Map_BPix", "CMS work in progress", 1000, -25, 25, 1000, -25, 25 );
+  hPFDV_XY_Map_BPix = new TH2D( "hPFDV_XY_Map_BPix", "CMS work in progress", 200, -25, 25, 200, -25, 25 );
   hPFDV_RhoPhi_Map_BPix = new TH2D( "hPFDV_RhoPhi_Map_BPix", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 25 );
   hPFDV_XY_Map_BPix->Sumw2();
   hPFDV_RhoPhi_Map_BPix->Sumw2();
@@ -1175,7 +1175,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     if (NumberNI <= 30)hMC_NumberNI -> Fill (NumberNI);
     else hMC_NumberNI -> Fill (30); 
 
-    //if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 3) ) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //test for assosiation
