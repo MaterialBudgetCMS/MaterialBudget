@@ -50,312 +50,37 @@ TH2D* h;
 Double_t Rmin, Rmax, RBGmin, RBGmax, RSmin, RSmax, RPlot;
 
 // create function to fit the plus side of the pixel support
-void funPixelSupportPlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
-{
-Double_t resoNI = 0.01;
-//Double_t halfWidthPipe = 0.025;
-Int_t numBinsX = h->GetNbinsX();
-Int_t numBinsY = h->GetNbinsY();
-Double_t chiSquare = 0.0;
-Double_t diff = 0.0;
-
-for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-   {
-   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-      {
-      Double_t binNum = h->GetBinContent( ix, iy );
-      if ( binNum < 0 ) continue;
-
-      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
-      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
-      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
-
-     if ( r > RSmin && r < RSmax && x >= 0)
-        {
-        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
-
-        diff = par[0] - r;
-        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
-        }
-      }
-   }
-f  = chiSquare;
-}
+void funPixelSupportPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 
 // create function to fit the minus side of the pixel support
-void funPixelSupportMinus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
-{
-Double_t resoNI = 0.01;
-//Double_t halfWidthPipe = 0.025;
-Int_t numBinsX = h->GetNbinsX();
-Int_t numBinsY = h->GetNbinsY();
-Double_t chiSquare = 0.0;
-Double_t diff = 0.0;
-
-for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-   {
-   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-      {
-      Double_t binNum = h->GetBinContent( ix, iy );
-      if ( binNum < 0 ) continue;
-
-      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
-      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
-      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
-
-     if ( r > RSmin && r < RSmax && x < 0)
-        {
-        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
-
-        diff = par[0] - r;
-        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
-        }
-      }
-   }
-f  = chiSquare;
-}
+void funPixelSupportMinus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 
 // create function to fit the pixel support with an ellipse
-void funPixelSupportEllipse( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
-{
-Double_t resoNI = 0.01;
-//Double_t halfWidthPipe = 0.025;
-Int_t numBinsX = h->GetNbinsX();
-Int_t numBinsY = h->GetNbinsY();
-Double_t chiSquare = 0.0;
-Double_t diff = 0.0;
-
-for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-   {
-   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-      {
-      Double_t binNum = h->GetBinContent( ix, iy );
-      if ( binNum < 0 ) continue;
-      
-      // create the necessary variables for the ellipse
-      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
-      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
-      Double_t a = par[0]; // x radius
-      Double_t b = par[3]; // y radius
-      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) ); // define r
-      Double_t cos_ellipse = (x-par[1])/r; // the cosine
-      Double_t sin_ellipse = (y-par[2])/r; // the sine
-      //Double_t x_ellipse = a*cos_ellipse - par[1];
-      Double_t x_ellipse = a*cos_ellipse;
-      //Double_t y_ellipse = b*sin_ellipse - par[2];
-      Double_t y_ellipse = b*sin_ellipse;
-      Double_t r_ellipse = TMath::Sqrt( (x_ellipse)*(x_ellipse) + (y_ellipse)*(y_ellipse) ); // define radius of the ellipse for the point
-      //Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
-     
-     if ( r > RSmin && r < RSmax)
-        {
-        Double_t PhaseSpaceFactor = (r_ellipse*r_ellipse)/(r*r);
-        
-        diff = r_ellipse - r;
-        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
-        }
-      }
-   } 
-f  = chiSquare;
-}
+void funPixelSupportEllipse( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 
 // create funciton to fit the pixel shield with an ellipse
-void funPixelShieldEllipsePlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
-{
-Double_t resoNI = 0.01;
-Int_t numBinsX = h->GetNbinsX();
-Int_t numBinsY = h->GetNbinsY();
-Double_t chiSquare = 0.0;
-Double_t diff = 0.0;
-
-for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++)
-   {
-   for (UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++)
-      {
-      Double_t binNum = h->GetBinContent( ix, iy );
-      if ( binNum < 0) continue;
-
-      Double_t x = h->GetXaxis()->GetBinCenter(ix);
-      Double_t y = h->GetYaxis()->GetBinCenter(iy);
-      Double_t a = par[0]; // x radius
-      Double_t b = par[3]; // y radius
-      Double_t r = TMath::Sqrt( (x-par[1])*(x-par[1]) + (y-par[2])*(y-par[2]) ); // define r
-      Double_t cos_ellipse = (x-par[1])/r; // the cosin
-      Double_t sin_ellipse = (y-par[2])/r; // the sine
-      Double_t x_ellipse = a*cos_ellipse;
-      Double_t y_ellipse = b*sin_ellipse;
-      Double_t r_ellipse = TMath::Sqrt( (x_ellipse)*(x_ellipse) + (y_ellipse)*(y_ellipse) );
-
-      if ( r > RSmin && r < RSmax && x >0)
-        {
-        Double_t PhaseSpaceFactor = (r_ellipse*r_ellipse)/(r*r);
-        diff = r_ellipse -r;
-        chiSquare += binNum*diff*diff / (resoNI*resoNI) * PhaseSpaceFactor;
-        }
-      }
-   }
-   f = chiSquare;
-}
+void funPixelShieldEllipsePlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t);
 
 // create function to fit the plus semicircle of the pixel shield
-void funArcPlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
-{
-Double_t resoNI = 0.01;
-//Double_t halfWidthPipe = 0.025;
-Int_t numBinsX = h->GetNbinsX();
-Int_t numBinsY = h->GetNbinsY();
-Double_t chiSquare = 0.0;
-Double_t diff = 0.0;
-
-//Bool_t skip = h->Integral() > 500000;
-for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-   {
-   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-      {
-      Double_t binNum = h->GetBinContent( ix, iy );
-      if ( binNum < 0 ) continue;
-      
-      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
-      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
-      // fit only in singnal + BK subtraction region
-      //Double_t Radius = TMath::Sqrt( x*x + y*y  );
-      //if ( Radius > PipeInf && Radius < FitInf )
-      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
-     
-     if ( r > RSmin && r < RSmax && x > 0)
-        {
-        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
-        
-        diff = par[0] - r;
-        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
-        }
-      }
-   } 
-f  = chiSquare;
-}// end funArcPlus
+void funArcPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 
 // create function to fit the minus semicircle of the pixel shield
-void funArcMinus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
-{
-Double_t resoNI = 0.01;
-//Double_t halfWidthPipe = 0.025;
-Int_t numBinsX = h->GetNbinsX();
-Int_t numBinsY = h->GetNbinsY();
-Double_t chiSquare = 0.0;
-Double_t diff = 0.0;
-
-//Bool_t skip = h->Integral() > 500000;
-for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-   {
-   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-      {
-      Double_t binNum = h->GetBinContent( ix, iy );
-      if ( binNum < 0 ) continue;
-
-      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
-      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
-      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
-
-     if ( r > RSmin && r < RSmax && x < 0)
-        {
-        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
-
-        diff = par[0] - r;
-        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
-        }
-      }
-    }
-f  = chiSquare;
-} // end funArcMinus
+void funArcMinus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 
 // good fit values
 // 21.70; -0.08; -0.34
 // 21.68; -0.07; -0.28
-//create function to fit beam pipe in 2D (circle)
-void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
-{ 
-  Double_t resoNI = 0.01;
-  //Double_t halfWidthPipe = 0.025;
-  Int_t numBinsX = h->GetNbinsX();
-  Int_t numBinsY = h->GetNbinsY();
-  Double_t chiSquare = 0.0;
-  Double_t diff = 0.0;
-  //Bool_t skip = h->Integral() > 500000;
-  for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-  { 
-    for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-    { 
-      Double_t binNum = h->GetBinContent( ix, iy );
-      
-      /// Thresholds
-      /// 2011A+B: 5 entries for inclusive
-      ///          3 entries for 5 cm slices
-      /// 2012A+B+C+D: 20 entries for inclusive
-      ///              5 entries for 5 cm slices      
-      //if ( !skip && binNum < 3 ) continue;
-      
-      // skip (??) negative values after background subtracktion: 
-      if ( binNum < 0 ) continue;
-      
-      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
-      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
-      
-      // fit only in singnal + BK subtraction region
-      //Double_t Radius = TMath::Sqrt( x*x + y*y  );
-      //if ( Radius > PipeInf && Radius < FitInf )
-      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
-      //if ( r > PipeInf && r < FitInf )
-      if ( r > RSmin && r < RSmax )
-      { 
-        
-        //Double_t PhaseSpaceFactor = (r0*r0)/(r*r);
-        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
-        
-        diff = par[0] - r;
-        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
-      }
-//      if (fabs(diff) > halfWidthPipe)  chiSquare += binNum*diff*diff / ( resoNI*resoNI);
-     
-    }
-  } 
-  f = chiSquare;
-}
+//create function to fit objects in 2D with circle (Arc)
+void chiSquareFunc( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
 
 //create Fit function for background
 Double_t func_fitBg(Double_t*, Double_t* );
-Double_t func_fitBg(Double_t *x ,Double_t *par)
-{
- //Double_t value = par[0]*par[0]*TMath::Exp(par[1]*x[0]);
- Double_t value = par[0]*par[0]*exp(par[1]*x[0]);
- //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
- return value;
-}
-
 Double_t fun2(Double_t*, Double_t* );
-Double_t fun2(Double_t *x ,Double_t *par)
-{
-  Double_t value = par[0]+par[1]*x[0];
-  return value;
-}
 
-
-//create Circle/Arc function in phi,R plane:
+//create Circle/Arc  or Ellipse function in phi,R plane:
 Double_t func_ArcRhoPhi(Double_t*, Double_t* );
-Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
-{
- // x[0] is phi here
- Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[0]*sin(x[0])+par[2])*(par[0]*sin(x[0])+par[2]) );
- //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
- return value;
-}
-
 Double_t func_EllipseRhoPhi(Double_t*, Double_t*);
-Double_t func_EllipseRhoPhi(Double_t *x, Double_t *par)
-{
- // x[0] is phi here
- Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[3]*sin(x[0])+par[2])*(par[3]*sin(x[0])+par[2]) );
- return value;
-}
+
 
 
 // Main Program to fit Inner Tracker: Beam Pipe, Pixel Shield, Pixel Support and Pixel Support Rails
@@ -405,20 +130,20 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // code is crashed for it during final fit
+  FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
-  //FitObject = "PixelShield"; // code is crashed for it during final fit
-  //FitObject = "PixelShieldPlus"; // code is crashed for it during final fit
-  //FitObject = "PixelShieldMinus";
+  //FitObject = "PixelShield"; // work well
+  //FitObject = "PixelShieldPlus"; // work well
+  //FitObject = "PixelShieldMinus"; // status failed 
   //FitObject = "PixelShieldEllipse"; //work well
-  //FitObject = "PixelShieldEllipsePlus"; // work well
-  //FitObject = "PixelSupport";
-  //FitObject = "PixelSupportPlus";
-  //FitObject = "PixelSupportMinus";
+  //FitObject = "PixelShieldEllipsePlus"; // status failed
+  //FitObject = "PixelSupport"; // work well
+  //FitObject = "PixelSupportPlus"; // work well
+  //FitObject = "PixelSupportMinus"; // work well
   //FitObject = "PixelSupportEllipse"; //work well
-  //FitObject = "PixelSupportRails"; // code is crashed for it during final fit of Rails
-  //FitObject = "PixelSupportRailsPositive"; // code is crashed for it during final fit of Rails
-  //FitObject = "PixelSupportRailsNegative"; // code is crashed for it during final fit of Rails
+  //FitObject = "PixelSupportRails"; // work well
+  //FitObject = "PixelSupportRailsPositive"; // work well
+  //FitObject = "PixelSupportRailsNegative"; // work wel
   
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
@@ -1354,15 +1079,16 @@ void InnerTrackerFit()
     /// par[2] = y0
 
     TVirtualFitter::SetDefaultFitter("Minuit");
+    //TVirtualFitter::SetPrecision(1.E-9);
 
     // Here is where everything but the plus and minus sides of the pixel shield is fit with a circle
     // Create the general fitter
-    TVirtualFitter* fitter = TVirtualFitter::Fitter( 0, 3 );
+    TVirtualFitter* fitter;
+    fitter = TVirtualFitter::Fitter( 0, 3 );
     if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport" || FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative")
     //if((FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportPlus" && FitObject != "PixelSupportEllipse") && FitObject != "PixelSupportMinus")
       {
       //                                                  npar
-      //TVirtualFitter* fitter = TVirtualFitter::Fitter( 0, 3 );
       // Set the function that the fitter will use and set the parameters
       fitter->SetFCN( chiSquareFunc );
       fitter->SetParameter( 0,  "R",   r0, 0.01, RSmin, RSmax ); // in cm
@@ -1377,7 +1103,10 @@ void InnerTrackerFit()
       //fitter->FixParameter( 0 );
       Double_t arglist[10] = {0.};
       // Execute the fit
+
+      //cout << "======    Start Fit of Inner Tracker with Circle" << endl;
       if(FitObject != "PixelSupportRails" && FitObject != "PixelSupportRailsPositive" && FitObject != "PixelSupportRailsNegative") fitter->ExecuteCommand( "MIGRAD", arglist, 0 );
+      //cout << "======    End Fit of Inner Tracker with Circle" << endl;
       }
 
     //if small slice, then rebin histo for better view
@@ -1424,14 +1153,17 @@ void InnerTrackerFit()
        gr_arcSupportPlus->SetMarkerColor(kRed);
        gr_arcSupportPlus->Draw("P");
        }
+
+
     // Fit the minus side of the pixel support with a semicircle
     TVirtualFitter* fitterSupportMinus;
-    fitterSupportMinus = TVirtualFitter::Fitter( 0, 3 );
-    fitterSupportMinus->SetFCN(funPixelSupportMinus);
+    fitterSupportMinus = fitter;
     TGraph* gr_arcSupportMinus = gr_arc;
     TGraph* gr_arcSupportMinusPlus = gr_arc;
     if ( FitObject == "PixelSupportMinus")
        {
+       fitterSupportMinus = TVirtualFitter::Fitter( 0, 3 );
+       fitterSupportMinus->SetFCN(funPixelSupportMinus);
        // set the parameters
        fitterSupportMinus->SetParameter( 0, "R",  r0, 0.01, RSmin, RSmax ); // in cm
        fitterSupportMinus->SetParameter( 1, "x0", x0, 0.01, -0.6,  0.6 ); // in cm
@@ -1472,11 +1204,12 @@ void InnerTrackerFit()
        }
 
     TVirtualFitter* fitterShieldEllipsePlus;
-    fitterShieldEllipsePlus = TVirtualFitter::Fitter(0,4);
-    fitterShieldEllipsePlus->SetFCN(funPixelShieldEllipsePlus);
+    fitterShieldEllipsePlus = fitter;
     TGraph* gr_ellipseShieldPlus = gr_arc;
     if (FitObject == "PixelShieldEllipsePlus")
        {
+       fitterShieldEllipsePlus = TVirtualFitter::Fitter(0,4);
+       fitterShieldEllipsePlus->SetFCN(funPixelShieldEllipsePlus);
        //std::cout << "**********Setting Parameters**********" << std::endl;
        fitterShieldEllipsePlus->SetParameter( 0, "r0_x", r0, 0.01, RSmin, RSmax ); // in cm
        fitterShieldEllipsePlus->SetParameter( 1, "x0", x0, 0.01, -0.4, 0.4 ); // in cm
@@ -1503,12 +1236,14 @@ void InnerTrackerFit()
        gr_ellipseShieldPlus->Draw("P");
        }
     // fit the pixel support with an ellipse
+
     TVirtualFitter* fitterSupportEllipse;
-    fitterSupportEllipse = TVirtualFitter::Fitter( 0, 4 );
-    fitterSupportEllipse->SetFCN(funPixelSupportEllipse);
+    fitterSupportEllipse = fitter;
     TGraph* gr_ellipseSupport = gr_arc;
     if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShieldEllipse" || FitObject == "BeamPipeEllipse")
        {
+       fitterSupportEllipse = TVirtualFitter::Fitter( 0, 4 );
+       fitterSupportEllipse->SetFCN(funPixelSupportEllipse);
        // set parameters for the pixel support ellipse fit
        std::cout << "********** Setting Parameters **********" << std::endl;
        fitterSupportEllipse->SetParameter( 0, "r0_x", r0, 0.01, RSmin, RSmax ); // in cm
@@ -1579,12 +1314,13 @@ void InnerTrackerFit()
 
     // Here is where the minus semicircle of the pixel shield is fit
     TVirtualFitter* fitterArcMinus ;
-   fitterArcMinus = TVirtualFitter::Fitter( 0, 3 );
-   fitterArcMinus->SetFCN(funArcMinus);
+    fitterArcMinus = fitter ;
     TGraph* gr_arcMinus = gr_arc;
     TGraph* gr_arcMinusPlus = gr_arc;
     if (FitObject == "PixelShieldMinus")
        {
+       fitterArcMinus = TVirtualFitter::Fitter( 0, 3 );
+       fitterArcMinus->SetFCN(funArcMinus);
        // create the fitter, set the function that it will use, and set the parameters
        fitterArcMinus->SetParameter( 0, "R",  r0, 0.01, RSmin, RSmax ); // in cm
        fitterArcMinus->SetParameter( 1, "x0", x0, 0.01, 0.,  0.1 ); // in cm
@@ -1629,6 +1365,7 @@ void InnerTrackerFit()
     if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport" || FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative")
     //if ( (FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportPlus") /*&& FitObject != "PixelSupportEllipse"*/ && FitObject != "PixelSupportMinus")
       {
+      cout << "======    fitter->GetParameter(1) = " << fitter->GetParameter(1) << endl;
       TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
       arc->SetFillStyle(0);
       arc->SetLineColor(kRed);
@@ -2823,6 +2560,7 @@ void InnerTrackerFit()
 
 
   }
+  cout << "======    Pass Fit and Plots" << endl;
 
   /// Summary TGraph
   cPlots = new TCanvas("results","");
@@ -2875,7 +2613,9 @@ void InnerTrackerFit()
   fy0fit->SetMarkerColor(kBlue);
   gy0fit->Fit("fy0fit","RWEMS");
   gy0fit->Draw("ap");
+  //cout << "======    Check Error 1" << endl;
   cPlots->Update();
+  //cout << "======    Check Error 2" << endl;
 
   cPlots->cd();
 
@@ -2973,4 +2713,309 @@ void InnerTrackerFit()
   cPlots->SaveAs("Plots/FitResults.png");
 
 }
+//End Main Program
+
+// Function Definition:
+
+
+//create Fit function for background
+Double_t func_fitBg(Double_t *x ,Double_t *par)
+{
+ //Double_t value = par[0]*par[0]*TMath::Exp(par[1]*x[0]);
+ Double_t value = par[0]*par[0]*exp(par[1]*x[0]);
+ //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
+ return value;
+}
+
+Double_t fun2(Double_t *x ,Double_t *par)
+{
+  Double_t value = par[0]+par[1]*x[0];
+  return value;
+}
+
+//create Circle/Arc function in phi,R plane:
+Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
+{
+ // x[0] is phi here
+ Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[0]*sin(x[0])+par[2])*(par[0]*sin(x[0])+par[2]) );
+ //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
+ return value;
+}
+
+Double_t func_EllipseRhoPhi(Double_t *x, Double_t *par)
+{
+ // x[0] is phi here
+ Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[3]*sin(x[0])+par[2])*(par[3]*sin(x[0])+par[2]) );
+ return value;
+}
+
+//create function to fit beam pipe in 2D (circle)
+void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{ 
+  Double_t resoNI = 0.01;
+  //Double_t halfWidthPipe = 0.025;
+  Int_t numBinsX = h->GetNbinsX();
+  Int_t numBinsY = h->GetNbinsY();
+  Double_t chiSquare = 0.0;
+  Double_t diff = 0.0;
+  //Bool_t skip = h->Integral() > 500000;
+  for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+  { 
+    for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+    { 
+      Double_t binNum = h->GetBinContent( ix, iy );
+      
+      /// Thresholds
+      /// 2011A+B: 5 entries for inclusive
+      ///          3 entries for 5 cm slices
+      /// 2012A+B+C+D: 20 entries for inclusive
+      ///              5 entries for 5 cm slices      
+      //if ( !skip && binNum < 3 ) continue;
+      
+      // skip (??) negative values after background subtracktion: 
+      if ( binNum < 0 ) continue;
+      
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      
+      // fit only in singnal + BK subtraction region
+      //Double_t Radius = TMath::Sqrt( x*x + y*y  );
+      //if ( Radius > PipeInf && Radius < FitInf )
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+      //if ( r > PipeInf && r < FitInf )
+      if ( r > RSmin && r < RSmax )
+      { 
+        
+        //Double_t PhaseSpaceFactor = (r0*r0)/(r*r);
+        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
+        
+        diff = par[0] - r;
+        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+      }
+//      if (fabs(diff) > halfWidthPipe)  chiSquare += binNum*diff*diff / ( resoNI*resoNI);
+     
+    }
+  } 
+  f = chiSquare;
+}
+// create function to fit the plus side of the pixel support
+void funPixelSupportPlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+Double_t resoNI = 0.01;
+//Double_t halfWidthPipe = 0.025;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
+
+for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+   {
+   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0 ) continue;
+
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+
+     if ( r > RSmin && r < RSmax && x >= 0)
+        {
+        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
+
+        diff = par[0] - r;
+        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+        }
+      }
+   }
+f  = chiSquare;
+}
+
+// create function to fit the minus side of the pixel support
+void funPixelSupportMinus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+Double_t resoNI = 0.01;
+//Double_t halfWidthPipe = 0.025;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
+
+for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+   {
+   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0 ) continue;
+
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+
+     if ( r > RSmin && r < RSmax && x < 0)
+        {
+        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
+
+        diff = par[0] - r;
+        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+        }
+      }
+   }
+f  = chiSquare;
+}
+
+// create function to fit the pixel support with an ellipse
+void funPixelSupportEllipse( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+Double_t resoNI = 0.01;
+//Double_t halfWidthPipe = 0.025;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
+
+for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+   {
+   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0 ) continue;
+      
+      // create the necessary variables for the ellipse
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      Double_t a = par[0]; // x radius
+      Double_t b = par[3]; // y radius
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) ); // define r
+      Double_t cos_ellipse = (x-par[1])/r; // the cosine
+      Double_t sin_ellipse = (y-par[2])/r; // the sine
+      //Double_t x_ellipse = a*cos_ellipse - par[1];
+      Double_t x_ellipse = a*cos_ellipse;
+      //Double_t y_ellipse = b*sin_ellipse - par[2];
+      Double_t y_ellipse = b*sin_ellipse;
+      Double_t r_ellipse = TMath::Sqrt( (x_ellipse)*(x_ellipse) + (y_ellipse)*(y_ellipse) ); // define radius of the ellipse for the point
+      //Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+     
+     if ( r > RSmin && r < RSmax)
+        {
+        Double_t PhaseSpaceFactor = (r_ellipse*r_ellipse)/(r*r);
+        
+        diff = r_ellipse - r;
+        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+        }
+      }
+   } 
+f  = chiSquare;
+}
+
+// create funciton to fit the pixel shield with an ellipse
+void funPixelShieldEllipsePlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
+{
+Double_t resoNI = 0.01;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
+
+for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++)
+   {
+   for (UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++)
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0) continue;
+
+      Double_t x = h->GetXaxis()->GetBinCenter(ix);
+      Double_t y = h->GetYaxis()->GetBinCenter(iy);
+      Double_t a = par[0]; // x radius
+      Double_t b = par[3]; // y radius
+      Double_t r = TMath::Sqrt( (x-par[1])*(x-par[1]) + (y-par[2])*(y-par[2]) ); // define r
+      Double_t cos_ellipse = (x-par[1])/r; // the cosin
+      Double_t sin_ellipse = (y-par[2])/r; // the sine
+      Double_t x_ellipse = a*cos_ellipse;
+      Double_t y_ellipse = b*sin_ellipse;
+      Double_t r_ellipse = TMath::Sqrt( (x_ellipse)*(x_ellipse) + (y_ellipse)*(y_ellipse) );
+
+      if ( r > RSmin && r < RSmax && x >0)
+        {
+        Double_t PhaseSpaceFactor = (r_ellipse*r_ellipse)/(r*r);
+        diff = r_ellipse -r;
+        chiSquare += binNum*diff*diff / (resoNI*resoNI) * PhaseSpaceFactor;
+        }
+      }
+   }
+   f = chiSquare;
+}
+
+// create function to fit the plus semicircle of the pixel shield
+void funArcPlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+Double_t resoNI = 0.01;
+//Double_t halfWidthPipe = 0.025;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
+
+//Bool_t skip = h->Integral() > 500000;
+for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+   {
+   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0 ) continue;
+      
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      // fit only in singnal + BK subtraction region
+      //Double_t Radius = TMath::Sqrt( x*x + y*y  );
+      //if ( Radius > PipeInf && Radius < FitInf )
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+     
+     if ( r > RSmin && r < RSmax && x > 0)
+        {
+        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
+        
+        diff = par[0] - r;
+        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+        }
+      }
+   } 
+f  = chiSquare;
+}// end funArcPlus
+
+// create function to fit the minus semicircle of the pixel shield
+void funArcMinus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+Double_t resoNI = 0.01;
+//Double_t halfWidthPipe = 0.025;
+Int_t numBinsX = h->GetNbinsX();
+Int_t numBinsY = h->GetNbinsY();
+Double_t chiSquare = 0.0;
+Double_t diff = 0.0;
+
+//Bool_t skip = h->Integral() > 500000;
+for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+   {
+   for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+      {
+      Double_t binNum = h->GetBinContent( ix, iy );
+      if ( binNum < 0 ) continue;
+
+      Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
+      Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
+      Double_t r = TMath::Sqrt( (x - par[1])*(x - par[1]) + (y - par[2])*(y - par[2]) );
+
+     if ( r > RSmin && r < RSmax && x < 0)
+        {
+        Double_t PhaseSpaceFactor = (par[0]*par[0])/(r*r);
+
+        diff = par[0] - r;
+        chiSquare += binNum*diff*diff / ( resoNI*resoNI) *PhaseSpaceFactor;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+        }
+      }
+    }
+f  = chiSquare;
+} // end funArcMinus
+
+
 
