@@ -43,6 +43,7 @@
 #include "TGraph.h"
 #include "TLatex.h"
 #include "TGraphErrors.h"
+#include <TAttFill.h>
 
 using namespace std;
 
@@ -866,22 +867,22 @@ void InnerTrackerFit()
       hbgua1->SetStats(0);
       hbgua2->SetStats(0);
 
-      hbgua0->Draw();
+      hbgua0->Draw("histo");
       hbgua1->SetFillStyle(3004);
       hbgua1->SetFillColor(kRed);
       hbgua1->SetMarkerColor(kRed);
       hbgua1->SetLineColor(kRed);
-      hbgua1->Draw("same");
+      hbgua1->Draw("samehisto");
       hbgua2->SetFillStyle(3005);
       hbgua2->SetFillColor(kGreen);
       hbgua2->SetMarkerColor(kGreen);
       hbgua2->SetLineColor(kGreen);
-      hbgua2->Draw("same");
+      hbgua2->Draw("samehisto");
       hbgua3->SetFillStyle(3005);
       hbgua3->SetFillColor(kBlue);
       hbgua3->SetMarkerColor(kBlue);
       hbgua3->SetLineColor(kBlue);
-      hbgua3->Draw("same");
+      hbgua3->Draw("samehisto");
 
       //TF1 *fitBg = new TF1( "fitBg","[0] + x*[1]", RBGmin, RBGmax );
       TF1 *fitBg = new TF1( "fitBg",func_fitBg, RBGmin , RBGmax, 2 );
