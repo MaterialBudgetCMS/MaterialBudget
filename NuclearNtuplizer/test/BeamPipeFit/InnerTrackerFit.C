@@ -180,8 +180,6 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Shield Plus
   if(FitObject == "PixelShieldPlus"){
-     PlotObject = "hPFDV_XY_Map_Pipe_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe_AbsZ25";
      Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.03; // size of systematics in cm
@@ -194,8 +192,6 @@ void InnerTrackerFit()
   //*** set parameters for Pixel Shield Minus
   //*** to superimpose the fits for the Pxiel Shield Plus and Minus sides run this
   if(FitObject == "PixelShieldMinus"){
-     PlotObject = "hPFDV_XY_Map_Pipe_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe_AbsZ25";
      Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.02; // size of systematics in cm
@@ -375,7 +371,9 @@ void InnerTrackerFit()
 
     /// k = -7 is the inclusive one
     /// k = -6 is only BPiz (|z| < 25 cm)
-    if ( FitObject == "PixelShield" || FitObject == "BeamPipe"  ) {
+    if ( FitObject == "PixelShield" || FitObject == "BeamPipe" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus" ||
+         FitObject == "BeamPipeEllipse" || FitObject == "PixelShieldEllipse" ||
+         FitObject == "PixelShieldEllipsePlus" || FitObject == "PixelShieldEllipseMinus"  ) {
        if ( k == -6 )
        {
          plotName << "_AbsZ25";
@@ -393,6 +391,9 @@ void InnerTrackerFit()
     std::cout << "plotName = " << plotBg.c_str() << std::endl;
     //printf(plot.c_str());
     //printf("\n");
+
+    cout << "Function used for X:Y   = " << plot << endl;
+    cout << "Function used for R:PHI = " << plot << endl;
 
     h_RhoPhi = new TH2D();
     h_RhoPhi = (TH2D*)inputFile->Get( plotBg.c_str() );
