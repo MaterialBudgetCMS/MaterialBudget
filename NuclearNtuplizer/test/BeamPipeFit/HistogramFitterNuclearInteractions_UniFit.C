@@ -59,7 +59,7 @@ double r0_PixelSupportMinus = 21.28;
 
 //*** set parameters for Beam Pipe fit
 //*** to fit is uncomment this block:
-/*TString FitObject = "BeamPipe";
+TString FitObject = "BeamPipe";
 TString PlotObject = "hPFDV_XY_Map_Pipe";
 TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
 double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
@@ -69,12 +69,12 @@ int flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superim
 double x_Sys = 0.02; //size of systematics in cm
 double x0 = 0.124; // from previous fits using this program that were based on 2015
 double y0 = 0.026; // from previous fits using this program that were based on 2015
-double r0 = 2.21;*/ // from previous fits using this program that were based on 2015
+double r0 = 2.21; // from previous fits using this program that were based on 2015
 //*** end comments for Beam Pipe
 
 //*** set parameters for Beam Pipe Ellipse fit
 //*** to fit uncomment this block
-TString FitObject = "BeamPipeEllipse";
+/*TString FitObject = "BeamPipeEllipse";
 TString PlotObject = "hPFDV_XY_Map_Pipe";
 TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
 double Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
@@ -86,6 +86,7 @@ double x0 = 0.124; // from previous fits using this program that were based on 2
 double y0 = 0.026; // from previous fits using this program that were based on 2015
 double r0 = 2.211; // initial x radiu, from previous fits using this program that were based on 2015
 double r0_y = 2.211; // in cm, initial y radius
+*/
 //*** end comments for Beam Pipe Ellipse
 
 //*** set parameters for Pixel Shield
