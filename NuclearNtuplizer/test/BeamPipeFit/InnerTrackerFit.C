@@ -102,11 +102,11 @@ void InnerTrackerFit()
   // fit mesurements:
   Double_t x0_PixelShieldPlus = -0.106;
   Double_t y0_PixelShieldPlus = -0.096;
-  Double_t r0_PixelShieldPlus = 3.78;
+  Double_t r0_PixelShieldPlus = 3.784;
   
-  Double_t x0_PixelShieldMinus = 0.0;
-  Double_t y0_PixelShieldMinus = -0.079;
-  Double_t r0_PixelShieldMinus = 3.74;
+  Double_t x0_PixelShieldMinus = 0.053;
+  Double_t y0_PixelShieldMinus = -0.096;
+  Double_t r0_PixelShieldMinus = 3.777;
   
   Double_t x0_PixelSupportPlus = -0.233;
   Double_t y0_PixelSupportPlus = -0.331;
@@ -131,11 +131,11 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
-  //FitObject = "PixelShieldMinus"; // status failed 
+  FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
   //FitObject = "PixelShieldEllipsePlus"; // status failed
   //FitObject = "PixelSupport"; // work well
@@ -185,7 +185,7 @@ void InnerTrackerFit()
      x_Sys = 0.03; // size of systematics in cm
      x0 = -0.106; // in cm
      y0 = -0.096; // in cm
-     r0 = 3.78; // in cm
+     r0 = 3.784; // in cm
   }
   //*** with all phi sectors: 3.736, x0 = -0.02, y0 = -0.092
   
@@ -195,9 +195,9 @@ void InnerTrackerFit()
      Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.02; // size of systematics in cm
-     x0 = 0.042; // in cm
-     y0 = -0.097; // in cm
-     r0 = 3.77; // in cm
+     x0 = 0.045; // in cm
+     y0 = -0.098; // in cm
+     r0 = 3.775; // in cm
   }
   
   //*** set parameters for Pixel Shield Ellipse
@@ -833,7 +833,7 @@ void InnerTrackerFit()
         }
       if(FitObject == "PixelShieldMinus")
         {
-        if (SignalUpperEdge > 1.28*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+        if (SignalUpperEdge > 1.15*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
         std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
         }
       if(FitObject == "PixelShieldEllipse")
