@@ -100,9 +100,9 @@ void InnerTrackerFit()
   TH2D* hXderivative2D;
   
   // fit mesurements:
-  Double_t x0_PixelShieldPlus = -0.112;
+  Double_t x0_PixelShieldPlus = -0.107;
   Double_t y0_PixelShieldPlus = -0.093;
-  Double_t r0_PixelShieldPlus = 3.782;
+  Double_t r0_PixelShieldPlus = 3.780;
   
   
   Double_t x0_PixelSupportPlus = -0.233;
@@ -127,11 +127,11 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
-  //FitObject = "PixelShieldMinus"; // work well 
+  FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
   //FitObject = "PixelShieldEllipsePlus"; // status failed
   //FitObject = "PixelSupport"; // work well
@@ -167,7 +167,7 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Shield
   if(FitObject == "PixelShield"){
-     Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 4.1;
+     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 5.0;
      RangeEstimatorQuality = 0.1;  
      x_Sys = 0.03; //size of systematics in cm
      r_Sys = 0.03; //size of systematics in cm
@@ -179,20 +179,20 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Shield Plus
   if(FitObject == "PixelShieldPlus"){
-     Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
+     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.006; // size of systematics in cm
      r_Sys = 0.006; // size of systematics in cm
-     x0 = -0.106; // in cm
-     y0 = -0.096; // in cm
-     r0 = 3.783; // in cm
+     x0 = -0.112;//-0.106; // in cm
+     y0 = -0.093;//-0.096; // in cm
+     r0 = 3.783;//3.783; // in cm
   }
   //*** with all phi sectors: 3.736, x0 = -0.02, y0 = -0.092
   
   //*** set parameters for Pixel Shield Minus
   //*** to superimpose the fits for the Pxiel Shield Plus and Minus sides run this
   if(FitObject == "PixelShieldMinus"){
-     Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
+     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.006; // size of systematics in cm
      r_Sys = 0.006; // size of systematics in cm
@@ -203,7 +203,7 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Shield Ellipse
   if(FitObject == "PixelShieldEllipse"){
-     Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
+     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.03; // size of systematics in cm
      r_Sys = 0.03; // size of systematics in cm
@@ -215,7 +215,7 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Shield Ellipse Plus
   if(FitObject == "PixelShieldEllipsePlus"){
-     Rmin = 3.0, Rmax = 4.1, RBGmin = 2.6, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 4.1;
+     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.006; // size of systematics in cm
      r_Sys = 0.006; // size of systematics in cm
@@ -446,13 +446,51 @@ void InnerTrackerFit()
     h->GetYaxis()->SetTitle("y [cm]");
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    h->Draw("col");
+    //h->Draw("col");
+
+
+   // finish h_Draw
+    //create empty 2d histo for backroung estimation in signal region
+    TH2D* h_Draw = new TH2D( plot.c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
+    h_Draw->GetXaxis()->SetTitle("x [cm]");
+    h_Draw->GetYaxis()->SetTitle("y [cm]");
+
+    Int_t numBinsX = h->GetNbinsX();
+    Int_t numBinsY = h->GetNbinsY();
+
+    for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+    {
+      for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+      {
+        //Double_t binNum = h->GetBinContent( ix, iy );
+
+        Double_t x = h->GetXaxis()->GetBinCenter( ix );
+        Double_t y = h->GetYaxis()->GetBinCenter( iy );
+        Double_t binNum = h->GetBinContent( ix, iy );
+
+
+        Double_t Radius = TMath::Sqrt( x*x + y*y );
+
+        if ( Radius < Rmin || Radius > Rmax ) continue;
+
+            h_Draw->Fill( x, y, binNum );
+      }
+    }
+   // finish h_Draw
+    h_Draw->SetStats(0);
+    h_Draw->GetXaxis()->SetTitle("x [cm]");
+    h_Draw->GetYaxis()->SetTitle("y [cm]");
+    h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+    h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
+    h_Draw->Draw("COLZ");
+
 
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
 
-    h->Draw("LEGO");
+    h_Draw->Draw("LEGO");
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw_LEGO.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_LEGO.png"));
 
@@ -466,8 +504,6 @@ void InnerTrackerFit()
 
 
 
-    Int_t numBinsX = h->GetNbinsX();
-    Int_t numBinsY = h->GetNbinsY();
 
     for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
       {
@@ -485,7 +521,10 @@ void InnerTrackerFit()
 
           Double_t binNum = h->GetBinContent( ix, iy );
 
-          Double_t densityNum = binNum * rc*rc / (r0*r0);
+          Double_t r0ref = r0;
+          if (FitObject == "PixelShieldMinus" && x >= 0) r0ref = r0_PixelShieldPlus;
+          if (FitObject == "PixelSupportMinus" && x >= 0) r0ref = r0_PixelSupportPlus;
+          Double_t densityNum = binNum * rc*rc / (r0ref*r0ref);
 
           h->SetBinContent(ix, iy, densityNum);
 
@@ -499,7 +538,6 @@ void InnerTrackerFit()
 
 
     /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
-
 
     //estimate if we have any object inside of signal region except fitted object
     Int_t bgFitQuality[40];
@@ -542,7 +580,8 @@ void InnerTrackerFit()
 
           if ( rc < Rmin || rc > Rmax ) continue;
 
-          Double_t pc = TMath::ATan2( yc, xc );
+          //Double_t pc = TMath::ATan2( yc, xc );
+          Double_t pc = TMath::ATan2( y, x );
           if(pc < 0) pc = pc + 2*TMath::Pi();
           Int_t thisPhiSect = floor(  pc  / ( 2*TMath::Pi() ) * 40 );
 
@@ -649,7 +688,8 @@ void InnerTrackerFit()
       delete hbgua0;
       delete hbgua1;
       delete hbgua2;
-    }
+
+    } //end phi sector cycle
 
     /// -------------------------- Step 2: calculate background --------------------------------
 
@@ -687,7 +727,8 @@ void InnerTrackerFit()
 
         if ( rc < Rmin || rc > Rmax ) continue;
 
-        Double_t pc = TMath::ATan2( yc, xc );
+        //Double_t pc = TMath::ATan2( yc, xc );
+        Double_t pc = TMath::ATan2( y, x );
         if(pc < 0) pc = pc + 2*TMath::Pi();
 
         if ( rc > RSmin && rc < RSmax )
@@ -713,7 +754,7 @@ void InnerTrackerFit()
       }
     }
 
-    h0->Draw("col");
+    h0->Draw("COL");
 
     // plot average estimated background in signal region from PipeInf to PipeSup
     cPlots->Update();
@@ -765,7 +806,8 @@ void InnerTrackerFit()
 
           if ( rc < Rmin || rc > Rmax ) continue;
 
-          Double_t pc = TMath::ATan2( yc, xc );
+          //Double_t pc = TMath::ATan2( yc, xc );
+          Double_t pc = TMath::ATan2( y, x );
           if(pc < 0) pc = pc + 2*TMath::Pi();
 
           Int_t thisPhiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
@@ -916,6 +958,7 @@ void InnerTrackerFit()
       legBg->Draw("same");
 
       gStyle->SetOptStat(1000111110);
+      //gStyle->SetOptStat(0000000000);
 
       std::ostringstream fn;
       //fn << "Plots/"<<plotBg<<"_BGUA_XCk" << "_" << phiSect<<".pdf";
@@ -1621,13 +1664,13 @@ void InnerTrackerFit()
       if(FitObject == "PixelShieldMinus")
         {
         // include entry for the plus side of the pixel shield since it will be superimposed on the same plot
-        legArc->AddEntry(gr_arcMinus,"x_{0}, y_{0} for Minus","P");
-        legArc->AddEntry(gr_arcMinusPlus,"x_{0}, y_{0} for Plus","P");
+        legArc->AddEntry(gr_arcMinus,"x_{0}, y_{0} for Far","P");
+        legArc->AddEntry(gr_arcMinusPlus,"x_{0}, y_{0} for Near","P");
         }
       if(FitObject == "PixelSupportMinus")
         {
-        legArc->AddEntry(gr_arcSupportMinus,"x_{0}, y_{0} for Minus","P");
-        legArc->AddEntry(gr_arcSupportMinusPlus,"x_{0}, y_{0} for Plus","P");
+        legArc->AddEntry(gr_arcSupportMinus,"x_{0}, y_{0} for Far","P");
+        legArc->AddEntry(gr_arcSupportMinusPlus,"x_{0}, y_{0} for Near","P");
         }
       if(FitObject == "PixelSupportEllipse")
         {
