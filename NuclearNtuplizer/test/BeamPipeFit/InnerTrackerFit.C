@@ -127,11 +127,11 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
-  FitObject = "PixelShieldMinus"; // work well 
+  //FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
   //FitObject = "PixelShieldEllipsePlus"; // status failed
   //FitObject = "PixelSupport"; // work well
@@ -144,7 +144,7 @@ void InnerTrackerFit()
   
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
-     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
+     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 3.0;
      RangeEstimatorQuality = 0.1;  
      x_Sys = 0.002; //size of systematics in cm
      r_Sys = 0.002; //size of systematics in cm
@@ -155,12 +155,12 @@ void InnerTrackerFit()
   
   //*** set parameters for Beam Pipe Ellipse fit
   if(FitObject == "BeamPipeEllipse") {
-     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 2.6;
+     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 3.0;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.002; //size of systematics in cm
      r_Sys = 0.002; //size of systematics in cm
      x0 = 0.124; // from previous fits using this program that were based on 2015
-     y0 = 0.026; // from previous fits using this program that were based on 2015
+     y0 = 0.027; // from previous fits using this program that were based on 2015
      r0 = 2.211; // initial x radiu, from previous fits using this program that were based on 2015
      r0_y = 2.211; // in cm, initial y radius
   }
@@ -268,14 +268,14 @@ void InnerTrackerFit()
   if(FitObject == "PixelSupportEllipse"){
      PlotObject = "hPFDV_XY_Map_BPix";
      PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
-     Rmin = 18.5, Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 24.5; 
+     Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 24.5; 
      RangeEstimatorQuality = 0.2;  
      x_Sys = 0.006; //size of systematics in cm
      r_Sys = 0.05; //size of systematics in cm
-     x0 = -0.081;// from previous fits using this program that were based on 2015
+     x0 = -0.082;// from previous fits using this program that were based on 2015
      y0 = -0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.70;  // initial x radius, from previous fits using this program that were based on 2015
-     r0_y = 21.78; // initial y radius, from previous fits using this program that were based on 2015
+     r0 = 21.701;  // initial x radius, from previous fits using this program that were based on 2015
+     r0_y = 21.779; // initial y radius, from previous fits using this program that were based on 2015
   }
   
   //*** set parameters for Pixel Support Rails
