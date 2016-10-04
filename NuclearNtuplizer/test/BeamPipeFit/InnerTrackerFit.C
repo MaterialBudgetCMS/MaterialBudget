@@ -744,6 +744,7 @@ void InnerTrackerFit()
           Double_t par1_p1 =  bgFit1[(41+phiSect)%40];
           Double_t par0_m1 =  bgFit0[(39+phiSect)%40];
           Double_t par1_m1 =  bgFit1[(39+phiSect)%40];
+          //cout << "par0_p1 =  " << par0_p1 << " par1_p1 =  " << par1_p1 << " par0_m1 =  " << par0_m1 << " par1_m1 =  " << par1_m1 << endl;
 
           Double_t x_rc[1];     x_rc[0]= rc;
           Double_t par_rc[2]; par_rc[0] = par0; par_rc[1] = par1;
@@ -752,7 +753,11 @@ void InnerTrackerFit()
           
           Double_t bgDensity = func_fitBg(x_rc,par_rc);
           /// Average over 3 adjacent sectors to smooth differences
-          if (AverageBG == 1) bgDensity = 1/3*(func_fitBg(x_rc,par_rc) + func_fitBg(x_rc,par_rc_p1) + func_fitBg(x_rc,par_rc_m1) );
+          if (AverageBG == 1) bgDensity = (func_fitBg(x_rc,par_rc) + func_fitBg(x_rc,par_rc_p1) + func_fitBg(x_rc,par_rc_m1) )/3.;
+          //cout << "bgDensity = " << bgDensity << endl;
+          //cout << "func_fitBg(x_rc,par_rc) = " << func_fitBg(x_rc,par_rc) << endl;
+          //cout << "func_fitBg(x_rc,par_rc_p1) = " << func_fitBg(x_rc,par_rc_p1) << endl;
+          //cout << "func_fitBg(x_rc,par_rc_m1) = " << func_fitBg(x_rc,par_rc_m1) << endl;
 
           Double_t bgNum = h0->GetXaxis()->GetBinWidth( ix ) * h0->GetYaxis()->GetBinWidth( iy ) * bgDensity;
 
@@ -1081,7 +1086,10 @@ void InnerTrackerFit()
 
           Double_t bgDensity = func_fitBg(x_rc,par_rc); 
           /// Average over 3 adjacent sectors to smooth differences
-          if (AverageBG == 1) bgDensity = 1/3*(func_fitBg(x_rc,par_rc) + func_fitBg(x_rc,par_rc_p1) + func_fitBg(x_rc,par_rc_m1) ); 
+          if (AverageBG == 1) bgDensity = (func_fitBg(x_rc,par_rc) + func_fitBg(x_rc,par_rc_p1) + func_fitBg(x_rc,par_rc_m1) )/3.; 
+          //cout << "bgDensity = " << bgDensity << endl;
+          //cout << "1/3 = " << 1/3 << endl;
+          //cout << "1./3. = " << 1./3. << endl;
 
 
 
