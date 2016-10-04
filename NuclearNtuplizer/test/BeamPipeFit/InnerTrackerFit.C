@@ -109,7 +109,8 @@ void InnerTrackerFit()
   Double_t y0_PixelSupportPlus = -0.331;
   Double_t r0_PixelSupportPlus = 21.85;
   
-  
+////Average over 3 adjacent sectors to smooth differences 
+  Int_t AverageBG = 0; // 0 - Default, don't average BG; 1 - sytematics, average BG
   TString FitObject = "";
   TString PlotObject = "hPFDV_XY_Map_Pipe";
   TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
@@ -735,17 +736,24 @@ void InnerTrackerFit()
         {
           UInt_t phiSect = floor(  pc   / ( 2*TMath::Pi() ) * 40 );
 
-          /// Average over 3 adjacent sectors to smooth differences
-          //Double_t avg0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
-          //Double_t avg1 = 1/3. * ( bgFit1[phiSect] + bgFit1[(41+phiSect)%40] + bgFit1[(39+phiSect)%40] );
-          Double_t avg0 =  bgFit0[phiSect];
-          Double_t avg1 =  bgFit1[phiSect];
+          //Double_t par0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
+          //Double_t par1 = 1/3. * ( bgFit1[phiSect] + bgFit1[(41+phiSect)%40] + bgFit1[(39+phiSect)%40] );
+          Double_t par0 =  bgFit0[phiSect];
+          Double_t par1 =  bgFit1[phiSect];
+          Double_t par0_p1 =  bgFit0[(41+phiSect)%40];
+          Double_t par1_p1 =  bgFit1[(41+phiSect)%40];
+          Double_t par0_m1 =  bgFit0[(39+phiSect)%40];
+          Double_t par1_m1 =  bgFit1[(39+phiSect)%40];
 
-          //Double_t bgDensity = avg0 + avg1*rc;
           Double_t x_rc[1];     x_rc[0]= rc;
-          Double_t par_rc[2]; par_rc[0] = avg0; par_rc[1] = avg1;
-
+          Double_t par_rc[2]; par_rc[0] = par0; par_rc[1] = par1;
+          Double_t par_rc_p1[2]; par_rc_p1[0] = par0_p1; par_rc_p1[1] = par1_p1;
+          Double_t par_rc_m1[2]; par_rc_m1[0] = par0_m1; par_rc_m1[1] = par1_m1;
+          
           Double_t bgDensity = func_fitBg(x_rc,par_rc);
+          /// Average over 3 adjacent sectors to smooth differences
+          if (AverageBG == 1) bgDensity = 1/3*(func_fitBg(x_rc,par_rc) + func_fitBg(x_rc,par_rc_p1) + func_fitBg(x_rc,par_rc_m1) );
+
           Double_t bgNum = h0->GetXaxis()->GetBinWidth( ix ) * h0->GetYaxis()->GetBinWidth( iy ) * bgDensity;
 
           if ( ( rc > RSmin && rc < RSmax ) )
@@ -1057,16 +1065,26 @@ void InnerTrackerFit()
           UInt_t phiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
           
           /// Remove Background
-          /// Average over 3 adjacent sectors to smooth differences
-          //Double_t avg0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
-          //Double_t avg1 = 1/3. * ( bgFit1[phiSect] + bgFit1[(41+phiSect)%40] + bgFit1[(39+phiSect)%40] );
-          Double_t avg0 =  bgFit0[phiSect];
-          Double_t avg1 =  bgFit1[phiSect];
+          //Double_t par0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
+          //Double_t par1 = 1/3. * ( bgFit1[phiSect] + bgFit1[(41+phiSect)%40] + bgFit1[(39+phiSect)%40] );
+          Double_t par0 =  bgFit0[phiSect];
+          Double_t par1 =  bgFit1[phiSect];
+          Double_t par0_p1 =  bgFit0[(41+phiSect)%40];
+          Double_t par1_p1 =  bgFit1[(41+phiSect)%40];
+          Double_t par0_m1 =  bgFit0[(39+phiSect)%40];
+          Double_t par1_m1 =  bgFit1[(39+phiSect)%40];
           
           Double_t x_rc[1];     x_rc[0]= rc;
-          Double_t par_rc[2]; par_rc[0] = avg0; par_rc[1] = avg1;
-          //Double_t bgDensity = avg0 + avg1*rc;
+          Double_t par_rc[2]; par_rc[0] = par0; par_rc[1] = par1;
+          Double_t par_rc_p1[2]; par_rc_p1[0] = par0_p1; par_rc_p1[1] = par1_p1;
+          Double_t par_rc_m1[2]; par_rc_m1[0] = par0_m1; par_rc_m1[1] = par1_m1;
+
           Double_t bgDensity = func_fitBg(x_rc,par_rc); 
+          /// Average over 3 adjacent sectors to smooth differences
+          if (AverageBG == 1) bgDensity = 1/3*(func_fitBg(x_rc,par_rc) + func_fitBg(x_rc,par_rc_p1) + func_fitBg(x_rc,par_rc_m1) ); 
+
+
+
           Double_t bgNum = h1->GetXaxis()->GetBinWidth( ix ) * h1->GetYaxis()->GetBinWidth( iy ) * bgDensity;
           
           //binNum -= bgNum; // subtrackt 1 BG only
