@@ -128,7 +128,7 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
@@ -138,7 +138,7 @@ void InnerTrackerFit()
   //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
-  //FitObject = "PixelSupportEllipse"; //work well
+  FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
   //FitObject = "PixelSupportRailsPositive"; // work well
   //FitObject = "PixelSupportRailsNegative"; // work wel
@@ -170,8 +170,8 @@ void InnerTrackerFit()
   if(FitObject == "PixelShield"){
      Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 5.0;
      RangeEstimatorQuality = 0.1;  
-     x_Sys = 0.03; //size of systematics in cm
-     r_Sys = 0.03; //size of systematics in cm
+     x_Sys = 0.007; //size of systematics in cm
+     r_Sys = 0.007; //size of systematics in cm
      // Values for fit with a circle
      x0 = -0.029; // from previous fits using this program that were based on 2015
      y0 = -0.079; // from previous fits using this program that were based on 2015
@@ -182,8 +182,8 @@ void InnerTrackerFit()
   if(FitObject == "PixelShieldPlus"){
      Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1; 
-     x_Sys = 0.006; // size of systematics in cm
-     r_Sys = 0.006; // size of systematics in cm
+     x_Sys = 0.007; // size of systematics in cm
+     r_Sys = 0.007; // size of systematics in cm
      x0 = -0.112;//-0.106; // in cm
      y0 = -0.093;//-0.096; // in cm
      r0 = 3.783;//3.783; // in cm
@@ -195,8 +195,8 @@ void InnerTrackerFit()
   if(FitObject == "PixelShieldMinus"){
      Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1; 
-     x_Sys = 0.006; // size of systematics in cm
-     r_Sys = 0.006; // size of systematics in cm
+     x_Sys = 0.007; // size of systematics in cm
+     r_Sys = 0.007; // size of systematics in cm
      x0 = 0.052; // in cm
      y0 = -0.095; // in cm
      r0 = 3.777; // in cm
@@ -206,8 +206,8 @@ void InnerTrackerFit()
   if(FitObject == "PixelShieldEllipse"){
      Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1; 
-     x_Sys = 0.03; // size of systematics in cm
-     r_Sys = 0.03; // size of systematics in cm
+     x_Sys = 0.007; // size of systematics in cm
+     r_Sys = 0.007; // size of systematics in cm
      x0 = -0.029; // in cm
      y0 = -0.086; // in cm
      r0 = 3.71; // in cm, initial x radius
@@ -218,8 +218,8 @@ void InnerTrackerFit()
   if(FitObject == "PixelShieldEllipsePlus"){
      Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
      RangeEstimatorQuality = 0.1;
-     x_Sys = 0.006; // size of systematics in cm
-     r_Sys = 0.006; // size of systematics in cm
+     x_Sys = 0.007; // size of systematics in cm
+     r_Sys = 0.007; // size of systematics in cm
      x0 = -0.115; // in cm
      y0 = -0.097; // in cm
      r0 = 3.792; // in cm, the initial x radius
@@ -232,8 +232,8 @@ void InnerTrackerFit()
      PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
      Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5;  
-     x_Sys = 0.1; //size of systematics in cm
-     r_Sys = 0.1; //size of systematics in cm
+     x_Sys = 0.007; //size of systematics in cm
+     r_Sys = 0.05; //size of systematics in cm
      x0 = -0.083;// from previous fits using this program that were based on 2015
      y0 = -0.324; // from previous fits using this program that were based on 2015
      r0 = 21.73;  // from previous fits using this program that were based on 2015
@@ -245,8 +245,8 @@ void InnerTrackerFit()
      PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
      Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5;  
-     x_Sys = 0.1; //size of systematics in cm
-     r_Sys = 0.1; //size of systematics in cm
+     x_Sys = 0.007; //size of systematics in cm
+     r_Sys = 0.05; //size of systematics in cm
      x0 = -0.232; // from previous fits using this program that were based on 2015
      y0 = -0.331; // from previous fits using this program that were based on 2015
      r0 = 21.85;  // from previous fits using this program that were based on 2015
@@ -258,8 +258,8 @@ void InnerTrackerFit()
      PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
      Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5;  
-     x_Sys = 0.1; //size of systematics in cm
-     r_Sys = 0.1; //size of systematics in cm
+     x_Sys = 0.007; //size of systematics in cm
+     r_Sys = 0.05; //size of systematics in cm
      x0 = 0.023;// from previous fits using this program that were based on 2015
      y0 = -0.317; // from previous fits using this program that were based on 2015
      r0 = 21.81; // from previous fits using this program that were based on 2015
@@ -271,7 +271,7 @@ void InnerTrackerFit()
      PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
      Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 24.5; 
      RangeEstimatorQuality = 0.2;  
-     x_Sys = 0.006; //size of systematics in cm
+     x_Sys = 0.007; //size of systematics in cm
      r_Sys = 0.05; //size of systematics in cm
      x0 = -0.082;// from previous fits using this program that were based on 2015
      y0 = -0.324; // from previous fits using this program that were based on 2015
