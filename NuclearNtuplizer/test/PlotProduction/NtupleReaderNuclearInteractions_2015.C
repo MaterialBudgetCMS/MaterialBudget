@@ -802,6 +802,16 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hPFDV_XY_Map_BPix->Sumw2();
   hPFDV_RhoPhi_Map_BPix->Sumw2();
 
+  hPFDV_XY_Map_BPix_AbsZ25 = new TH2D( "hPFDV_XY_Map_BPix_AbsZ25", "CMS work in progress", 200, -25, 25, 200, -25, 25 );
+  hPFDV_RhoPhi_Map_BPix_AbsZ25 = new TH2D( "hPFDV_RhoPhi_Map_BPix_AbsZ25", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 25 );
+  hPFDV_XY_Map_BPix_AbsZ25->Sumw2();
+  hPFDV_RhoPhi_Map_BPix_AbsZ25->Sumw2();
+
+  hPFDV_XY_Map_BPix_AbsZ20 = new TH2D( "hPFDV_XY_Map_BPix_AbsZ20", "CMS work in progress", 160, -20, 20, 160, -20, 20 );
+  hPFDV_RhoPhi_Map_BPix_AbsZ20 = new TH2D( "hPFDV_RhoPhi_Map_BPix_AbsZ20", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 160, 0, 20 );
+  hPFDV_XY_Map_BPix_AbsZ20->Sumw2();
+  hPFDV_RhoPhi_Map_BPix_AbsZ20->Sumw2();
+
   hPFDV_XY_Map_Pipe = new TH2D( "hPFDV_XY_Map_Pipe", "CMS work in progress", 1000, -5, 5, 1000, -5, 5 );
   hPFDV_RhoPhi_Map_Pipe = new TH2D( "hPFDV_RhoPhi_Map_Pipe", "CMS work in progress", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
   hPFDV_XY_Map_Pipe->Sumw2();
@@ -1740,6 +1750,16 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       hPFDV_XY_Map_BPix->Fill( ni_x, ni_y );
       hPFDV_RhoPhi_Map_BPix->Fill( ni_phi, ni_rho );
+
+      if (fabs(ni_z) < 25 ){
+      hPFDV_XY_Mao_BPix_AbsZ25->Fill( ni_x, ni_y );
+      hPFDV_RhoPhi_Map_BPix_AbsZ25->Fill( ni_phi, ni_rho );
+      }
+
+      if (fabs(ni_z) < 20 ){
+      hPFDV_XY_Mao_BPix_AbsZ20->Fill( ni_x, ni_y );
+      hPFDV_RhoPhi_Map_BPix_AbsZ20->Fill( ni_phi, ni_rho );
+      }
 
       hPFDV_XY_Map_Pipe->Fill( ni_x, ni_y );
       hPFDV_RhoPhi_Map_Pipe->Fill( ni_phi, ni_rho );

@@ -169,8 +169,12 @@ class NtupleReaderNuclearInteractions_2015
     TH2D* hPFDV_XY_Map;
     TH2D* hPFDV_RhoPhi_Map;
     TH2D* hPFDV_XY_Map_BPix;
+    TH2D* hPFDV_XY_Map_BPix_AbsZ25;
+    TH2D* hPFDV_XY_Map_BPix_AbsZ20;
     TH2D* hPFDV_RhoPhi_Map_BPix;
     TH2D* hPFDV_RhoPhi_Map_Pipe;
+    TH2D* hPFDV_RhoPhi_Map_BPix_AbsZ25;
+    TH2D* hPFDV_RhoPhi_Map_BPix_AbsZ20;
 
     TH2D* hPFDV_XY_Map_Pipe;
 
@@ -228,7 +232,11 @@ class NtupleReaderNuclearInteractions_2015
     std::map<int, TH2D*> m_hPFDV_XY_Map;
     std::map<int, TH2D*> m_hPFDV_RhoPhi_Map;
     std::map<int, TH2D*> m_hPFDV_XY_Map_BPix;
+    std::map<int, TH2D*> m_hPFDV_XY_Map_BPix_AbsZ25;
+    std::map<int, TH2D*> m_hPFDV_XY_Map_BPix_AbsZ20;
     std::map<int, TH2D*> m_hPFDV_RhoPhi_Map_BPix;
+    std::map<int, TH2D*> m_hPFDV_RhoPhi_Map_BPix_AbsZ25;
+    std::map<int, TH2D*> m_hPFDV_RhoPhi_Map_BPix_AbsZ20;
     std::map<int, TH2D*> m_hPFDV_XY_Map_Pipe;
     std::map<int, TH2D*> m_hPFDV_RhoPhi_Map_Pipe;
 
