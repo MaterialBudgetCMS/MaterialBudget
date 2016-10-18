@@ -6,7 +6,8 @@
 //void runNtupleReaderNuclearInteractions_2015( const std::string fileList = "prova_Run2015D.txt", const Long64_t maxEvents = -1 )
 //void runNtupleReaderNuclearInteractions_2015( const std::string fileList = "prova_MC.txt", const Long64_t maxEvents = -1 )
 //void runNtupleReaderNuclearInteractions_2015( const std::string fileList = "prova_Run2016B.txt", const Long64_t maxEvents = -1 )
-void runNtupleReaderNuclearInteractions_2015( const std::string fileList = "prova_Run2015DreReco.txt", const Long64_t maxEvents = -1 )
+//void runNtupleReaderNuclearInteractions_2015( const std::string fileList = "prova_Run2015DreReco.txt", const Long64_t maxEvents = -1 )
+void runNtupleReaderNuclearInteractions_2015( const std::string fileList = "prova_Run2015DreReco_local.txt", const Long64_t maxEvents = -1 )
 {
   gSystem->CompileMacro("NtupleReaderNuclearInteractions_2015.C");
   NtupleReaderNuclearInteractions_2015 m( fileList, maxEvents );

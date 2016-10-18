@@ -792,15 +792,20 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
   hPFDV_ZR_Map = new TH2D( "hPFDV_ZR_Map", "CMS work in progress", 800, -200, 200, 140, 0, 70 );
   hPFDV_ZR_Map->Sumw2();
 
-  hPFDV_XY_Map = new TH2D( "hPFDV_XY_Map", "CMS work in progress", 280, -70, 70, 280, -70, 70 );
+  hPFDV_XY_Map = new TH2D( "hPFDV_XY_Map", "CMS work in progress", 1000, -70, 70, 1000, -70, 70 );
   hPFDV_RhoPhi_Map = new TH2D( "hPFDV_RhoPhi_Map", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 280, 0, 70 );
   hPFDV_XY_Map->Sumw2();
   hPFDV_RhoPhi_Map->Sumw2();
 
-  hPFDV_XY_Map_BPix = new TH2D( "hPFDV_XY_Map_BPix", "CMS work in progress", 200, -25, 25, 200, -25, 25 );
-  hPFDV_RhoPhi_Map_BPix = new TH2D( "hPFDV_RhoPhi_Map_BPix", "CMS work in progress", 200, -TMath::Pi(), TMath::Pi(), 200, 0, 25 );
-  hPFDV_XY_Map_BPix->Sumw2();
-  hPFDV_RhoPhi_Map_BPix->Sumw2();
+  hPFDV_XY_PixelSupport = new TH2D( "hPFDV_XY_PixelSupport", "CMS work in progress", 1200, -25, 25, 1200, -25, 25 );
+  hPFDV_RhoPhi_PixelSupport = new TH2D( "hPFDV_RhoPhi_PixelSupport", "CMS work in progress", 400, -TMath::Pi(), TMath::Pi(), 1000, 0, 25 );
+  hPFDV_XY_PixelSupport->Sumw2();
+  hPFDV_RhoPhi_PixelSupport->Sumw2();
+
+  hPFDV_XY_PixelSupport_AbsZ25 = new TH2D( "hPFDV_XY_PixelSupport_AbsZ25", "CMS work in progress", 1200, -25, 25, 1200, -25, 25 );
+  hPFDV_RhoPhi_PixelSupport_AbsZ25 = new TH2D( "hPFDV_RhoPhi_PixelSupport_AbsZ25", "CMS work in progress", 400, -TMath::Pi(), TMath::Pi(), 1000, 0, 25 );
+  hPFDV_XY_PixelSupport_AbsZ25->Sumw2();
+  hPFDV_RhoPhi_PixelSupport_AbsZ25->Sumw2();
 
   hPFDV_XY_Map_Pipe = new TH2D( "hPFDV_XY_Map_Pipe", "CMS work in progress", 1000, -5, 5, 1000, -5, 5 );
   hPFDV_RhoPhi_Map_Pipe = new TH2D( "hPFDV_RhoPhi_Map_Pipe", "CMS work in progress", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
@@ -1175,7 +1180,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     if (NumberNI <= 30)hMC_NumberNI -> Fill (NumberNI);
     else hMC_NumberNI -> Fill (30); 
 
-    if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    //if (NumberNI < 1 || numberOfPFDV > 1) continue; // for MC only: avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 3) ) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //test for assosiation
@@ -1738,8 +1743,13 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       hPFDV_XY_Map->Fill( ni_x, ni_y );
       hPFDV_RhoPhi_Map->Fill( ni_phi, ni_rho );
 
-      hPFDV_XY_Map_BPix->Fill( ni_x, ni_y );
-      hPFDV_RhoPhi_Map_BPix->Fill( ni_phi, ni_rho );
+
+      hPFDV_XY_PixelSupport->Fill( ni_x, ni_y );
+      hPFDV_RhoPhi_PixelSupport->Fill( ni_phi, ni_rho );
+      if ( fabs(ni_z) < 25 ) {
+         hPFDV_XY_PixelSupport_AbsZ25->Fill( ni_x, ni_y );
+         hPFDV_RhoPhi_PixelSupport_AbsZ25->Fill( ni_phi, ni_rho );
+      }
 
       hPFDV_XY_Map_Pipe->Fill( ni_x, ni_y );
       hPFDV_RhoPhi_Map_Pipe->Fill( ni_phi, ni_rho );

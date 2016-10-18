@@ -135,10 +135,10 @@ void InnerTrackerFit()
   //FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
   //FitObject = "PixelShieldEllipsePlus"; // status failed
-  //FitObject = "PixelSupport"; // work well
+  FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
-  FitObject = "PixelSupportEllipse"; //work well
+  //FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
   //FitObject = "PixelSupportRailsPositive"; // work well
   //FitObject = "PixelSupportRailsNegative"; // work wel
@@ -228,21 +228,22 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Support
   if(FitObject == "PixelSupport"){
-     PlotObject = "hPFDV_XY_Map_BPix";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
-     Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
+     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
+     //Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
+     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 23.; 
      RangeEstimatorQuality = 0.5;  
      x_Sys = 0.007; //size of systematics in cm
      r_Sys = 0.05; //size of systematics in cm
-     x0 = -0.083;// from previous fits using this program that were based on 2015
-     y0 = -0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.73;  // from previous fits using this program that were based on 2015
+     x0 = -0.075;//-0.083;// from previous fits using this program that were based on 2015
+     y0 = -0.313;//-0.324; // from previous fits using this program that were based on 2015
+     r0 = 21.734;//21.73;  // from previous fits using this program that were based on 2015
   }
   
   //*** set parameters for Pixel Support Plus
   if(FitObject == "PixelSupportPlus"){
-     PlotObject = "hPFDV_XY_Map_BPix";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5;  
      x_Sys = 0.007; //size of systematics in cm
@@ -254,8 +255,8 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Support Minus
   if(FitObject == "PixelSupportMinus"){
-     PlotObject = "hPFDV_XY_Map_BPix";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5;  
      x_Sys = 0.007; //size of systematics in cm
@@ -267,22 +268,23 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Support Ellipse
   if(FitObject == "PixelSupportEllipse"){
-     PlotObject = "hPFDV_XY_Map_BPix";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 24.5; 
-     RangeEstimatorQuality = 0.2;  
+     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
+     //Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 24.5; 
+     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 23.; 
+     RangeEstimatorQuality = 0.5;  
      x_Sys = 0.007; //size of systematics in cm
      r_Sys = 0.05; //size of systematics in cm
-     x0 = -0.082;// from previous fits using this program that were based on 2015
-     y0 = -0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.701;  // initial x radius, from previous fits using this program that were based on 2015
-     r0_y = 21.779; // initial y radius, from previous fits using this program that were based on 2015
+     x0 = -0.075;//-0.082;// from previous fits using this program that were based on 2015
+     y0 = -0.315;//-0.324; // from previous fits using this program that were based on 2015
+     r0 = 21.703;//21.701;  // initial x radius, from previous fits using this program that were based on 2015
+     r0_y = 21.803;//21.779; // initial y radius, from previous fits using this program that were based on 2015
   }
   
   //*** set parameters for Pixel Support Rails
   if(FitObject == "PixelSupportRails"){
-     PlotObject = "hPFDV_XY_Map_BPix";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5; 
      x_Sys = 0.02; //size of systematics in cm
@@ -294,8 +296,8 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Support Rails Positive
   if(FitObject == "PixelSupportRailsPositive"){
-     PlotObject = "hPFDV_XY_Map_BPix";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5; 
      x_Sys = 0.02; //size of systematics in cm
@@ -307,8 +309,8 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Support Rails Negative
   if(FitObject == "PixelSupportRailsNegative"){
-     PlotObject = "hPFDV_XY_Map_BPix";
-     PlotObjectBg = "hPFDV_RhoPhi_Map_BPix";
+     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
      RangeEstimatorQuality = 0.5;
      x_Sys = 0.02; //size of systematics in cm
@@ -430,8 +432,9 @@ void InnerTrackerFit()
     h = new TH2D();
     h = (TH2D*)inputFile->Get( plot.c_str() );
     h->Sumw2();
-    if(FitObject == "PixelSupport" || FitObject == "PixelSupportPlus" || FitObject == "PixelSupportMinus")h->Rebin2D(3,3);
-    if(FitObject == "PixelSupportEllipse")h->Rebin2D(3,3);
+    if(FitObject == "PixelSupport" || FitObject == "PixelSupportPlus" || FitObject == "PixelSupportMinus")h->Rebin2D(4,4);
+    //if(FitObject == "PixelSupportEllipse")h->Rebin2D(3,3);
+    if(FitObject == "PixelSupportEllipse")h->Rebin2D(4,4);
     if(FitObject == "PixelShield") h->Rebin2D(5,5);
     if(FitObject == "PixelShieldEllipsePlus") h->Rebin2D(5,5);
     if(FitObject == "PixelShieldEllipse")h->Rebin2D(5,5);
@@ -459,6 +462,8 @@ void InnerTrackerFit()
 
     Int_t numBinsX = h->GetNbinsX();
     Int_t numBinsY = h->GetNbinsY();
+
+    cout << "****** numBinsX = " << numBinsX << endl;
 
     for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
     {
@@ -865,21 +870,26 @@ void InnerTrackerFit()
         Double_t x = hbgua0->GetXaxis()->GetBinCenter( ix );
         Double_t value = hbgua0->GetBinContent(ix);
         if( x > RSmin && x < (RSmin+RangeEstimatorQuality) ) SignalLowEdge = SignalLowEdge + value;
-        if( (FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse" || FitObject == "BeamPipe" || FitObject == "BeamPipeEllipse") && x > RSmax && x < (RSmax+RangeEstimatorQuality)) SignalUpperEdge = SignalUpperEdge + value;
-        if( (FitObject == "PixelShieldEllipse" || FitObject == "PixelShieldEllipsePlus" || FitObject == "PixelShield" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus") && x > (RSmax-RangeEstimatorQuality) && x < RSmax) SignalUpperEdge = SignalUpperEdge + value;
+        if( (FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse" || FitObject == "BeamPipe" || FitObject == "BeamPipeEllipse") 
+             && x > RSmax && x < (RSmax+RangeEstimatorQuality)) SignalUpperEdge = SignalUpperEdge + value;
+        if( (FitObject == "PixelShieldEllipse" || FitObject == "PixelShieldEllipsePlus" || FitObject == "PixelShield" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus") 
+            && x > (RSmax-RangeEstimatorQuality) && x < RSmax) SignalUpperEdge = SignalUpperEdge + value;
         
         if( x > (RBGmax-RangeEstimatorQuality) && x < RBGmax) BgUpperEdge = BgUpperEdge + value;
       }
       bgFitQuality[phiSect] = 1; //good phi sector for fit      
 
       // Flag phi sectors to be excluded from the fit using bin contents in the signal and background region
-      if(FitObject == "PixelSupport" || FitObject == "PixelSupportPlus" || FitObject == "PixelSupportMinus")
+      if( FitObject == "PixelSupportPlus" || FitObject == "PixelSupportMinus")
         {
          if (SignalLowEdge > 0.6*BgUpperEdge || SignalUpperEdge > 1.3*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
         }
-      if(FitObject == "PixelSupportEllipse")
+      if( FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse")
         {
-         if (SignalLowEdge > 0.2*BgUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+         //if (SignalLowEdge > 0.2*BgUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+         if (BgUpperEdge > 2.0*SignalUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+         std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   BgUpperEdge/SignalUpperEdge = "<< BgUpperEdge/SignalUpperEdge << std::endl;
+         //cout << " BgUpperEdge = " << BgUpperEdge << " SignalUpperEdge = " << SignalUpperEdge << endl;
         }
       if(FitObject == "PixelShield")
         {
@@ -909,7 +919,6 @@ void InnerTrackerFit()
         }
       if(BgUpperEdge > 0.)hQuality->Fill( max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) );
       if(FitObject == "PixelShield")std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
-      if( FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse")std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalLowEdge/BgUpperEdge << std::endl;
 
       cPlots->cd();
       hbgua0->SetMinimum(0);

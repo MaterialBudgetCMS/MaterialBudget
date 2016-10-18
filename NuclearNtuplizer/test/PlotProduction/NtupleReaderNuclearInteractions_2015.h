@@ -168,9 +168,12 @@ class NtupleReaderNuclearInteractions_2015
     /// Histograms
     TH2D* hPFDV_XY_Map;
     TH2D* hPFDV_RhoPhi_Map;
-    TH2D* hPFDV_XY_Map_BPix;
-    TH2D* hPFDV_RhoPhi_Map_BPix;
     TH2D* hPFDV_RhoPhi_Map_Pipe;
+
+    TH2D* hPFDV_XY_PixelSupport;
+    TH2D* hPFDV_RhoPhi_PixelSupport;
+    TH2D* hPFDV_XY_PixelSupport_AbsZ25;
+    TH2D* hPFDV_RhoPhi_PixelSupport_AbsZ25;
 
     TH2D* hPFDV_XY_Map_Pipe;
 
