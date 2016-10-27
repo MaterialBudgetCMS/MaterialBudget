@@ -6,6 +6,16 @@ Compiled version works for any CMSSW versions:
 
       root.exe -b InnerTrackerFit.C++
 
+For 2015 reReco Data:
+     cmsrel CMSSW_7_4_14
+
+For 2016 Data:
+
+     export SCRAM_ARCH=slc6_amd64_gcc530
+     cmsrel CMSSW_8_0_20
+
+===========
+
 Old uncompiled version, works only for CMSSW_7_3_X (do not support higher versions) :
 
 Universal Fit program could fit Beam Pipe, Pixel Shield or Pixel Support, just uncomment correct lines in code and run:
