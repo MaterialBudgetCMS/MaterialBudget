@@ -60,7 +60,7 @@ void funPixelSupportMinus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 void funPixelSupportEllipse( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 
 // create funciton to fit the pixel shield with an ellipse
-void funPixelShieldEllipsePlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t);
+void funPixelShield2Ellipses( Int_t &, Double_t *, Double_t &, Double_t *, Int_t);
 
 // create function to fit the plus semicircle of the pixel shield
 void funArcPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
@@ -114,7 +114,7 @@ void InnerTrackerFit()
   TString FitObject = "";
   TString PlotObject = "hPFDV_XY_Map_Pipe";
   TString PlotObjectBg = "hPFDV_RhoPhi_Map_Pipe";
-  Double_t RangeEstimatorQuality, x_Sys = 0, r_Sys = 0, x0 = 0, y0 = 0, r0 = 1, r0_y =1 ;
+  Double_t RangeEstimatorQuality, x_Sys = 0, r_Sys = 0, x0 = 0, y0 = 0, r0 = 1, r0_y =1, x0_Far = 0, y0_Far = 0;
   if (r0_y < 0.) cout << "Error: r0_y < 0" << endl;
 
   Double_t ErrPrecision = 0.0005;  
@@ -134,8 +134,8 @@ void InnerTrackerFit()
   //FitObject = "PixelShieldPlus"; // work well
   //FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
-  //FitObject = "PixelShieldEllipsePlus"; // status failed
-  FitObject = "PixelSupport"; // work well
+  FitObject = "PixelShield2Ellipses"; // status failed
+  //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
   //FitObject = "PixelSupportEllipse"; //work well
@@ -215,15 +215,24 @@ void InnerTrackerFit()
   }
   
   //*** set parameters for Pixel Shield Ellipse Plus
-  if(FitObject == "PixelShieldEllipsePlus"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
+  if(FitObject == "PixelShield2Ellipses"){
+     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4., RPlot = 5.0;
+     //Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4.1, RPlot = 5.0;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.007; // size of systematics in cm
      r_Sys = 0.007; // size of systematics in cm
-     x0 = -0.115; // in cm
-     y0 = -0.097; // in cm
-     r0 = 3.792; // in cm, the initial x radius
-     r0_y = 3.783; // in cm, initial y radius
+     x0 = -0.099; // in cm
+     y0 = -0.090; // in cm
+     x0_Far = 0.048; // in cm
+     y0_Far = -0.104; // in cm
+     r0 = 3.780; // in cm, the initial x radius
+     r0_y = 3.776; // in cm, initial y radius
+     //x0 = -0.115; // in cm
+     //y0 = -0.092; // in cm
+     //x0_Far = 0.064; // in cm
+     //y0_Far = -0.098; // in cm
+     //r0 = 3.794; // in cm, the initial x radius
+     //r0_y = 3.777; // in cm, initial y radius
   }
   
   //*** set parameters for Pixel Support
@@ -386,7 +395,7 @@ void InnerTrackerFit()
     /// k = -6 is only BPiz (|z| < 25 cm)
     if ( FitObject == "PixelShield" || FitObject == "BeamPipe" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus" ||
          FitObject == "BeamPipeEllipse" || FitObject == "PixelShieldEllipse" ||
-         FitObject == "PixelShieldEllipsePlus" || FitObject == "PixelShieldEllipseMinus"  ) {
+         FitObject == "PixelShield2Ellipses" || FitObject == "PixelShieldEllipseMinus"  ) {
        if ( k == -6 )
        {
          plotName << "_AbsZ25";
@@ -413,7 +422,7 @@ void InnerTrackerFit()
     if(FitObject == "PixelSupport")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelSupportEllipse")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(2,2);
-    if(FitObject == "PixelShieldEllipsePlus") h_RhoPhi->Rebin2D(2,2);
+    if(FitObject == "PixelShield2Ellipses") h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShieldEllipse")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShieldPlus")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShieldMinus")h_RhoPhi->Rebin2D(2,2);
@@ -436,7 +445,7 @@ void InnerTrackerFit()
     //if(FitObject == "PixelSupportEllipse")h->Rebin2D(3,3);
     if(FitObject == "PixelSupportEllipse")h->Rebin2D(4,4);
     if(FitObject == "PixelShield") h->Rebin2D(5,5);
-    if(FitObject == "PixelShieldEllipsePlus") h->Rebin2D(5,5);
+    if(FitObject == "PixelShield2Ellipses") h->Rebin2D(5,5);
     if(FitObject == "PixelShieldEllipse")h->Rebin2D(5,5);
     if(FitObject == "PixelShieldPlus") h->Rebin2D(5,5);
     if(FitObject == "PixelShieldMinus")h->Rebin2D(5,5);
@@ -455,7 +464,7 @@ void InnerTrackerFit()
 
    // finish h_Draw
     //create empty 2d histo for backroung estimation in signal region
-    TH2D* h_Draw = new TH2D( plot.c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+    TH2D* h_Draw = new TH2D( "h_Draw", h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
                                                       h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
     h_Draw->GetXaxis()->SetTitle("x [cm]");
     h_Draw->GetYaxis()->SetTitle("y [cm]");
@@ -577,8 +586,12 @@ void InnerTrackerFit()
           // positions of the two halves so that the background subtraction is cleaner.
           Double_t x0ref = x0;
           Double_t y0ref = y0;
-          if (FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
-          if (FitObject == "PixelSupportMinus" && x >= 0) x0ref = x0_PixelSupportPlus, y0ref = y0_PixelSupportPlus;
+          if (FitObject == "PixelShieldMinus" && x >= 0) {x0ref = x0_PixelShieldPlus; y0ref = y0_PixelShieldPlus;}
+          if (FitObject == "PixelSupportMinus" && x >= 0) {x0ref = x0_PixelSupportPlus; y0ref = y0_PixelSupportPlus;}
+
+          if (FitObject == "PixelShield2Ellipses" && x >= 0) {x0ref = x0; y0ref = y0;}
+          if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
+
           Double_t xc = x - x0ref;
           Double_t yc = y - y0ref;
 
@@ -726,6 +739,10 @@ void InnerTrackerFit()
         Double_t y0ref = y0;
         if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
         if(FitObject == "PixelSupportMinus" && x >= 0) x0ref = x0_PixelSupportPlus, y0ref = y0_PixelSupportPlus;
+
+          if (FitObject == "PixelShield2Ellipses" && x >= 0) {x0ref = x0; y0ref = y0;}
+          if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
+
         Double_t xc = x - x0ref;
         Double_t yc = y - y0ref;
 
@@ -817,6 +834,10 @@ void InnerTrackerFit()
           Double_t y0ref = y0;
           if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
           if(FitObject == "PixelSupportMinus" && x >= 0) x0ref = x0_PixelSupportPlus, y0ref = y0_PixelSupportPlus;
+
+          if (FitObject == "PixelShield2Ellipses" && x >= 0) {x0ref = x0; y0ref = y0;}
+          if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
+
           Double_t xc = x - x0ref;
           Double_t yc = y - y0ref;
 
@@ -872,7 +893,7 @@ void InnerTrackerFit()
         if( x > RSmin && x < (RSmin+RangeEstimatorQuality) ) SignalLowEdge = SignalLowEdge + value;
         if( (FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse" || FitObject == "BeamPipe" || FitObject == "BeamPipeEllipse") 
              && x > RSmax && x < (RSmax+RangeEstimatorQuality)) SignalUpperEdge = SignalUpperEdge + value;
-        if( (FitObject == "PixelShieldEllipse" || FitObject == "PixelShieldEllipsePlus" || FitObject == "PixelShield" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus") 
+        if( (FitObject == "PixelShieldEllipse" || FitObject == "PixelShield2Ellipses" || FitObject == "PixelShield" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus") 
             && x > (RSmax-RangeEstimatorQuality) && x < RSmax) SignalUpperEdge = SignalUpperEdge + value;
         
         if( x > (RBGmax-RangeEstimatorQuality) && x < RBGmax) BgUpperEdge = BgUpperEdge + value;
@@ -897,7 +918,7 @@ void InnerTrackerFit()
         std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
         std::cout << "********DONE CHECKING SLICE TO REMOVE STRUCTURES********" << std::endl;
         }
-      if(FitObject == "PixelShieldPlus")
+      if(FitObject == "PixelShieldPlus" )
         {
         if (SignalUpperEdge > 1.15*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
         std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
@@ -912,10 +933,10 @@ void InnerTrackerFit()
         if (SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
         std::cout << "Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
         }
-      if(FitObject == "PixelShieldEllipsePlus")
+      if(FitObject == "PixelShield2Ellipses")
         {
-        if (SignalUpperEdge > 1.3*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        std::cout << "Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
+        if (SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
+        std::cout << "Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   SignalUpperEdge/BgUpperEdge =" << SignalUpperEdge/BgUpperEdge << std::endl;
         }
       if(BgUpperEdge > 0.)hQuality->Fill( max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) );
       if(FitObject == "PixelShield")std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
@@ -1063,6 +1084,10 @@ void InnerTrackerFit()
         Double_t y0ref = y0;
         if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
         if(FitObject == "PixelSupportMinus" && x >= 0) x0ref = x0_PixelSupportPlus, y0ref = y0_PixelSupportPlus;
+
+        if (FitObject == "PixelShield2Ellipses" && x >= 0) {x0ref = x0; y0ref = y0;}
+        if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
+
         Double_t xc = x - x0ref;
         Double_t yc = y - y0ref;
         
@@ -1299,25 +1324,40 @@ void InnerTrackerFit()
     TVirtualFitter* fitterShieldEllipsePlus;
     fitterShieldEllipsePlus = fitter;
     TGraph* gr_ellipseShieldPlus = gr_arc;
-    if (FitObject == "PixelShieldEllipsePlus")
+    TGraph* gr_ellipseShieldFar = gr_arc;
+    if (FitObject == "PixelShield2Ellipses")
        {
-       fitterShieldEllipsePlus = TVirtualFitter::Fitter(0,4);
-       fitterShieldEllipsePlus->SetFCN(funPixelShieldEllipsePlus);
+       fitterShieldEllipsePlus = TVirtualFitter::Fitter(0,6);
+       fitterShieldEllipsePlus->SetFCN(funPixelShield2Ellipses);
        //std::cout << "**********Setting Parameters**********" << std::endl;
-       fitterShieldEllipsePlus->SetParameter( 0, "r0_x", r0, 0.01, RSmin, RSmax ); // in cm
-       fitterShieldEllipsePlus->SetParameter( 1, "x0", x0, 0.01, -0.4, 0.4 ); // in cm
+       fitterShieldEllipsePlus->SetParameter( 0, "r0_x", r0, 0.01, RSmin+0.1, RSmax-0.16 ); // in cm
+       fitterShieldEllipsePlus->SetParameter( 1, "x0", x0, 0.01, -0.4, 0.5 ); // in cm
        fitterShieldEllipsePlus->SetParameter( 2, "y0", y0, 0.01, -0.4, 0.4 ); // in cm
        fitterShieldEllipsePlus->SetParameter( 3, "r0_y", r0_y, 0.01, RSmin, RSmax ); // in cm
+       //fitterShieldEllipsePlus->SetParameter( 3, "r0_y", r0_y, 0.01, -0.05, 0.05 ); // in cm
+       fitterShieldEllipsePlus->SetParameter( 4, "x0_Far", x0_Far, 0.01, -0.4, 0.4 ); // in cm
+       fitterShieldEllipsePlus->SetParameter( 5, "y0_Far", y0_Far, 0.01, -0.4, 0.4 ); // in cm
+       fitterShieldEllipsePlus->FixParameter(0);
+       //fitterShieldEllipsePlus->FixParameter(3);
+       //fitterShieldEllipsePlus->FixParameter(4);
+       //fitterShieldEllipsePlus->FixParameter(5);
        Double_t arglistArcEllipse[10] = {0.};
        //std::cout << "**********About to Fit**********" << std::endl;
        fitterShieldEllipsePlus->ExecuteCommand( "MIGRAD", arglistArcEllipse, 0 );
        //std::cout << "*********Done Fitting**********" << std::endl;
 
-       TEllipse* ellipseShieldPlus = new TEllipse( fitterShieldEllipsePlus->GetParameter(1), fitterShieldEllipsePlus->GetParameter(2), fitterShieldEllipsePlus->GetParameter(0), fitterShieldEllipsePlus->GetParameter(3));
+       TEllipse* ellipseShieldPlus = new TEllipse( fitterShieldEllipsePlus->GetParameter(1), fitterShieldEllipsePlus->GetParameter(2), fitterShieldEllipsePlus->GetParameter(0), fitterShieldEllipsePlus->GetParameter(3), -90, 90);
        ellipseShieldPlus->SetFillStyle(0);
        ellipseShieldPlus->SetLineColor(kRed);
        ellipseShieldPlus->SetLineWidth(2);
        ellipseShieldPlus->Draw("same");
+
+       TEllipse* ellipseShieldFar = new TEllipse( fitterShieldEllipsePlus->GetParameter(4), fitterShieldEllipsePlus->GetParameter(5), fitterShieldEllipsePlus->GetParameter(0), fitterShieldEllipsePlus->GetParameter(3), 90, 270);
+       ellipseShieldFar->SetFillStyle(0);
+       ellipseShieldFar->SetLineColor(kBlack);
+       ellipseShieldFar->SetLineWidth(2);
+       ellipseShieldFar->Draw("same");
+
        Double_t x_ellipseShieldPlus[1], y_ellipseShieldPlus[1];
        x_ellipseShieldPlus[0] = fitterShieldEllipsePlus->GetParameter(1);
        y_ellipseShieldPlus[0] = fitterShieldEllipsePlus->GetParameter(2);
@@ -1327,6 +1367,16 @@ void InnerTrackerFit()
        gr_ellipseShieldPlus->SetMarkerSize(0.5);
        gr_ellipseShieldPlus->SetMarkerColor(kRed);
        gr_ellipseShieldPlus->Draw("P");
+
+       Double_t x_ellipseShieldFar[1], y_ellipseShieldFar[1];
+       x_ellipseShieldFar[0] = fitterShieldEllipsePlus->GetParameter(4);
+       y_ellipseShieldFar[0] = fitterShieldEllipsePlus->GetParameter(5);
+       gr_ellipseShieldFar = new TGraph(1,x_ellipseShieldFar,y_ellipseShieldFar);
+       gr_ellipseShieldFar->SetMarkerStyle(20);
+       gr_ellipseShieldFar->SetMarkerSize(0.5);
+       gr_ellipseShieldFar->SetMarkerColor(kBlack);
+       gr_ellipseShieldFar->Draw("P");
+
        fitterDraw = fitterShieldEllipsePlus;
        }
     // fit the pixel support with an ellipse
@@ -1488,7 +1538,7 @@ void InnerTrackerFit()
     gr_arc0->SetMarkerSize(0.5);
     gr_arc0->SetMarkerColor(kBlue);
     // draw the (0,0) point for everything but the pixel support fit with an ellipse
-    if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShieldEllipsePlus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
+    if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
       {
       //plot circle with center at (0.0)
       TArc* arc0 = new TArc( 0., 0., fitter->GetParameter(0) );
@@ -1499,15 +1549,15 @@ void InnerTrackerFit()
       gr_arc0->Draw("P");
       }
 
-    if(FitObject == "PixelShieldEllipsePlus")
-      {
-      // plot ellipse with center at (0,0)
-      TArc* arc0 = new TArc( 0., 0., fitterShieldEllipsePlus->GetParameter(0) );
-      arc0->SetFillStyle(0);
-      arc0->SetLineColor(kBlue);
-      arc0->SetLineWidth(2);
-      gr_arc0->Draw("P");
-      }
+    //if(FitObject == "PixelShield2Ellipses")
+    //  {
+    //  // plot ellipse with center at (0,0)
+    //  TArc* arc0 = new TArc( 0., 0., fitterShieldEllipsePlus->GetParameter(0) );
+    //  arc0->SetFillStyle(0);
+    //  arc0->SetLineColor(kBlue);
+    //  arc0->SetLineWidth(2);
+    // gr_arc0->Draw("P");
+    //  }
 
     // draw the (0,0) point for the pixel support fit with an ellipse
     if(FitObject == "PixelSupportEllipse" || FitObject == "PixelShieldEllipse" || FitObject == "BeamPipeEllipse")
@@ -1535,7 +1585,7 @@ void InnerTrackerFit()
 
     // Create the stats box for everything that is not the minus side of the pixel shield,
     // the minus side of the pixel support, or the pixel support ellipse
-    if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShieldEllipsePlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
+    if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
       {
       TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
       std::ostringstream legEntry;
@@ -1560,7 +1610,7 @@ void InnerTrackerFit()
       }
 
     // Create the stats box for the pixel support ellipse fit
-    if(FitObject == "PixelSupportEllipse" || FitObject == "BeamPipeEllipse" || FitObject == "PixelShieldEllipse" || FitObject == "PixelShieldEllipsePlus")
+    if(FitObject == "PixelSupportEllipse" || FitObject == "BeamPipeEllipse" || FitObject == "PixelShieldEllipse")
       {
       TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
       std::ostringstream legEntry;
@@ -1587,6 +1637,51 @@ void InnerTrackerFit()
       res->SetTextFont(42);
       res->Draw("same");
       }
+
+    // Create the stats box for the pixel support ellipse fit
+    if(FitObject == "PixelShield2Ellipses")
+      {
+      TPaveText* res = new TPaveText(x1L-0.01, y1L-0.32, x2L+0.02, y2L-0.40, "brNDC");
+      std::ostringstream legEntry;
+
+      legEntry.str("");
+      if(fitterDraw->GetParError(0) >= ErrPrecision)legEntry << "r_{0}^{x} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << fitterDraw->GetParError(0) << " #pm " << r_Sys;
+      else legEntry << "r_{0}^{x} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << r_Sys;
+      res->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      if(fitterDraw->GetParError(3) >= ErrPrecision)legEntry << "r_{0}^{y} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(3) << " #pm " << fitterDraw->GetParError(3) << " #pm " << r_Sys;
+      //else legEntry << "r_{0}^{y} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) + fabs(fitterDraw->GetParameter(3)) << " #pm " << r_Sys;
+      else legEntry << "r_{0}^{y} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(3) << " #pm " << r_Sys;
+      res->AddText( legEntry.str().c_str() );
+
+      legEntry.str("");
+      if(fitterDraw->GetParError(1) >= ErrPrecision) legEntry << "x_{0}^{Near} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(1)*10 << " #pm " << fitterDraw->GetParError(1)*10 << " #pm " << x_Sys*10;
+      else legEntry << "x_{0}^{Near} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(1)*10 << " #pm " << x_Sys*10;
+      res->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      if(fitterDraw->GetParError(2) >= ErrPrecision) legEntry << "y_{0}^{Near} (mm) \t = \t" << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10;
+      else legEntry << "y_{0}^{Near} (mm) \t = \t" << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10;
+      res->AddText( legEntry.str().c_str() );
+
+      legEntry.str("");
+      if(fitterDraw->GetParError(4) >= ErrPrecision) legEntry << "x_{0}^{Far} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(4)*10 << " #pm " << fitterDraw->GetParError(4)*10 << " #pm " << x_Sys*10;
+      else legEntry << "x_{0}^{Far} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(4)*10 << " #pm " << x_Sys*10;
+      res->AddText( legEntry.str().c_str() );
+      legEntry.str("");
+      if(fitterDraw->GetParError(5) >= ErrPrecision) legEntry << "y_{0}^{Far} (mm) \t = \t" << fitterDraw->GetParameter(5)*10 << " #pm " << fitterDraw->GetParError(5)*10 << " #pm " << x_Sys*10;
+      else legEntry << "y_{0}^{Far} (mm) \t = \t" << fitterDraw->GetParameter(5)*10 << " #pm " << x_Sys*10;
+      res->AddText( legEntry.str().c_str() );
+
+
+
+      res->SetFillStyle(0);
+      res->SetTextAlign(12);
+      res->SetTextColor(kRed);
+      res->SetLineColor(kRed);
+      res->SetTextFont(42);
+      res->Draw("same");
+      }
+
 
       // Format the 2D map for the pixel shield
       if(FitObject == "PixelShieldMinus")
@@ -1711,9 +1806,10 @@ void InnerTrackerFit()
         {
         legArc->AddEntry(gr_ellipseSupport,"x_{0}, y_{0} from fit","P");
         }
-      if(FitObject == "PixelShieldEllipsePlus")
+      if(FitObject == "PixelShield2Ellipses")
         {
-        legArc->AddEntry(gr_ellipseShieldPlus,"x_{0}, y_{0} from fit", "P");
+        legArc->AddEntry(gr_ellipseShieldPlus,"(x_{0}^{Near}, y_{0}^{Near})", "P");
+        legArc->AddEntry(gr_ellipseShieldFar,"(x_{0}^{Far}, y_{0}^{Far})", "P");
         }
       if(FitObject == "PixelShieldEllipse")
         {
@@ -1762,7 +1858,7 @@ void InnerTrackerFit()
     // Create function that will be plotted on the Rho-Phi plots, but not on the plots for the minus side of the pixel shield,
     // the minus side of the pixel support, and the ellipse fit for the pixel support
     TF1 *bpAlt = new TF1("bpAlt",func_ArcRhoPhi,-3.15,6.3,3);
-    if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShieldEllipsePlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
+    if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
       {
       // use parameters from the fitter
       bpAlt->SetParameter(0, fitter->GetParameter(0));
@@ -1792,18 +1888,37 @@ void InnerTrackerFit()
       }
 
     // Draw the ellipse in rhophi for the pixel shield plus
-    TF1 *bpShieldEllipsePlusAlt = new TF1("bpAlt",func_EllipseRhoPhi,-1.575,1.575,4);
-    if(FitObject == "PixelShieldEllipsePlus")
+    TF1 *funShieldEllipseNear = new TF1("funShieldEllipseNear",func_EllipseRhoPhi,-1.575,1.575,4);
+    TF1 *funShieldEllipseFar = new TF1("funShieldEllipseFar",func_EllipseRhoPhi,1.575,2*1.575,4);
+    TF1 *funShieldEllipseFar2 = new TF1("funShieldEllipseFar2",func_EllipseRhoPhi,-2.*1.575,-1.575,4);
+    if(FitObject == "PixelShield2Ellipses")
       {
       // use parameters from the fitter
-      bpShieldEllipsePlusAlt->SetParameter(0, fitterShieldEllipsePlus->GetParameter(0));
-      bpShieldEllipsePlusAlt->SetParameter(1, fitterShieldEllipsePlus->GetParameter(1));
-      bpShieldEllipsePlusAlt->SetParameter(2, fitterShieldEllipsePlus->GetParameter(2));
-      bpShieldEllipsePlusAlt->SetParameter(3, fitterShieldEllipsePlus->GetParameter(3));
+      funShieldEllipseNear->SetParameter(0, fitterShieldEllipsePlus->GetParameter(0));
+      funShieldEllipseNear->SetParameter(1, fitterShieldEllipsePlus->GetParameter(1));
+      funShieldEllipseNear->SetParameter(2, fitterShieldEllipsePlus->GetParameter(2));
+      funShieldEllipseNear->SetParameter(3, fitterShieldEllipsePlus->GetParameter(3));
+      funShieldEllipseNear->SetLineColor(kRed);
+      funShieldEllipseNear->SetLineWidth(2);
+      funShieldEllipseNear->Draw("same");
 
-      bpShieldEllipsePlusAlt->SetLineColor(kRed);
-      bpShieldEllipsePlusAlt->SetLineWidth(2);
-      bpShieldEllipsePlusAlt->Draw("same");
+      funShieldEllipseFar->SetParameter(0, fitterShieldEllipsePlus->GetParameter(0));
+      funShieldEllipseFar->SetParameter(1, fitterShieldEllipsePlus->GetParameter(4));
+      funShieldEllipseFar->SetParameter(2, fitterShieldEllipsePlus->GetParameter(5));
+      funShieldEllipseFar->SetParameter(3, fitterShieldEllipsePlus->GetParameter(3));
+      funShieldEllipseFar->SetLineColor(kBlack);
+      funShieldEllipseFar->SetLineWidth(2);
+      funShieldEllipseFar->Draw("same");
+
+      funShieldEllipseFar2->SetParameter(0, fitterShieldEllipsePlus->GetParameter(0));
+      funShieldEllipseFar2->SetParameter(1, fitterShieldEllipsePlus->GetParameter(4));
+      funShieldEllipseFar2->SetParameter(2, fitterShieldEllipsePlus->GetParameter(5));
+      funShieldEllipseFar2->SetParameter(3, fitterShieldEllipsePlus->GetParameter(3));
+      funShieldEllipseFar2->SetLineColor(kBlack);
+      funShieldEllipseFar2->SetLineWidth(2);
+      funShieldEllipseFar2->Draw("same");
+
+
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
       }
@@ -1885,7 +2000,7 @@ void InnerTrackerFit()
        // create the functions for the systematic variation of x, but not for the minus side of the pixel shield
        TF1 *bpAlt_xp = new TF1("bpAlt_xp",func_ArcRhoPhi,-3.15,6.3,3);
        TF1 *bpAlt_xm = new TF1("bpAlt_xm",func_ArcRhoPhi,-3.15,6.3,3);
-       if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShieldEllipsePlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
+       if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
          {
          // set parameters using values from the fitter
          bpAlt_xp->SetParameter(0, fitter->GetParameter(0));
@@ -1933,7 +2048,7 @@ void InnerTrackerFit()
 
        TF1 *bpAltShieldEllipsePlus_xp = new TF1("bpAlt_xp",func_EllipseRhoPhi,-1.575,1.575,4);
        TF1 *bpAltShieldEllipsePlus_xm = new TF1("bpAlt_xm",func_EllipseRhoPhi,-1.575,1.575,4);
-       if(FitObject == "PixelShieldEllipsePlus")
+       if(FitObject == "PixelShield2Ellipses")
          {
          bpAltShieldEllipsePlus_xp->SetParameter(0, fitterShieldEllipsePlus->GetParameter(0));
          bpAltShieldEllipsePlus_xp->SetParameter(1, fitterShieldEllipsePlus->GetParameter(1)+x_Sys);
@@ -2081,7 +2196,7 @@ void InnerTrackerFit()
        // Create the functions for the systematic variation of y, but not for the minus side of the pixel shield 
        TF1 *bpAlt_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,-3.15,6.3,3);
        TF1 *bpAlt_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,-3.15,6.3,3);
-       if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShieldEllipsePlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
+       if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
          {
          // set parameters for the positive deviation
          bpAlt_yp->SetParameter(0, fitter->GetParameter(0));
@@ -2130,7 +2245,7 @@ void InnerTrackerFit()
 
        TF1 *bpAltShieldEllipsePlus_yp = new TF1("bpAlt_yp",func_EllipseRhoPhi,-1.575,1.575,4);
        TF1 *bpAltShieldEllipsePlus_ym = new TF1("bpAlt_ym",func_EllipseRhoPhi,-1.575,1.575,4);
-       if(FitObject == "PixelShieldEllipsePlus")
+       if(FitObject == "PixelShield2Ellipses")
          {
          // set parameters for the positive deviaiton
          bpAltShieldEllipsePlus_yp->SetParameter(0, fitterShieldEllipsePlus->GetParameter(0));
@@ -2149,7 +2264,7 @@ void InnerTrackerFit()
          bpAltShieldEllipsePlus_ym->SetLineWidth(2);
          bpAltShieldEllipsePlus_ym->Draw("same");
 
-         bpShieldEllipsePlusAlt->Draw("same");
+         funShieldEllipseNear->Draw("same");
          cPlots->Update();
          }
 
@@ -2290,7 +2405,7 @@ void InnerTrackerFit()
        // Create the functions for the systematic variation of rho, but not for the minus side of the pixel shield
        TF1 *bpAlt_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,-3.15,6.3,3);
        TF1 *bpAlt_rm = new TF1("bpAlt_rm",func_ArcRhoPhi,-3.15,6.3,3);
-       if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShieldEllipsePlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
+       if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
          {
          // set the parameters for the positive deviation
          //TF1 *bpAlt_rp = new TF1("bpAlt_rp",func_ArcRhoPhi,-3.15,3.15,3);
@@ -2342,7 +2457,7 @@ void InnerTrackerFit()
 
        TF1 *bpAltShieldEllipsePlus_rp = new TF1("bpAlt_rp",func_EllipseRhoPhi,-1.575,1.575,4);
        TF1 *bpAltShieldEllipsePlus_rm = new TF1("bpAlt_rm",func_EllipseRhoPhi,-1.575,1.575,4);
-       if(FitObject == "PixelShieldEllipsePlus")
+       if(FitObject == "PixelShield2Ellipses")
          {
          bpAltShieldEllipsePlus_rp->SetParameter(0, fitterShieldEllipsePlus->GetParameter(0)+r_Sys);
          bpAltShieldEllipsePlus_rp->SetParameter(1, fitterShieldEllipsePlus->GetParameter(1));
@@ -2360,7 +2475,7 @@ void InnerTrackerFit()
          bpAltShieldEllipsePlus_rm->SetLineWidth(2);
          bpAltShieldEllipsePlus_rm->Draw("same");
 
-         bpShieldEllipsePlusAlt->Draw("same");
+         funShieldEllipseNear->Draw("same");
          cPlots->Update();
          }
 
@@ -2996,7 +3111,7 @@ f  = chiSquare;
 }
 
 // create funciton to fit the pixel shield with an ellipse
-void funPixelShieldEllipsePlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
+void funPixelShield2Ellipses( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
 {
 Double_t resoNI = 0.01;
 Int_t numBinsX = h->GetNbinsX();
@@ -3015,6 +3130,9 @@ for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++)
       Double_t y = h->GetYaxis()->GetBinCenter(iy);
       Double_t a = par[0]; // x radius
       Double_t b = par[3]; // y radius
+      //Double_t b = par[0]+ fabs(par[3]); // y radius
+
+      //near side x > 0
       Double_t r = TMath::Sqrt( (x-par[1])*(x-par[1]) + (y-par[2])*(y-par[2]) ); // define r
       Double_t cos_ellipse = (x-par[1])/r; // the cosin
       Double_t sin_ellipse = (y-par[2])/r; // the sine
@@ -3022,12 +3140,28 @@ for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++)
       Double_t y_ellipse = b*sin_ellipse;
       Double_t r_ellipse = TMath::Sqrt( (x_ellipse)*(x_ellipse) + (y_ellipse)*(y_ellipse) );
 
-      if ( r > RSmin && r < RSmax && x >0)
+      //far side x < 0
+      Double_t r_far = TMath::Sqrt( (x-par[4])*(x-par[4]) + (y-par[5])*(y-par[5]) ); // define r
+      Double_t cos_ellipse_far = (x-par[4])/r_far; // the cosin
+      Double_t sin_ellipse_far = (y-par[5])/r_far; // the sine
+      Double_t x_ellipse_far = a*cos_ellipse_far;
+      Double_t y_ellipse_far = b*sin_ellipse_far;
+      Double_t r_ellipse_far = TMath::Sqrt( (x_ellipse_far)*(x_ellipse_far) + (y_ellipse_far)*(y_ellipse_far) );
+
+      if ( r > RSmin && r < RSmax && x >= 0)
         {
         Double_t PhaseSpaceFactor = (r_ellipse*r_ellipse)/(r*r);
         diff = r_ellipse -r;
         chiSquare += binNum*diff*diff / (resoNI*resoNI) * PhaseSpaceFactor;
         }
+
+      if ( r > RSmin && r < RSmax && x < 0)
+        {
+        Double_t PhaseSpaceFactor = (r_ellipse_far*r_ellipse_far)/(r_far*r_far);
+        diff = r_ellipse_far -r_far;
+        chiSquare += binNum*diff*diff / (resoNI*resoNI) * PhaseSpaceFactor;
+        }
+
       }
    }
    f = chiSquare;
