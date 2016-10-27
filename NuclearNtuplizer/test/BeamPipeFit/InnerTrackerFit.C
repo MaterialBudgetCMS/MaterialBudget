@@ -44,6 +44,10 @@
 #include "TLatex.h"
 #include "TGraphErrors.h"
 #include <TAttFill.h>
+#include <TLatex.h>
+
+#include "tdrstyle.C"
+#include "CMS_lumi.C"
 
 using namespace std;
 
@@ -88,6 +92,39 @@ Double_t func_EllipseRhoPhi(Double_t*, Double_t*);
 
 void InnerTrackerFit()
 {
+  //  gROOT->LoadMacro("tdrstyle.C");
+  setTDRStyle();
+
+
+  //  gROOT->LoadMacro("CMS_lumi.C");
+
+  writeExtraText = true;       // if extra text
+  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
+  //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
+  lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
+  //lumi_sqrtS = "13 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
+
+  int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 0=free form (uses lumi_sqrtS)
+
+  int iPos = 11;
+  // second parameter in example_plot is iPos, which drives the position of the CMS logo in the plot
+  //iPos=11 : top-left, left-aligned
+  // iPos=33 : top-right, right-aligned
+  // iPos=22 : center, centered
+  // mode generally : 
+  //   iPos = 10*(alignement 1/2/3) + position (1/2/3 = left/center/right)
+
+  //  example_plot( iPeriod, 11 );  // left-aligned
+  //  example_plot( iPeriod, 33 );  // right-aligned
+
+  //  writeExtraText = false;       // remove Preliminary
+  
+  //  example_plot( iPeriod, 0 );   // out of frame (in exceptional cases)
+
+  //  example_plot( iPeriod, 11 );  // default: left-aligned
+  //  example_plot( iPeriod, 22 );  // centered
+  //  example_plot( iPeriod, 33 );  // right-aligned  
 
   //Start Initialization:
   
@@ -98,7 +135,10 @@ void InnerTrackerFit()
   TH1D* hYderivative;
   TH2D* hYderivative2D;
   TH2D* hXderivative2D;
-  
+  TLatex latex_circle;
+
+
+  float ScaleSize = 1. - 2.*0.16;  
   // fit mesurements:
   Double_t x0_PixelShieldPlus = -0.107;
   Double_t y0_PixelShieldPlus = -0.093;
@@ -128,13 +168,13 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
   //FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
-  FitObject = "PixelShield2Ellipses"; // status failed
+  //FitObject = "PixelShield2Ellipses"; // status failed
   //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
@@ -145,7 +185,7 @@ void InnerTrackerFit()
   
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
-     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 3.0;
+     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 3.5;
      RangeEstimatorQuality = 0.1;  
      x_Sys = 0.002; //size of systematics in cm
      r_Sys = 0.002; //size of systematics in cm
@@ -332,7 +372,7 @@ void InnerTrackerFit()
   //End Initialization:
 
   //gROOT->SetBatch(1);
-  gROOT->ForceStyle();
+  //gROOT->ForceStyle();
 
   TFile* inputFile = TFile::Open("Run2015DreReco.root");
 
@@ -350,16 +390,18 @@ void InnerTrackerFit()
   /// dummy should better be 1
   gStyle->SetPalette(1);
   gStyle->SetOptStat(1000111110);
-  gStyle->SetCanvasDefW(980);
-  gStyle->SetCanvasDefH(800);
-  gStyle->SetPadRightMargin(0.2725);
-  gStyle->SetStatX(0.98);
-  gStyle->SetStatY(0.90);
-  gStyle->SetStatW(0.24);
-  gStyle->SetTitleW(0.585);
-  gStyle->SetTitleX(0.434);
+  gStyle->SetCanvasDefW(1000);
+  gStyle->SetCanvasDefH(1000);
+  //gStyle->SetPadRightMargin(0.2);
+  //gStyle->SetPadTopMargin(0.2);
+  //gStyle->SetStatX(0.9);
+  //gStyle->SetStatY(0.90);
+  //gStyle->SetStatW(0.24);
+  //gStyle->SetTitleW(0.585);
+  //gStyle->SetTitleX(0.434);
 
   gStyle->SetOptFit(0011);
+  //gStyle->SetCanvasBorderMode(0); //no canvas border
 
   Double_t resR[10];
   Double_t errR[10];
@@ -429,7 +471,7 @@ void InnerTrackerFit()
     //if(FitObject == "BeamPipe")    h_RhoPhi->Rebin2D(5,5);
     h_RhoPhi->SetStats(0);
     h_RhoPhi->GetXaxis()->SetTitle("#phi");
-    h_RhoPhi->GetYaxis()->SetTitle("R [cm]");
+    h_RhoPhi->GetYaxis()->SetTitle("R (cm)");
     //h_RhoPhi->GetXaxis()->SetRangeUser(-RPlot, RPlot);
 
 
@@ -455,8 +497,8 @@ void InnerTrackerFit()
     //if(FitObject == "PixelSupportRailsPositive")h->Rebin2D(2,2);
     //if(FitObject == "PixelSupportRailsNegative")h->Rebin2D(2,2);
     h->SetStats(0);
-    h->GetXaxis()->SetTitle("x [cm]");
-    h->GetYaxis()->SetTitle("y [cm]");
+    h->GetXaxis()->SetTitle("x (cm)");
+    h->GetYaxis()->SetTitle("y (cm)");
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     //h->Draw("col");
@@ -466,8 +508,8 @@ void InnerTrackerFit()
     //create empty 2d histo for backroung estimation in signal region
     TH2D* h_Draw = new TH2D( "h_Draw", h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
                                                       h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
-    h_Draw->GetXaxis()->SetTitle("x [cm]");
-    h_Draw->GetYaxis()->SetTitle("y [cm]");
+    h_Draw->GetXaxis()->SetTitle("x (cm)");
+    h_Draw->GetYaxis()->SetTitle("y (cm)");
 
     Int_t numBinsX = h->GetNbinsX();
     Int_t numBinsY = h->GetNbinsY();
@@ -494,12 +536,12 @@ void InnerTrackerFit()
     }
    // finish h_Draw
     h_Draw->SetStats(0);
-    h_Draw->GetXaxis()->SetTitle("x [cm]");
-    h_Draw->GetYaxis()->SetTitle("y [cm]");
+    h_Draw->GetXaxis()->SetTitle("x (cm)");
+    h_Draw->GetYaxis()->SetTitle("y (cm)");
     h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     h_Draw->Draw("COLZ");
-
+    CMS_lumi( cPlots, iPeriod, 0 );
 
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
@@ -628,7 +670,7 @@ void InnerTrackerFit()
 
       cPlots->cd();
       hbgua0->SetMinimum(0);
-      hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) [cm]");
+      hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) (cm)");
       //hbgua0->GetXaxis()->SetRangeUser(PipeInf, FitSup+0.1);
       hbgua0->GetXaxis()->SetRangeUser(Rmin, Rmax);
 
@@ -681,7 +723,7 @@ void InnerTrackerFit()
 
       TLegend* legBg = new TLegend(x1L, 0.6, x2L, y2L, "");
       legBg->SetTextFont(42);
-      legBg->SetTextSize(0.03);
+      legBg->SetTextSize(0.03*ScaleSize);
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
       legBg->AddEntry(hbgua0,"inclusive data","l");
@@ -719,8 +761,8 @@ void InnerTrackerFit()
     //create empty 2d histo for backroung estimation in signal region
     TH2D* h0 = new TH2D( plot.c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
                                                       h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
-    h0->GetXaxis()->SetTitle("x [cm]");
-    h0->GetYaxis()->SetTitle("y [cm]");
+    h0->GetXaxis()->SetTitle("x (cm)");
+    h0->GetYaxis()->SetTitle("y (cm)");
 
     //Int_t numBinsX = h0->GetNbinsX();
     //Int_t numBinsY = h0->GetNbinsY();
@@ -943,7 +985,7 @@ void InnerTrackerFit()
 
       cPlots->cd();
       hbgua0->SetMinimum(0);
-      hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) [cm]");
+      hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) (cm)");
       hbgua0->GetXaxis()->SetRangeUser(Rmin, Rmax);
       hbgua0->Draw();
       cPlots->Update();
@@ -987,9 +1029,9 @@ void InnerTrackerFit()
 
       //TLegend* legBg = new TLegend(x1L, 0.52, x2L, y2L, "");
       //TLegend* legBg = new TLegend(0.45, 0.6, 0.8, 0.9, "");
-      TLegend* legBg = new TLegend(0.65, 0.6, 1.0, 0.9, "");
+      TLegend* legBg = new TLegend(0.5, 0.6, 0.7, 0.8, "");
       legBg->SetTextFont(42);
-      legBg->SetTextSize(0.03);
+      legBg->SetTextSize(0.04*ScaleSize);
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
       if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hbgua0,"EXCLUDED from FIT","");
@@ -1040,8 +1082,8 @@ void InnerTrackerFit()
     //create empty histo for 2D signal (minus backroung minus 2 simgma of background)
     TH2D* h1 = new TH2D( plot.c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
                                                       h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
-    h1->GetXaxis()->SetTitle("x [cm]");
-    h1->GetYaxis()->SetTitle("y [cm]");
+    h1->GetXaxis()->SetTitle("x (cm)");
+    h1->GetYaxis()->SetTitle("y (cm)");
 
     //Int_t numBinsX = h->GetNbinsX();
     //Int_t numBinsY = h->GetNbinsY();
@@ -1179,7 +1221,7 @@ void InnerTrackerFit()
 
     /// Step 5: fit the distribution
 
-    h1->SetMinimum(1);
+    //h1->SetMinimum(1);
     h1->SetStats(0);
     h = h1;
 
@@ -1587,26 +1629,29 @@ void InnerTrackerFit()
     // the minus side of the pixel support, or the pixel support ellipse
     if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
       {
-      TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
-      std::ostringstream legEntry;
-      legEntry.str("");
-      if(fitterDraw->GetParError(0) >= ErrPrecision)legEntry << "R (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << fitterDraw->GetParError(0) << " #pm " << r_Sys;
-      else legEntry << "R (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << r_Sys;
-      res->AddText( legEntry.str().c_str() );
-      legEntry.str("");
-      if(fitterDraw->GetParError(1) >= ErrPrecision)legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(1)*10 << " #pm " << fitterDraw->GetParError(1)*10 << " #pm " << x_Sys*10;
-      else legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) <<  fitterDraw->GetParameter(1)*10 <<" #pm " << x_Sys*10;
-      res->AddText( legEntry.str().c_str() );
-      legEntry.str("");
-      if(fitterDraw->GetParError(2) >= ErrPrecision)legEntry << "y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10;
-      else legEntry << "y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10;
-      res->AddText( legEntry.str().c_str() );
-      res->SetFillStyle(0);
-      res->SetTextAlign(12);
-      res->SetTextColor(kRed);
-      res->SetLineColor(kRed);
-      res->SetTextFont(42);
-      res->Draw("same");
+      //TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
+      latex_circle.SetTextAlign(12);
+      latex_circle.SetTextColor(kBlack);
+      //latex_circle.SetLineColor(kRed);
+      latex_circle.SetTextFont(42);
+      latex_circle.SetTextSize(0.04*ScaleSize);    
+
+      std::ostringstream legRadius;
+      if(fitterDraw->GetParError(0) >= ErrPrecision)legRadius << "R (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << fitterDraw->GetParError(0) << " #pm " << r_Sys;
+      else legRadius << "R (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << r_Sys;
+
+      std::ostringstream legCenter;
+      if(fitterDraw->GetParError(1) >= ErrPrecision)legCenter << "#splitline{x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(1)*10 << " #pm " << fitterDraw->GetParError(1)*10 << " #pm " << x_Sys*10 << "}";
+      else legCenter << "#splitline{x_{0} (mm) \t = \t" << fixed << setprecision(2) <<  fitterDraw->GetParameter(1)*10 <<" #pm " << x_Sys*10 << "}";
+      if(fitterDraw->GetParError(2) >= ErrPrecision)legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10 << "}";
+      else legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10 << "}";
+
+      //latex_circle.DrawLatex(x1L, y1L, legCenter.str().c_str());
+      latex_circle.DrawLatex(0.5, -2.9, legCenter.str().c_str());
+      latex_circle.DrawLatex(-3.1, -2.7, legRadius.str().c_str());
+      CMS_lumi( cPlots, iPeriod, iPos );
+      //cout << " ======= cPlots->GetTopMargin() =  " << cPlots->GetTopMargin() << endl; 
+
       }
 
     // Create the stats box for the pixel support ellipse fit
@@ -1772,9 +1817,11 @@ void InnerTrackerFit()
       }
 
       // Create the legend for all 2D XY map plots, include (0,0) point
-      TLegend* legArc = new TLegend(0.75, 0.75, 0.95, 0.9, "");
+      //TLegend* legArc = new TLegend(0.75, 0.75, 0.95, 0.9, "");
+      TLegend* legArc = new TLegend(0.7, 0.73, 0.8, 0.8, "");
       legArc->SetTextFont(42);
-      legArc->SetTextSize(0.03);
+      //legArc->SetTextAlign(12); 
+      legArc->SetTextSize(0.04*ScaleSize);
       legArc->SetFillColor(kWhite);
       legArc->SetTextColor(kBlack);
       //legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
@@ -1783,9 +1830,9 @@ void InnerTrackerFit()
 
       // Add entries according to the object that was fit
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport" || FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative")
-      //if((FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportPlus" && FitObject != "PixelSupportEllipse") && FitObject != PixelSupportMinus)
         {
-        legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
+        legArc->AddEntry(gr_arc,"(x_{0}, y_{0})","P");
+        //legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
         }
       if(FitObject == "PixelShieldPlus")
         {
@@ -1853,6 +1900,7 @@ void InnerTrackerFit()
       }
     //h_RhoPhi->GetYaxis()->SetRangeUser(RSmin, RSmax);
     h_RhoPhi->Draw("colz");
+    h_RhoPhi->GetYaxis()->SetTitleOffset(1.5);
 
     //TF1 *bpAlt = new TF1("bpAlt","sqrt((21.699*cos(x)-0.081)^2 + (21.699*sin(x)-0.345)^2)",-3.15,3.15);
     // Create function that will be plotted on the Rho-Phi plots, but not on the plots for the minus side of the pixel shield,
@@ -1867,6 +1915,7 @@ void InnerTrackerFit()
       bpAlt->SetLineColor(kRed);
       bpAlt->SetLineWidth(2);
       bpAlt ->Draw("same");
+      CMS_lumi( cPlots, iPeriod, 0 );
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
       }
@@ -2630,7 +2679,7 @@ void InnerTrackerFit()
     if (FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative") {
        gStyle->SetOptStat(0);
        hYderivative->GetYaxis()->SetTitleOffset(1.5);
-       hYderivative->GetXaxis()->SetTitle("y [cm]");
+       hYderivative->GetXaxis()->SetTitle("y (cm)");
        hYderivative->GetYaxis()->SetTitle("y Derivative");
        hYderivative->SetLineWidth(2);
 
@@ -2768,8 +2817,8 @@ void InnerTrackerFit()
   cPlots = new TCanvas("results","");
   cPlots->cd();
   TGraphErrors* gRfit = new TGraphErrors( 10, resZ, resR, errZ, errR );
-  gRfit->GetXaxis()->SetTitle("z [cm]");
-  gRfit->GetYaxis()->SetTitle("R [cm]");
+  gRfit->GetXaxis()->SetTitle("z (cm)");
+  gRfit->GetYaxis()->SetTitle("R (cm)");
   gRfit->SetTitle("fit results");
   gRfit->SetMarkerStyle(20);
   gRfit->SetMarkerSize(1.2);
@@ -2784,8 +2833,8 @@ void InnerTrackerFit()
   cPlots->Update();
 
   TGraphErrors* gx0fit = new TGraphErrors( 10, resZ, resx0, errZ, errx0 );
-  gx0fit->GetXaxis()->SetTitle("z [cm]");
-  gx0fit->GetYaxis()->SetTitle("x_{0} [mm]");
+  gx0fit->GetXaxis()->SetTitle("z (cm)");
+  gx0fit->GetYaxis()->SetTitle("x_{0} (mm)");
   gx0fit->SetTitle("fit results");
   gx0fit->SetMarkerStyle(20);
   gx0fit->SetMarkerSize(1.2);
@@ -2801,7 +2850,7 @@ void InnerTrackerFit()
   cPlots->Update();
 
   TGraphErrors* gy0fit = new TGraphErrors( 10, resZ, resy0, errZ, erry0 );
-  gy0fit->GetXaxis()->SetTitle("z [cm]");
+  gy0fit->GetXaxis()->SetTitle("z (cm)");
   gy0fit->GetYaxis()->SetTitle("y_{0} [mm]");
   gy0fit->SetTitle("fit results");
   gy0fit->SetMarkerStyle(20);
@@ -2815,9 +2864,7 @@ void InnerTrackerFit()
   fy0fit->SetMarkerColor(kBlue);
   gy0fit->Fit("fy0fit","RWEMS");
   gy0fit->Draw("ap");
-  //cout << "======    Check Error 1" << endl;
   cPlots->Update();
-  //cout << "======    Check Error 2" << endl;
 
   cPlots->cd();
 
@@ -2862,8 +2909,10 @@ void InnerTrackerFit()
   statsRfit->SetY2NDC(0.665);
   pad1->Update();
   TPaveText *title = (TPaveText*)pad1->GetPrimitive("title");
-  title->SetY1NDC( 0.78 );
-  title->SetY2NDC( 0.94 );
+  cout << "======    Check Error 1" << endl;
+  //title->SetY1NDC( 0.78 );
+  //title->SetY2NDC( 0.94 );
+  cout << "======    Check Error 2" << endl;
 
   //gbfit->Draw("p same");
   //gbfit->GetListOfFunctions()->FindObject("stats")->Delete();
