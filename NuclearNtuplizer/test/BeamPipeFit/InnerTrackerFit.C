@@ -172,7 +172,7 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
@@ -182,7 +182,7 @@ void InnerTrackerFit()
   //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
-  //FitObject = "PixelSupportEllipse"; //work well
+  FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
   //FitObject = "PixelSupportRailsPositive"; // work well
   //FitObject = "PixelSupportRailsNegative"; // work wel
@@ -324,7 +324,7 @@ void InnerTrackerFit()
      PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      //Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 24.5; 
-     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 23.; 
+     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 30.; 
      RangeEstimatorQuality = 0.5;  
      x_Sys = 0.007; //size of systematics in cm
      r_Sys = 0.05; //size of systematics in cm
@@ -372,7 +372,12 @@ void InnerTrackerFit()
      y0 = -0.324; // from previous fits using this program that were based on 2015
      r0 = 21.73;  // from previous fits using this program that were based on 2015
   }
-  
+ 
+
+  TH2F *hEmpty = new TH2F("hEmpty","",40,-RPlot,RPlot,40,-RPlot,RPlot);
+  hEmpty->GetXaxis()->SetTitle("x (cm)");
+  hEmpty->GetYaxis()->SetTitle("y (cm)"); 
+  hEmpty->SetStats(0);
   //End Initialization:
 
   //gROOT->SetBatch(1);
@@ -544,9 +549,17 @@ void InnerTrackerFit()
     h_Draw->GetYaxis()->SetTitle("y (cm)");
     h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    h_Draw->Draw("COLZ");
+    if ( FitObject == "PixelSupportEllipse" ){
+       hEmpty -> Draw();
+       h_Draw->Draw("COLZsame");
+    }
+    else {
+       h_Draw->Draw("COLZ");
+    }
+
     CMS_lumi( cPlots, iPeriod, 0 );
-    latex_circle.DrawLatex(1.9, 3., "Data 2015");
+    if (FitObject == "BeamPipe" )latex_circle.DrawLatex(1.9, 3., "Data 2015");
+    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 25., "Data 2015");
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
@@ -1277,7 +1290,13 @@ void InnerTrackerFit()
     //if(k > -6 && k < 5) h->Rebin2D(5,5);
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    h->Draw("col");
+    if ( FitObject == "PixelSupportEllipse" ){
+       hEmpty -> Draw();
+       h->Draw("colsame");
+    }
+    else {
+       h->Draw("col");
+    }
 
     TGraph* gr_arc;
     Double_t x_arc0[1], y_arc0[1];
@@ -1562,13 +1581,13 @@ void InnerTrackerFit()
 
     // If the object is not the plus or minus sides of the pixel shield, draw a circle using the parameters from the fit
      TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
+      arc->SetFillStyle(0);
+      arc->SetLineColor(kRed);
+      arc->SetLineWidth(2);
     if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport" || FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative")
     //if ( (FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportPlus") /*&& FitObject != "PixelSupportEllipse"*/ && FitObject != "PixelSupportMinus")
       {
       cout << "======    fitter->GetParameter(1) = " << fitter->GetParameter(1) << endl;
-      arc->SetFillStyle(0);
-      arc->SetLineColor(kRed);
-      arc->SetLineWidth(2);
       arc->Draw("same");
       Double_t x_arc[1], y_arc[1];
       x_arc[0] = fitter->GetParameter(1);
@@ -1649,7 +1668,6 @@ void InnerTrackerFit()
       if(fitterDraw->GetParError(2) >= ErrPrecision)legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10 << "}";
       else legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10 << "}";
 
-      //latex_circle.DrawLatex(x1L, y1L, legCenter.str().c_str());
       latex_circle.DrawLatex(0.5, -2.9, legCenter.str().c_str());
       latex_circle.DrawLatex(-3.1, -2.7, legRadius.str().c_str());
       CMS_lumi( cPlots, iPeriod, iPos );
@@ -1660,30 +1678,23 @@ void InnerTrackerFit()
     // Create the stats box for the pixel support ellipse fit
     if(FitObject == "PixelSupportEllipse" || FitObject == "BeamPipeEllipse" || FitObject == "PixelShieldEllipse")
       {
-      TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
-      std::ostringstream legEntry;
-      legEntry.str("");
-      if(fitterDraw->GetParError(0) >= ErrPrecision)legEntry << "r0_x (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << fitterDraw->GetParError(0) << " #pm " << r_Sys;
-      else legEntry << "r0_x (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << r_Sys;
-      res->AddText( legEntry.str().c_str() );
-      legEntry.str("");
-      if(fitterDraw->GetParError(3) >= ErrPrecision)legEntry << "r0_y (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(3) << " #pm " << fitterDraw->GetParError(3) << " #pm " << r_Sys;
-      else legEntry << "r0_y (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(3) << " #pm " << r_Sys;
-      res->AddText( legEntry.str().c_str() );
-      legEntry.str("");
-      if(fitterDraw->GetParError(1) >= ErrPrecision) legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(1)*10 << " #pm " << fitterDraw->GetParError(1)*10 << " #pm " << x_Sys*10;
-      else legEntry << "x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(1)*10 << " #pm " << x_Sys*10;
-      res->AddText( legEntry.str().c_str() );
-      legEntry.str("");
-      if(fitterDraw->GetParError(2) >= ErrPrecision) legEntry << "y_{0} (mm) \t = \t" << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10;
-      else legEntry << "y_{0} (mm) \t = \t" << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10;
-      res->AddText( legEntry.str().c_str() );
-      res->SetFillStyle(0);
-      res->SetTextAlign(12);
-      res->SetTextColor(kRed);
-      res->SetLineColor(kRed);
-      res->SetTextFont(42);
-      res->Draw("same");
+
+      std::ostringstream legRadius;
+      if(fitterDraw->GetParError(0) >= ErrPrecision)legRadius << "#splitline{R_{x} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << fitterDraw->GetParError(0) << " #pm " << r_Sys << "}";
+      else legRadius << "#splitline{R_{x} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << r_Sys << "}";
+      if(fitterDraw->GetParError(3) >= ErrPrecision)legRadius << "{R_{y} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(3) << " #pm " << fitterDraw->GetParError(3) << " #pm " << r_Sys << "}";
+      else legRadius << "{R_{y} (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(3) << " #pm " << r_Sys << "}";
+
+      std::ostringstream legCenter;
+      if(fitterDraw->GetParError(1) >= ErrPrecision)legCenter << "#splitline{x_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(1)*10 << " #pm " << fitterDraw->GetParError(1)*10 << " #pm " << x_Sys*10 << "}";
+      else legCenter << "#splitline{x_{0} (mm) \t = \t" << fixed << setprecision(2) <<  fitterDraw->GetParameter(1)*10 <<" #pm " << x_Sys*10 << "}";
+      if(fitterDraw->GetParError(2) >= ErrPrecision)legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10 << "}";
+      else legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10 << "}";
+
+      latex_circle.DrawLatex(4., -26., legCenter.str().c_str());
+      latex_circle.DrawLatex(-27., -26., legRadius.str().c_str());
+      CMS_lumi( cPlots, iPeriod, iPos );
+
       }
 
     // Create the stats box for the pixel support ellipse fit
@@ -1828,12 +1839,14 @@ void InnerTrackerFit()
       legArc->SetFillColor(kWhite);
       legArc->SetTextColor(kBlack);
 
+      legArc->AddEntry(arc,"Data 2015","");
+
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport") 
-        {
-        //legArc->AddEntry(arc,"#splitline{Circle fit}{Data 2015}","l");
-        legArc->AddEntry(arc,"Data 2015","");
         legArc->AddEntry(arc,"Circle fit","l");
-        }
+
+      if( FitObject == "PixelSupportEllipse") 
+        legArc->AddEntry(arc,"Ellipse fit","l");
+
       legArc->AddEntry(gr_arc0,"(0,0)","P");
       legArc->Draw("same");
 
@@ -1860,7 +1873,7 @@ void InnerTrackerFit()
         }
       if(FitObject == "PixelSupportEllipse")
         {
-        legArc->AddEntry(gr_ellipseSupport,"x_{0}, y_{0} from fit","P");
+        legArc->AddEntry(gr_ellipseSupport,"(x_{0}, y_{0})","P");
         }
       if(FitObject == "PixelShield2Ellipses")
         {
