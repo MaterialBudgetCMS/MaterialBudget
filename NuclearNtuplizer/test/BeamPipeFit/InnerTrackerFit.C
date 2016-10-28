@@ -127,6 +127,7 @@ void InnerTrackerFit()
   //  example_plot( iPeriod, 33 );  // right-aligned  
 
   //Start Initialization:
+  float ScaleSize = 1. - 2.*0.16;  
   
   TH2D* h_RhoPhi;
   TCanvas* cPlots;
@@ -136,9 +137,12 @@ void InnerTrackerFit()
   TH2D* hYderivative2D;
   TH2D* hXderivative2D;
   TLatex latex_circle;
+         latex_circle.SetTextAlign(12);
+         latex_circle.SetTextColor(kBlack);
+         latex_circle.SetTextFont(42);
+         latex_circle.SetTextSize(0.04*ScaleSize);    
 
 
-  float ScaleSize = 1. - 2.*0.16;  
   // fit mesurements:
   Double_t x0_PixelShieldPlus = -0.107;
   Double_t y0_PixelShieldPlus = -0.093;
@@ -542,7 +546,7 @@ void InnerTrackerFit()
     h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     h_Draw->Draw("COLZ");
     CMS_lumi( cPlots, iPeriod, 0 );
-
+    latex_circle.DrawLatex(1.9, 3., "Data 2015");
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
@@ -726,7 +730,7 @@ void InnerTrackerFit()
       legBg->SetTextSize(0.03*ScaleSize);
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
-      legBg->AddEntry(hbgua0,"inclusive data","l");
+      legBg->AddEntry(hbgua0,"Data 2015","l");
       legBg->AddEntry(hbgua2,"signal fit region","f");
       legBg->AddEntry(hbgua1,"sideband fit region","f");
       legBg->AddEntry(fitBg,"sideband fit function","l");
@@ -985,7 +989,10 @@ void InnerTrackerFit()
 
       cPlots->cd();
       hbgua0->SetMinimum(0);
-      hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) (cm)");
+      //hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) (cm)");
+      hbgua0->GetXaxis()->SetTitleOffset(1.05);
+      hbgua0->GetXaxis()->SetTitle("#rho (x_{0},y_{0}) (cm)");
+      hbgua0->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hbgua0->GetXaxis()->GetBinWidth(1)));
       hbgua0->GetXaxis()->SetRangeUser(Rmin, Rmax);
       hbgua0->Draw();
       cPlots->Update();
@@ -1035,13 +1042,14 @@ void InnerTrackerFit()
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
       if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hbgua0,"EXCLUDED from FIT","");
-      legBg->AddEntry(hbgua0,"inclusive data","l");
+      legBg->AddEntry(hbgua0,Form("Data 2015, #phi sector = %d", phiSect),"l");
       legBg->AddEntry(hbgua2,"signal fit region","f");
       legBg->AddEntry(hbgua1,"sideband fit region","f");
       legBg->AddEntry(fitBg,"sideband fit function","l");
       legBg->AddEntry(hbgua3,"estimated background","f");
       legBg->Draw("same");
 
+      if (phiSect == 0 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
       gStyle->SetOptStat(1000111110);
       //gStyle->SetOptStat(0000000000);
 
@@ -1553,11 +1561,11 @@ void InnerTrackerFit()
        }
 
     // If the object is not the plus or minus sides of the pixel shield, draw a circle using the parameters from the fit
+     TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
     if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport" || FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative")
     //if ( (FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportPlus") /*&& FitObject != "PixelSupportEllipse"*/ && FitObject != "PixelSupportMinus")
       {
       cout << "======    fitter->GetParameter(1) = " << fitter->GetParameter(1) << endl;
-      TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
       arc->SetFillStyle(0);
       arc->SetLineColor(kRed);
       arc->SetLineWidth(2);
@@ -1630,11 +1638,6 @@ void InnerTrackerFit()
     if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
       {
       //TPaveText* res = new TPaveText(x1L-0.01, y1L-0.22, x2L+0.02, y2L-0.40, "brNDC");
-      latex_circle.SetTextAlign(12);
-      latex_circle.SetTextColor(kBlack);
-      //latex_circle.SetLineColor(kRed);
-      latex_circle.SetTextFont(42);
-      latex_circle.SetTextSize(0.04*ScaleSize);    
 
       std::ostringstream legRadius;
       if(fitterDraw->GetParError(0) >= ErrPrecision)legRadius << "R (cm) \t = \t" << fixed << setprecision(3) << fitterDraw->GetParameter(0) << " #pm " << fitterDraw->GetParError(0) << " #pm " << r_Sys;
@@ -1818,13 +1821,19 @@ void InnerTrackerFit()
 
       // Create the legend for all 2D XY map plots, include (0,0) point
       //TLegend* legArc = new TLegend(0.75, 0.75, 0.95, 0.9, "");
-      TLegend* legArc = new TLegend(0.7, 0.73, 0.8, 0.8, "");
+      TLegend* legArc = new TLegend(0.67, 0.69, 0.77, 0.81, "");
       legArc->SetTextFont(42);
       //legArc->SetTextAlign(12); 
       legArc->SetTextSize(0.04*ScaleSize);
       legArc->SetFillColor(kWhite);
       legArc->SetTextColor(kBlack);
-      //legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
+
+      if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport") 
+        {
+        //legArc->AddEntry(arc,"#splitline{Circle fit}{Data 2015}","l");
+        legArc->AddEntry(arc,"Data 2015","");
+        legArc->AddEntry(arc,"Circle fit","l");
+        }
       legArc->AddEntry(gr_arc0,"(0,0)","P");
       legArc->Draw("same");
 
@@ -1916,6 +1925,21 @@ void InnerTrackerFit()
       bpAlt->SetLineWidth(2);
       bpAlt ->Draw("same");
       CMS_lumi( cPlots, iPeriod, 0 );
+
+      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.75, 0.82, 0.81, "");
+      legArc_RhoPhi->SetTextFont(42);
+      legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
+      legArc_RhoPhi->SetFillColor(kWhite);
+      legArc_RhoPhi->SetTextColor(kBlack);
+      if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport")
+        {
+        legArc_RhoPhi->AddEntry(arc,"Data 2015","");
+        legArc_RhoPhi->AddEntry(arc,"Circle fit","l");
+        }
+      legArc_RhoPhi->Draw("same");
+
+
+
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
       }
