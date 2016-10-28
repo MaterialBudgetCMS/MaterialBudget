@@ -324,7 +324,7 @@ void InnerTrackerFit()
      PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      //Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 24.5; 
-     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 30.; 
+     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 31.; 
      RangeEstimatorQuality = 0.5;  
      x_Sys = 0.007; //size of systematics in cm
      r_Sys = 0.05; //size of systematics in cm
@@ -1050,6 +1050,7 @@ void InnerTrackerFit()
       //TLegend* legBg = new TLegend(x1L, 0.52, x2L, y2L, "");
       //TLegend* legBg = new TLegend(0.45, 0.6, 0.8, 0.9, "");
       TLegend* legBg = new TLegend(0.5, 0.6, 0.7, 0.8, "");
+      if(FitObject == "PixelSupportEllipse")legBg = new TLegend(0.2, 0.6, 0.4, 0.8, "");
       legBg->SetTextFont(42);
       legBg->SetTextSize(0.04*ScaleSize);
       legBg->SetFillColor(kWhite);
@@ -1949,6 +1950,7 @@ void InnerTrackerFit()
         legArc_RhoPhi->AddEntry(arc,"Data 2015","");
         legArc_RhoPhi->AddEntry(arc,"Circle fit","l");
         }
+
       legArc_RhoPhi->Draw("same");
 
 
@@ -1969,6 +1971,18 @@ void InnerTrackerFit()
       bpEllipseAlt->SetLineColor(kRed);
       bpEllipseAlt->SetLineWidth(2);
       bpEllipseAlt ->Draw("same");
+      CMS_lumi( cPlots, iPeriod, 0 );
+
+      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.75, 0.82, 0.81, "");
+      legArc_RhoPhi->SetTextFont(42);
+      legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
+      legArc_RhoPhi->SetFillColor(kWhite);
+      legArc_RhoPhi->SetTextColor(kBlack);
+      legArc_RhoPhi->AddEntry(arc,"Data 2015","");
+      legArc_RhoPhi->AddEntry(arc,"Ellipse fit","l");
+
+      legArc_RhoPhi->Draw("same");
+
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
       }
