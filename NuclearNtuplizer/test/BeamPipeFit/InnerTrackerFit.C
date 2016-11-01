@@ -2052,6 +2052,7 @@ void InnerTrackerFit()
       {
       h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
       }
+    if(FitObject == "PixelShield2Arcs") h_RhoPhi->GetYaxis()->SetRangeUser(3.4, Rmax);
     if(FitObject == "PixelSupportMinus" || FitObject == "PixelSupportEllipse")
       {
       h_RhoPhi->GetYaxis()->SetRangeUser(19, 23);
