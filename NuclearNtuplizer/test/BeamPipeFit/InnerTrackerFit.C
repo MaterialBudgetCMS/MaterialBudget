@@ -133,6 +133,7 @@ void InnerTrackerFit()
   float ScaleSize = 1. - 2.*0.16;  
   
   TH2D* h_RhoPhi;
+  TH2D* h_ZR;
   TCanvas* cPlots;
   TCanvas* cQuality;
   TH1D* hQuality;
@@ -175,14 +176,14 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
   //FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
   //FitObject = "PixelShield2Ellipses"; // status failed
-  FitObject = "PixelShield2Arcs"; // status failed
+  //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
@@ -195,8 +196,8 @@ void InnerTrackerFit()
   if(FitObject == "BeamPipe"){
      Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 3.5;
      RangeEstimatorQuality = 0.1;  
-     x_Sys = 0.002; //size of systematics in cm
-     r_Sys = 0.002; //size of systematics in cm
+     x_Sys = 0.003; //size of systematics in cm
+     r_Sys = 0.003; //size of systematics in cm
      x0 = 0.124; // from previous fits using this program that were based on 2015
      y0 = 0.026; // from previous fits using this program that were based on 2015
      r0 = 2.21; // from previous fits using this program that were based on 2015
@@ -204,7 +205,8 @@ void InnerTrackerFit()
   
   //*** set parameters for Beam Pipe Ellipse fit
   if(FitObject == "BeamPipeEllipse") {
-     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 3.0;
+     extraText  = "work in progress";
+     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.4, RBGmax = 3., RSmin = 2.0, RSmax = 2.4, RPlot = 3.5;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.002; //size of systematics in cm
      r_Sys = 0.002; //size of systematics in cm
@@ -287,13 +289,13 @@ void InnerTrackerFit()
   if(FitObject == "PixelShield2Arcs"){
      Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4., RPlot = 6.5;
      RangeEstimatorQuality = 0.1;
-     x_Sys = 0.007; // size of systematics in cm
-     r_Sys = 0.007; // size of systematics in cm
-     x0 = -0.102; // in cm
-     y0 = -0.093; // in cm
-     x0_Far = 0.051; // in cm
-     y0_Far = -0.100; // in cm
-     r0 = 3.780; // in cm, the initial x radius
+     x_Sys = 0.014; // size of systematics in cm
+     r_Sys = 0.014; // size of systematics in cm
+     x0 = -0.099; // in cm
+     y0 = -0.092; // in cm
+     x0_Far = 0.048; // in cm
+     y0_Far = -0.098; // in cm
+     r0 = 3.777; // in cm, the initial x radius
   }
   
   //*** set parameters for Pixel Support
@@ -353,9 +355,11 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Support Rails
   if(FitObject == "PixelSupportRails"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     //PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     PlotObject = "hPFDV_XY_PixelSupport";
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
+     //Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
+     Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 31.; 
      RangeEstimatorQuality = 0.5; 
      x_Sys = 0.02; //size of systematics in cm
      r_Sys = 0.02; //size of systematics in cm
@@ -368,7 +372,7 @@ void InnerTrackerFit()
   if(FitObject == "PixelSupportRailsPositive"){
      PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
+     Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 31.; 
      RangeEstimatorQuality = 0.5; 
      x_Sys = 0.02; //size of systematics in cm
      r_Sys = 0.02; //size of systematics in cm
@@ -501,6 +505,17 @@ void InnerTrackerFit()
     h_RhoPhi->GetYaxis()->SetTitle("R (cm)");
     //h_RhoPhi->GetXaxis()->SetRangeUser(-RPlot, RPlot);
 
+    h_ZR = new TH2D();
+    h_ZR = (TH2D*)inputFile->Get("hPFDV_ZR_Map" );
+    h_ZR->Sumw2();
+    //h_ZR->Rebin2D(1,1);
+    h_ZR->SetStats(0);
+    h_ZR->GetXaxis()->SetTitle("z (cm)");
+    h_ZR->GetYaxis()->SetTitle("R (cm)");
+    h_ZR->GetYaxis()->SetTitleOffset(1.25);
+    h_ZR->GetXaxis()->SetTitleOffset(1.2);
+    h_ZR->GetYaxis()->SetLabelOffset(0.012);
+    h_ZR->GetXaxis()->SetLabelOffset(0.012);
 
     cPlots = new TCanvas(("c_"+plot).c_str(),"");
 
@@ -521,9 +536,9 @@ void InnerTrackerFit()
     if(FitObject == "PixelShieldMinus")h->Rebin2D(5,5);
     if(FitObject == "BeamPipe")    h->Rebin2D(5,5);
     if(FitObject == "BeamPipeEllipse")h->Rebin2D(5,5);
-    if(FitObject == "PixelSupportRails")h->Rebin2D(3,3);
-    //if(FitObject == "PixelSupportRailsPositive")h->Rebin2D(2,2);
-    //if(FitObject == "PixelSupportRailsNegative")h->Rebin2D(2,2);
+    if(FitObject == "PixelSupportRails")h->Rebin2D(2,2);
+    if(FitObject == "PixelSupportRailsPositive")h->Rebin2D(2,2);
+    if(FitObject == "PixelSupportRailsNegative")h->Rebin2D(2,2);
     h->SetStats(0);
     h->GetXaxis()->SetTitle("x (cm)");
     h->GetYaxis()->SetTitle("y (cm)");
@@ -568,13 +583,13 @@ void InnerTrackerFit()
     h_Draw->GetYaxis()->SetTitle("y (cm)");
     h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
+    //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
        hEmpty -> Draw();
        h_Draw->Draw("COLZsame");
-    }
-    else {
-       h_Draw->Draw("COLZ");
-    }
+    //}
+    //else {
+    //   h_Draw->Draw("COLZ");
+    //}
 
     CMS_lumi( cPlots, iPeriod, 0 );
     if (FitObject == "BeamPipe" )latex_circle.DrawLatex(1.9, 3., "Data 2015");
@@ -583,6 +598,14 @@ void InnerTrackerFit()
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
+    
+    cPlots -> SetLogz();
+    h_ZR->Draw("COLZ");
+    CMS_lumi( cPlots, iPeriod, 0 ); 
+    latex_circle.DrawLatex(-33., 66., "Data 2015");
+    cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.png"));
+    cPlots -> SetLogz(0);
+    //cPlots -> SetLinz();
 
     h_Draw->Draw("LEGO");
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw_LEGO.pdf"));
@@ -1093,7 +1116,7 @@ void InnerTrackerFit()
       //cPlots->SaveAs(fn.str().c_str());
       fn.str("");
       fn << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".png";
-      cPlots->SaveAs(fn.str().c_str());
+      if (FitObject != "PixelSupportRails" && FitObject != "PixelSupportRailsPositive" && FitObject != "PixelSupportRailsNegative")cPlots->SaveAs(fn.str().c_str());
       //delete to avoid memory leak:
       //cPlots->Delete();
       //delete cPlots;
@@ -1228,7 +1251,7 @@ void InnerTrackerFit()
               // revert in negative y plain:
               if (y < 0) fyDer2D = -fyDer2D;
               // only fit the positive derivatives to measure the inner side of the pixel support rails
-              if (FitObject == "PixelSupportRailsPositive")
+              if (FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRails")
                  {
                  if (fyDer2D < 0) fyDer2D = 0;
                  }
@@ -1311,13 +1334,13 @@ void InnerTrackerFit()
     //if(k > -6 && k < 5) h->Rebin2D(5,5);
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
+    //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
        hEmpty -> Draw();
        h->Draw("colsame");
-    }
-    else {
-       h->Draw("col");
-    }
+    //}
+    //else {
+    //   h->Draw("col");
+    //}
 
     TGraph* gr_arc;
     Double_t x_arc0[1], y_arc0[1];
@@ -1778,8 +1801,14 @@ void InnerTrackerFit()
       if(fitterDraw->GetParError(2) >= ErrPrecision)legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10 << "}";
       else legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10 << "}";
 
-      latex_circle.DrawLatex(4., -26., legCenter.str().c_str());
-      latex_circle.DrawLatex(-27., -26., legRadius.str().c_str());
+      if(FitObject == "PixelSupportEllipse"){
+         latex_circle.DrawLatex(4., -26., legCenter.str().c_str());
+         latex_circle.DrawLatex(-27., -26., legRadius.str().c_str());
+      }
+      if(FitObject == "BeamPipeEllipse"){
+         latex_circle.DrawLatex(0.5, -2.8, legCenter.str().c_str());
+         latex_circle.DrawLatex(-3., -2.8, legRadius.str().c_str());
+      }
       CMS_lumi( cPlots, iPeriod, iPos );
 
       }
@@ -2022,7 +2051,7 @@ void InnerTrackerFit()
         }
       if(FitObject == "BeamPipeEllipse")
         {
-        legArc->AddEntry(gr_ellipseSupport,"x_{0}, y_{0} form fit","P");
+        legArc->AddEntry(gr_ellipseSupport,"(x_{0}, y_{0})","P");
         }
     if ( k > -6 )
     {
@@ -2940,13 +2969,15 @@ void InnerTrackerFit()
 
        // Draw and Fit Bottom
        std::cout<<"Fit for Bottom Rail"<<std::endl;
-       TF1 *f2Bottom = new TF1("f2Bottom",fun2,-7,7,2);
+       TF1 *f2Bottom = new TF1("f2Bottom",fun2,-8,8,2);
        f2Bottom -> SetParameter(0, -19.7);
        f2Bottom -> SetParameter(1, 0.);
        f2Bottom->SetLineWidth(2);
        f2Bottom->SetLineColor(kRed);
-       hYderivative2D->GetXaxis()->SetRangeUser(-7., -7.);
-       hYderivative2D->GetYaxis()->SetRangeUser(-20., -19.5);
+       //hYderivative2D->GetXaxis()->SetRangeUser(-7., -7.);
+       //hYderivative2D->GetYaxis()->SetRangeUser(-20., -19.5);
+       hYderivative2D->GetXaxis()->SetRangeUser(-8., 8.);
+       hYderivative2D->GetYaxis()->SetRangeUser(-19.9, -19.5);
        hYderivative2D->Fit("f2Bottom","R");//fit only this Range defind in function
        YRailBottom = f2Bottom->GetParameter(0);
        std::cout<<"End Fit for Bottom Rail"<<std::endl;
@@ -2961,8 +2992,8 @@ void InnerTrackerFit()
        std::cout<<"Fit for Top Rail"<<std::endl;
        f2Bottom -> SetParameter(0, 19.);
        f2Bottom -> SetParameter(1, 0.);
-       hYderivative2D->GetXaxis()->SetRangeUser(-7., -7.);
-       hYderivative2D->GetYaxis()->SetRangeUser(18.8, 19.4);
+       hYderivative2D->GetXaxis()->SetRangeUser(-8., -8.);
+       hYderivative2D->GetYaxis()->SetRangeUser(18.9, 19.3);
        //TBox *tbox = new TBox (-7., 18.8, 7., 19.4);
        //tbox ->SetFillColorAlpha(kRed,0.);
        hYderivative2D->Fit("f2Bottom","R");//fit only this Range defind in function
@@ -2997,7 +3028,8 @@ void InnerTrackerFit()
     }
     // end Plot Derivative
 
-    h->Draw("COLZ");
+    hEmpty -> Draw();
+    h->Draw("COLZsame");
     if (FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative") {
        //std::cout << " yRailTop = " << hYderivative->GetXaxis()->GetBinCenter(yRailTop) << " +- " << hYderivative->GetXaxis()->GetBinWidth(yRailTop)/2. << std::endl;
        Double_t x1 = -RPlot;
@@ -3013,12 +3045,13 @@ void InnerTrackerFit()
 
        //TText *t_top = new TText(.5,y1+2,Form("Top Rail y = %3.3f #pm %3.3f",y1, yerr));
        TLatex *t_top = new TLatex(.5,y1+3.7,Form("Top Rail y = %3.2f #pm %3.2f cm",y1, yerr));
+       latex_circle.DrawLatex(-14., 23.5, Form("Top Rail y = %3.2f #pm %3.2f cm",y1, yerr));
        t_top->SetTextAlign(22);
        t_top->SetTextColor(kRed);
        t_top->SetTextFont(43);
        t_top->SetTextSize(40);
        //t_top->SetTextAngle(45);
-       t_top->Draw();
+       //t_top->Draw();
 
 
        //y1 = hYderivative->GetXaxis()->GetBinCenter(yRailBottom);//very rude estimation
@@ -3029,16 +3062,19 @@ void InnerTrackerFit()
        lineBottom->SetLineWidth(2);
        lineBottom->Draw("same");
 
+       latex_circle.DrawLatex(17., 27., "Data 2015");
        TLatex *t_bottom = new TLatex(.5,y1+3.7,Form("Bottom Rail y = %3.2f #pm %3.2f cm",y1, yerr));
+       latex_circle.DrawLatex(-15., -25., Form("Bottom Rail y = %3.2f #pm %3.2f cm",y1, yerr));
        t_bottom->SetTextAlign(22);
        t_bottom->SetTextColor(kRed);
        t_bottom->SetTextFont(43);
        t_bottom->SetTextSize(40);
        //t_bottom->SetTextAngle(45);
-       t_bottom->Draw();
+       //t_bottom->Draw();
 
     }
 
+    if(FitObject == "PixelSupportRails")     CMS_lumi( cPlots, iPeriod, 0 );
     // save
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
