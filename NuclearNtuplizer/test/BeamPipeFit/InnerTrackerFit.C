@@ -52,6 +52,7 @@
 using namespace std;
 
 TH2D* h;
+TH2D* h_Extra;
 Double_t Rmin, Rmax, RBGmin, RBGmax, RSmin, RSmax, RPlot;
 
 // create function to fit the plus side of the pixel support
@@ -102,8 +103,8 @@ void InnerTrackerFit()
   //  gROOT->LoadMacro("CMS_lumi.C");
 
   writeExtraText = true;       // if extra text
-  //extraText  = "Preliminary";  // default extra text is "Preliminary"
-  extraText  = "work in progress";  // default extra text is "Preliminary"
+  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  //extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
@@ -134,6 +135,7 @@ void InnerTrackerFit()
   float ScaleSize = 1. - 2.*0.16;  
   
   TH2D* h_RhoPhi;
+  TH2D* h_RhoPhi_Extra;
   TH2D* h_ZR;
   TCanvas* cPlots;
   TCanvas* cQuality;
@@ -292,16 +294,36 @@ void InnerTrackerFit()
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.017; // size of systematics in cm
      r_Sys = 0.017; // size of systematics in cm
+     //**** for |z| < 25 cm
      x0 = -0.095; // in cm
      y0 = -0.092; // in cm
      x0_Far = 0.043; // in cm
      y0_Far = -0.098; // in cm
      r0 = 3.773; // in cm, the initial x radius
-     //x0 = -0.099; // in cm
-     //y0 = -0.092; // in cm
-     //x0_Far = 0.048; // in cm
-     //y0_Far = -0.098; // in cm
-     //r0 = 3.777; // in cm, the initial x radius
+     //***** for z: -25 to -20 cm
+     //x0 = -0.032; // in cm
+     //x0_Far = -0.096; // in cm
+     //r0 = 3.705; // in cm, the initial x radius
+     //***** for z: -25 to -20 cm
+     //x0 = 0.018; // in cm
+     //x0_Far = -0.016; // in cm
+     //r0 = 3.724; // in cm, the initial x radius
+     //***** for z: -20 to -10 cm
+     //x0 = -0.102; // in cm
+     //x0_Far = 0.075; // in cm
+     //r0 = 3.788; // in cm, the initial x radius
+     //***** for z: -10 to 0 cm
+     //x0 = -0.170; // in cm
+     //x0_Far = 0.112; // in cm
+     //r0 = 3.825; // in cm, the initial x radius
+     //***** for z: 0-10 cm
+     //x0 = -0.128; // in cm
+     //x0_Far = 0.063; // in cm
+     //r0 = 3.790; // in cm, the initial x radius
+     //***** for z: 10-20 cm
+     //x0 = -0.063; // in cm
+     //x0_Far = 0.003; // in cm
+     //r0 = 3.748; // in cm, the initial x radius
   }
   
   //*** set parameters for Pixel Support
@@ -452,23 +474,31 @@ void InnerTrackerFit()
 
 
   //  for ( int k = -7; k < 5; k++ )
-  //for ( int k = -6; k < -5; k++ ) // deafault: |z| < 25 cm 
-  for ( int k = -3; k < -2; k++ ) //for for list of histograms to fit
+  for ( int k = -6; k < -5; k++ ) // deafault: |z| < 25 cm 
+  //for ( int k = 4; k < 5; k++ ) //for for list of histograms to fit
   //for ( int k = 0; k < 1; k++ ) //for for list of histograms to fit
   {
     std::string  plot = std::string(PlotObject);
     std::string  plotBg = std::string(PlotObjectBg);
+    std::string  plot2 = std::string(PlotObject);
+    std::string  plotBg2 = std::string(PlotObjectBg);
     //if (FitObject == "PixelSupport")TString plot = PlotObject;
     //if (FitObject == "PixelSupport")TString plotBg = PlotObjectBg;
     //TString plot = "hPFDV_XY_Map_Pipe";
     //TString plotBg = "hPFDV_RhoPhi_Map_Pipe";
     std::ostringstream plotName;
     std::ostringstream plotNameBg;
+    std::ostringstream plotName2;
+    std::ostringstream plotNameBg2;
 
     plotName.str("");
     plotName << plot.c_str();
     plotNameBg.str("");
     plotNameBg << plotBg.c_str();
+    plotName2.str("");
+    plotName2 << plot.c_str();
+    plotNameBg2.str("");
+    plotNameBg2 << plotBg.c_str();
 
     /// k = -7 is the inclusive one
     /// k = -6 is only BPiz (|z| < 25 cm)
@@ -484,11 +514,15 @@ void InnerTrackerFit()
       {
         plotName << "_" << k*5 << "_" << (k+1)*5;
         plotNameBg << "_" << k*5 << "_" << (k+1)*5;
+        plotName2 << "_" << (k+1)*5 << "_" << (k+2)*5;
+        plotNameBg2 << "_" << (k+1)*5 << "_" << (k+2)*5;
       }
     }
 
     plot = TString( plotName.str().c_str() );
     plotBg = TString( plotNameBg.str().c_str() );
+    plot2 = TString( plotName2.str().c_str() );
+    plotBg2 = TString( plotNameBg2.str().c_str() );
     //printf(plot.c_str());
     //printf("\n");
 
@@ -498,6 +532,12 @@ void InnerTrackerFit()
     h_RhoPhi = new TH2D();
     h_RhoPhi = (TH2D*)inputFile->Get( plotBg.c_str() );
     h_RhoPhi->Sumw2();
+    h_RhoPhi_Extra = new TH2D();
+    if(k > -5 && k < 4){
+       h_RhoPhi_Extra = (TH2D*)inputFile->Get( plotBg2.c_str() );
+       h_RhoPhi_Extra->Sumw2();
+       h_RhoPhi->Add(h_RhoPhi_Extra);
+    }
     if(FitObject == "PixelSupport")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelSupportEllipse")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(2,2);
@@ -533,6 +573,12 @@ void InnerTrackerFit()
     h = new TH2D();
     h = (TH2D*)inputFile->Get( plot.c_str() );
     h->Sumw2();
+    h_Extra = new TH2D();
+    if(k > -5 && k < 4){
+       h_Extra = (TH2D*)inputFile->Get( plot2.c_str() );
+       h_Extra->Sumw2();
+       h->Add(h_Extra);
+    }
     if(FitObject == "PixelSupport" || FitObject == "PixelSupportPlus" || FitObject == "PixelSupportMinus")h->Rebin2D(4,4);
     //if(FitObject == "PixelSupportEllipse")h->Rebin2D(3,3);
     if(FitObject == "PixelSupportEllipse")h->Rebin2D(4,4);
@@ -1052,8 +1098,13 @@ void InnerTrackerFit()
         }
       if(FitObject == "PixelShield2Arcs" && k != -6)
         {
+        if (k == 4 && SignalUpperEdge > 1.25*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
+        //if (k == 4 && SignalUpperEdge > 2.*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
         if (k == -5 && SignalUpperEdge > 1.4*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        if (k == -3 && SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
+        if (k == -4 && SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
+        if (k == -2 && SignalUpperEdge > 1.*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
+        if (k == 0 && SignalUpperEdge > 0.85*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
+        if (k == 2 && SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
         std::cout << "Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   SignalUpperEdge/BgUpperEdge =" << SignalUpperEdge/BgUpperEdge << std::endl;
         }
       if(BgUpperEdge > 0.)hQuality->Fill( max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) );
@@ -1526,9 +1577,12 @@ void InnerTrackerFit()
        fitterDraw->SetParameter( 1, "x0", x0, 0.01, -0.3, 0.1 ); // in cm
        fitterDraw->SetParameter( 2, "y0", y0, 0.01, -0.3, 0.1 ); // in cm
        fitterDraw->SetParameter( 3, "x0_Far", x0_Far, 0.01, -0.1, 0.3 ); // in cm
+       if (k == 4)fitterDraw->SetParameter( 3, "x0_Far", x0_Far, 0.01, -0.3, 0.3 ); // in cm
        fitterDraw->SetParameter( 4, "y0_Far", y0_Far, 0.01, -0.3, 0.1 ); // in cm
        //fitterDraw->FixParameter(0);
-       //if(k == -6)fitterDraw->FixParameter(0);
+       //fitterDraw->FixParameter(0);
+       //fitterDraw->FixParameter(2);
+       //fitterDraw->FixParameter(4);
        //if(k>-5 && k<6)fitterDraw->FixParameter(0);
        //if(k>-6 && k<6)fitterDraw->FixParameter(2);
        //if(k>-6 && k<6)fitterDraw->FixParameter(4);
@@ -1901,7 +1955,8 @@ void InnerTrackerFit()
       latex_circle.DrawLatex(0.5, -5.5, legCenter.str().c_str());
       latex_circle.DrawLatex(-5.5, -5.5, legCenterFar.str().c_str());
       latex_circle.DrawLatex(-2.5, -4.5, legRadius.str().c_str());
-      if(k> -6 && k < 6) latex_circle.DrawLatex(2.5, 3.3,Form("%d<|z|<%d cm", k*5, (k+1)*5));
+      if(k > -5 && k < 4) latex_circle.DrawLatex(2.5, 3.3,Form("%d<z<%d cm", k*5, (k+2)*5));
+      if(k == -5 || k == 4) latex_circle.DrawLatex(2.5, 3.3,Form("%d < z < %d cm", k*5, (k+1)*5));
       CMS_lumi( cPlots, iPeriod, iPos );
 
 
@@ -2253,7 +2308,8 @@ void InnerTrackerFit()
       legArc_RhoPhi->SetFillColor(kWhite);
       legArc_RhoPhi->SetTextColor(kBlack);
       legArc_RhoPhi->AddEntry(arc,"Data 2015","");
-      if(k> -6 && k < 6) legArc_RhoPhi->AddEntry(arc,Form("%d<|z|<%d cm", k*5, (k+1)*5),""); 
+      if(k > -5 && k < 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+2)*5),""); 
+      if(k == -5 || k == 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+1)*5),""); 
       legArc_RhoPhi->AddEntry(ArcShieldPlus,"Circle fit Near","l");
       legArc_RhoPhi->AddEntry(ArcShieldFar,"Circle fit Far","l");
 
