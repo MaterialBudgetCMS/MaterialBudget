@@ -186,11 +186,11 @@ void InnerTrackerFit()
   //FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
   //FitObject = "PixelShield2Ellipses"; // status failed
-  FitObject = "PixelShield2Arcs"; // status failed
+  //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
-  //FitObject = "PixelSupportEllipse"; //work well
+  FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
   //FitObject = "PixelSupportRailsPositive"; // work well
   //FitObject = "PixelSupportRailsNegative"; // work wel
@@ -646,10 +646,48 @@ void InnerTrackerFit()
     //   h_Draw->Draw("COLZ");
     //}
 
+    TGraph* gr_arc;
+    Double_t x_arc0[1], y_arc0[1];
+    x_arc0[0] = 0.;
+    y_arc0[0] = 0.;
+    gr_arc = new TGraph(1,x_arc0,y_arc0);
+    gr_arc->SetMarkerStyle(20);
+    gr_arc->SetMarkerSize(0.5);
+    gr_arc->SetMarkerColor(kBlue);
+
+    TGraph* gr_BS;
+    Double_t x_BS[1], y_BS[1];
+    x_BS[0] = 0.077;
+    y_BS[0] = 0.092;
+    gr_BS = new TGraph(1,x_BS,y_BS);
+    gr_BS->SetMarkerStyle(20);
+    gr_BS->SetMarkerSize(0.5);
+    gr_BS->SetMarkerColor(kGreen+1);
+
+
+
+      TLegend* legBS = new TLegend(0.67, 0.74, 0.77, 0.81, "");
+      legBS->SetTextFont(42);
+      legBS->SetTextSize(0.04*ScaleSize);
+      legBS->SetFillColor(kWhite);
+      legBS->SetTextColor(kBlack);
+      legBS->AddEntry(gr_arc,"(0,0)","P");
+      legBS->AddEntry(gr_BS,"Beam Spot","P");
+
+
+
+
+
+
     CMS_lumi( cPlots, iPeriod, 0 );
-    if (FitObject == "BeamPipe" )latex_circle.DrawLatex(1.9, 3., "Data 2015");
+    if (FitObject == "BeamPipe" )latex_circle.DrawLatex(-3., 3., "Data 2015");
     if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(3., 5.5, "Data 2015");
     if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 25., "Data 2015");
+    if (FitObject == "BeamPipe"){
+       gr_arc->Draw("P");
+       gr_BS->Draw("P");
+       legBS -> Draw("same");
+    }
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
@@ -1114,7 +1152,7 @@ void InnerTrackerFit()
       hbgua0->SetMinimum(0);
       //hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) (cm)");
       hbgua0->GetXaxis()->SetTitleOffset(1.05);
-      hbgua0->GetXaxis()->SetTitle("#rho (x_{0},y_{0}) (cm)");
+      hbgua0->GetXaxis()->SetTitle("#rho (x_{0}, y_{0}) (cm)");
       hbgua0->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hbgua0->GetXaxis()->GetBinWidth(1)));
       hbgua0->GetXaxis()->SetRangeUser(Rmin, Rmax);
       hbgua0->Draw();
@@ -1138,9 +1176,9 @@ void InnerTrackerFit()
       hbgua1->SetLineColor(kRed);
       hbgua1->Draw("samehisto");
       hbgua2->SetFillStyle(3005);
-      hbgua2->SetFillColor(kGreen);
-      hbgua2->SetMarkerColor(kGreen);
-      hbgua2->SetLineColor(kGreen);
+      hbgua2->SetFillColor(kGreen+2);
+      hbgua2->SetMarkerColor(kGreen+2);
+      hbgua2->SetLineColor(kGreen+2);
       hbgua2->Draw("samehisto");
       hbgua3->SetFillStyle(3005);
       hbgua3->SetFillColor(kBlue);
@@ -1173,7 +1211,9 @@ void InnerTrackerFit()
       legBg->AddEntry(hbgua3,"estimated background","f");
       legBg->Draw("same");
 
-      if (phiSect == 0 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
+       hbgua0->Draw("AXISsame");
+
+      if (phiSect == 1 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
       gStyle->SetOptStat(1000111110);
       //gStyle->SetOptStat(0000000000);
 
@@ -1412,8 +1452,8 @@ void InnerTrackerFit()
     //   h->Draw("col");
     //}
 
-    TGraph* gr_arc;
-    Double_t x_arc0[1], y_arc0[1];
+    //TGraph* gr_arc;
+    //Double_t x_arc0[1], y_arc0[1];
     x_arc0[0] = 0.;
     y_arc0[0] = 0.;
     gr_arc = new TGraph(1,x_arc0,y_arc0);
@@ -1789,7 +1829,7 @@ void InnerTrackerFit()
     gr_arc0->SetMarkerStyle(20);
     gr_arc0->SetMarkerSize(0.5);
     gr_arc0->SetMarkerColor(kBlue);
-    gr_arc0->Draw("P");
+    if(FitObject !="BeamPipe" && FitObject != "PixelShield2Arcs" && FitObject != "PixelSupportEllipse")gr_arc0->Draw("P");
     // draw the (0,0) point for everything but the pixel support fit with an ellipse
     if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses"  && FitObject != "PixelShield2Arcs" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
       {
@@ -2084,8 +2124,13 @@ void InnerTrackerFit()
       if( FitObject == "PixelSupportEllipse") 
         legArc->AddEntry(arc,"Ellipse fit","l");
 
-      legArc->AddEntry(gr_arc0,"(0,0)","P");
+      if(FitObject !="BeamPipe" && FitObject != "PixelShield2Arcs" && FitObject != "PixelSupportEllipse")legArc->AddEntry(gr_arc0,"(0,0)","P");
       legArc->Draw("same");
+
+      if( FitObject == "BeamPipe" || FitObject == "PixelShield2Arcs" || FitObject == "PixelSupportEllipse") {
+         gr_BS->Draw("P");
+         legArc->AddEntry(gr_BS,"Beam Spot","P"); 
+      }
 
       // Add entries according to the object that was fit
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport" || FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative")
@@ -2093,6 +2138,7 @@ void InnerTrackerFit()
         legArc->AddEntry(gr_arc,"(x_{0}, y_{0})","P");
         //legArc->AddEntry(gr_arc,"(x_{0}, y_{0}) from fit","P");
         }
+
       if(FitObject == "PixelShieldPlus")
         {
         legArc->AddEntry(gr_arcPlus,"x_{0}, y_{0} from fit","P");
