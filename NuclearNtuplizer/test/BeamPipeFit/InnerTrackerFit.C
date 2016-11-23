@@ -103,8 +103,8 @@ void InnerTrackerFit()
   //  gROOT->LoadMacro("CMS_lumi.C");
 
   writeExtraText = true;       // if extra text
-  extraText  = "Preliminary";  // default extra text is "Preliminary"
-  //extraText  = "work in progress";  // default extra text is "Preliminary"
+  //extraText  = "Preliminary";  // default extra text is "Preliminary"
+  extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
@@ -179,7 +179,7 @@ void InnerTrackerFit()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
@@ -190,7 +190,7 @@ void InnerTrackerFit()
   //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
-  FitObject = "PixelSupportEllipse"; //work well
+  //FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
   //FitObject = "PixelSupportRailsPositive"; // work well
   //FitObject = "PixelSupportRailsNegative"; // work wel
@@ -722,29 +722,41 @@ void InnerTrackerFit()
           Double_t x = h->GetXaxis()->GetBinCenter( ix );
           Double_t y = h->GetYaxis()->GetBinCenter( iy );
 
-          Double_t xc = x;
-          Double_t yc = y;
+          // correct flux on (0,0) (bad)
+          //Double_t xc = x;
+          //Double_t yc = y;
+          //correct flux on beam stop (good)
+          Double_t xc = x-x_BS[0];
+          Double_t yc = y-y_BS[0];
 
           Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
 
           //          if ( rc < Inf || rc > Sup ) continue;
 
           Double_t binNum = h->GetBinContent( ix, iy );
+          Double_t binNum_Draw = h_Draw->GetBinContent( ix, iy );
 
           Double_t r0ref = r0;
           if (FitObject == "PixelShieldMinus" && x >= 0) r0ref = r0_PixelShieldPlus;
           if (FitObject == "PixelSupportMinus" && x >= 0) r0ref = r0_PixelSupportPlus;
           Double_t densityNum = binNum * rc*rc / (r0ref*r0ref);
+          Double_t densityNum_Draw = binNum_Draw * rc*rc / (r0ref*r0ref);
 
-          h->SetBinContent(ix, iy, densityNum);
+          h_Draw->SetBinContent(ix, iy, densityNum_Draw);
 
         }
       }
     h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    h->Draw("LEGO");
+    //h->Draw("LEGO");
+    h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+    h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
+    //hEmpty -> Draw("");
+    //h_Draw->Draw("COLZsame");
+    h_Draw->Draw("LEGO");
     //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.png"));
+    //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_COLZ.png"));
 
 
     /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
