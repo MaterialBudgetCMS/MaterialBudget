@@ -693,6 +693,7 @@ void InnerTrackerFit()
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     
     cPlots -> SetLogz();
     h_ZR->Draw("COLZ");
