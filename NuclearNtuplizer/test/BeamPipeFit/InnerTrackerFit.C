@@ -103,8 +103,8 @@ void InnerTrackerFit()
   //  gROOT->LoadMacro("CMS_lumi.C");
 
   writeExtraText = true;       // if extra text
-  //extraText  = "Preliminary";  // default extra text is "Preliminary"
-  extraText  = "work in progress";  // default extra text is "Preliminary"
+  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  //extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
@@ -383,8 +383,8 @@ void InnerTrackerFit()
   
   //*** set parameters for Pixel Support Rails
   if(FitObject == "PixelSupportRails"){
-     //PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
      PlotObject = "hPFDV_XY_PixelSupport";
+     //PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      //Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
      Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 31.; 
@@ -653,16 +653,18 @@ void InnerTrackerFit()
     gr_arc = new TGraph(1,x_arc0,y_arc0);
     gr_arc->SetMarkerStyle(20);
     gr_arc->SetMarkerSize(0.5);
-    gr_arc->SetMarkerColor(kBlue);
+    //gr_arc->SetMarkerColor(kBlue);
+    gr_arc->SetMarkerColor(kBlack);
 
     TGraph* gr_BS;
     Double_t x_BS[1], y_BS[1];
-    x_BS[0] = 0.077;
-    y_BS[0] = 0.092;
+    x_BS[0] = 0.077; // in cm
+    y_BS[0] = 0.092; // in cm
     gr_BS = new TGraph(1,x_BS,y_BS);
     gr_BS->SetMarkerStyle(20);
     gr_BS->SetMarkerSize(0.5);
-    gr_BS->SetMarkerColor(kGreen+1);
+    //gr_BS->SetMarkerColor(kGreen+1);
+    gr_BS->SetMarkerColor(kBlue);
 
 
 
@@ -697,6 +699,7 @@ void InnerTrackerFit()
     CMS_lumi( cPlots, iPeriod, 0 ); 
     latex_circle.DrawLatex(-33., 66., "Data 2015");
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.png"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.pdf"));
     cPlots -> SetLogz(0);
     //cPlots -> SetLinz();
 
@@ -742,7 +745,9 @@ void InnerTrackerFit()
           Double_t densityNum = binNum * rc*rc / (r0ref*r0ref);
           Double_t densityNum_Draw = binNum_Draw * rc*rc / (r0ref*r0ref);
 
+          // make flux correction ofr h_Draw and h 
           h_Draw->SetBinContent(ix, iy, densityNum_Draw);
+          h->SetBinContent(ix, iy, densityNum);
 
         }
       }
@@ -1205,7 +1210,7 @@ void InnerTrackerFit()
       fitBg->SetParName(0, "N0");
       fitBg->SetParName(1, "k");
       fitBg->SetLineWidth(2);
-      fitBg->Draw("same");
+      //fitBg->Draw("same");
 
       //TLegend* legBg = new TLegend(x1L, 0.52, x2L, y2L, "");
       //TLegend* legBg = new TLegend(0.45, 0.6, 0.8, 0.9, "");
@@ -1219,23 +1224,26 @@ void InnerTrackerFit()
       legBg->AddEntry(hbgua0,Form("Data 2015, #phi sector = %d", phiSect),"l");
       legBg->AddEntry(hbgua2,"signal fit region","f");
       legBg->AddEntry(hbgua1,"sideband fit region","f");
-      legBg->AddEntry(fitBg,"sideband fit function","l");
+      //legBg->AddEntry(fitBg,"sideband fit function","l");
       legBg->AddEntry(hbgua3,"estimated background","f");
       legBg->Draw("same");
 
-       hbgua0->Draw("AXISsame");
+      hbgua0->Draw("AXISsame");
+      hbgua0->Draw("histosame");
 
       if (phiSect == 1 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
       gStyle->SetOptStat(1000111110);
       //gStyle->SetOptStat(0000000000);
 
       std::ostringstream fn;
+      std::ostringstream fn_pdf;
       //fn << "Plots/"<<plotBg<<"_BGUA_XCk" << "_" << phiSect<<".pdf";
-      fn << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".pdf";
+      fn_pdf << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".pdf";
       //cPlots->SaveAs(fn.str().c_str());
       fn.str("");
       fn << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".png";
       if (FitObject != "PixelSupportRails" && FitObject != "PixelSupportRailsPositive" && FitObject != "PixelSupportRailsNegative")cPlots->SaveAs(fn.str().c_str());
+      if (phiSect == 1 && FitObject == "BeamPipe")cPlots->SaveAs(fn_pdf.str().c_str());
       //delete to avoid memory leak:
       //cPlots->Delete();
       //delete cPlots;
@@ -2208,6 +2216,7 @@ void InnerTrackerFit()
       }
     else {
         cPlots->SaveAs(("Plots/"+FitObject+"_Fit.png"));
+        cPlots->SaveAs(("Plots/"+FitObject+"_Fit.pdf"));
         cPlots->SaveAs(("Plots/"+FitObject+"_Fit.root"));
     }
     TFile* f = new TFile(("Plots/"+FitObject+"_Fit.root"), "UPDATE");
@@ -2263,6 +2272,7 @@ void InnerTrackerFit()
 
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
     // draw the ellipse in rhophi
@@ -2291,6 +2301,7 @@ void InnerTrackerFit()
 
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
     // Draw the ellipse in rhophi for the pixel shield plus
@@ -2327,6 +2338,7 @@ void InnerTrackerFit()
 
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
     // Draw the ellipse in rhophi for the pixel shield plus
@@ -2378,7 +2390,7 @@ void InnerTrackerFit()
         if(k < 0)cPlots->SaveAs(Form("Plots/"+FitObject+"_Fit_RhoPhi_m%d.png", -k));
         else cPlots->SaveAs(Form("Plots/"+FitObject+"_Fit_RhoPhi_p%d.png", k));
       }
-      else {cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));}
+      else {cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png")); cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));}
     }
 
 
@@ -2419,6 +2431,7 @@ void InnerTrackerFit()
       // save
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
     // create the plots in rhophi for the pixel support minus side fit
@@ -2454,6 +2467,7 @@ void InnerTrackerFit()
       // save
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
    if (flag_Sys == 1)
@@ -3227,6 +3241,7 @@ void InnerTrackerFit()
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.png"));
+    if(FitObject == "PixelSupportRails") cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
 
 
 
