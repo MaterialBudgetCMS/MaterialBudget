@@ -705,6 +705,8 @@ void InnerTrackerFit()
     //cPlots -> SetLinz();
 
     h_Draw->Draw("LEGO");
+    h_Draw->GetXaxis()->SetTitleOffset(1.5);
+    h_Draw->GetYaxis()->SetTitleOffset(1.5);
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw_LEGO.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_LEGO.png"));
 
