@@ -1154,6 +1154,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     std::vector< double > MatchingDuplicates_VerY_XY;                               
     MatchingDuplicates_VerY_XY.clear();
 
+// start MC part
 
     // calculate number of good NI vertices per event
     int NumberNI = 0;
