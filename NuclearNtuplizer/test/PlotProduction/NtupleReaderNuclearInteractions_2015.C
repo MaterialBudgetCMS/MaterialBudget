@@ -1421,7 +1421,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       ///////////
       
       hMC_TrkV_R->Fill( ni_MC_rho );
-      if( ni_MC_rho < 19) continue; //for track cuts
+      if( ni_MC_rho < 19) continue; //for pixel cuts
+      //if( ni_MC_rho > 5) continue; //for strip cuts
  
       hMC_TrkV_numberOftracks_0p2->Fill(MC_TrkV_numberOfChargedParticles_0p2->at(i));
       hMC_TrkV_numberOftracks_0p5->Fill(MC_TrkV_numberOfChargedParticles_0p5->at(i));
