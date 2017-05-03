@@ -18,7 +18,7 @@
   //Float_t dR_xmax_Loose = 900.;
   //Int_t   dR_Nbin = 200;
 
-  Float_t dR_xmax = 5.;
+  Float_t dR_xmax = 0.2;
   Float_t dR_xmax_Loose = 20.;
   Int_t  dR_Nbin = 100;
 
@@ -51,7 +51,9 @@ NtupleReaderNuclearInteractions_2015::NtupleReaderNuclearInteractions_2015( cons
 
   std::cout << " entries are "<<inputChain->GetEntries()<<std::endl;
 
-  outputFile = new TFile( "prova.root", "RECREATE" );
+  //outputFile = new TFile( "prova.root", "RECREATE" );
+  outputFile = new TFile( "prova_Pixel.root", "RECREATE" );
+  //outputFile = new TFile( "prova_Track.root", "RECREATE" );
 
 }
 
@@ -488,8 +490,9 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
    Bins[9]=    53.5;
    Bins[10]=    57.;
    Bins[11]=    65.;
+   //set last bin to zero
+   //Bins[99]=0.0;
 
- 
   //histo MC_TrkV
   hMC_NumberNI = new TH1D( "hMC_NumberNI", "# NI pass good sel. per event", 31, -0.5, 30.5 );
   hMC_NumberNI->Sumw2();
@@ -517,7 +520,6 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
 
   hMC_TrkV_associationPFDV_deltaR3d_Forward = new TH1D( "hMC_TrkV_associationPFDV_deltaR3d_Forward", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax );
   hMC_TrkV_associationPFDV_deltaR3d_Forward->Sumw2();
-
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular->Sumw2();
 
@@ -1175,8 +1177,9 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     if (NumberNI <= 30)hMC_NumberNI -> Fill (NumberNI);
     else hMC_NumberNI -> Fill (30); 
 
-    if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
-    //if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    //if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    // use this \/
+    if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 3) ) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //test for assosiation
 
@@ -1418,6 +1421,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       ///////////
       
       hMC_TrkV_R->Fill( ni_MC_rho );
+      if( ni_MC_rho < 19) continue; //for track cuts
  
       hMC_TrkV_numberOftracks_0p2->Fill(MC_TrkV_numberOfChargedParticles_0p2->at(i));
       hMC_TrkV_numberOftracks_0p5->Fill(MC_TrkV_numberOfChargedParticles_0p5->at(i));
@@ -1455,12 +1459,12 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       else if (MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < dR_xmax_Loose) hMC_TrkV_associationPFDV_deltaR3dParallel -> Fill(dR_xmax-0.00001);
 
       double Rel_deltaR3dPerp = -1.;
-      if (ni_MC_rho > 0.) Rel_deltaR3dPerp = MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i)/ni_MC_rho;
+      if (ni_MC_rho > 19) Rel_deltaR3dPerp = MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i)/ni_MC_rho;
       if (Rel_deltaR3dPerp < 0.5 && Rel_deltaR3dPerp > 0.) hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel -> Fill (Rel_deltaR3dPerp);
       if (Rel_deltaR3dPerp >= 0.5 && MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel -> Fill(0.4999);
 
       double Rel_deltaR3dPar = -1.;
-      if (ni_MC_rho > 0.) Rel_deltaR3dPar = MC_TrkV_associationPFDV_deltaR3dParallel->at(i)/ni_MC_rho;
+      if (ni_MC_rho > 19) Rel_deltaR3dPar = MC_TrkV_associationPFDV_deltaR3dParallel->at(i)/ni_MC_rho;
       if (Rel_deltaR3dPar < 0.5 && Rel_deltaR3dPar > 0.) hMC_TrkV_associationPFDV_deltaR3dParallelRel -> Fill (Rel_deltaR3dPar);
       if (Rel_deltaR3dPar >= 0.5 && MC_TrkV_associationPFDV_deltaR3dParallel->at(i) < 20.) hMC_TrkV_associationPFDV_deltaR3dParallelRel -> Fill(0.4999);
 
@@ -1532,7 +1536,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       if (isMC_assosiated_PF) hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2 -> Fill (eta_VerSim);
       
       //Barrel region only 
-      if(fabs(ni_MC_z) <20)
+      if(fabs(ni_MC_z) <25)
       {
         hMC_TrkV_R_Barrel->Fill( ni_MC_rho );
         if ( isMC_assosiated_PF ){
@@ -1593,7 +1597,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 
       }
       // Forward region only 
-      if(fabs(ni_MC_z) >= 20){
+      if(fabs(ni_MC_z) >=20){
         if ( (MC_TrkV_numberOfChargedParticles_Out0p2->at(i) > 2 && ni_MC_rho < 20 ) || (MC_TrkV_numberOfChargedParticles_0p2->at(i) > 2 && ni_MC_rho >= 20 ) ){
           if ( MC_TrkV_isNuclearInteraction->at(i)){
           hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2->Fill( ni_MC_rho );
@@ -1619,7 +1623,6 @@ void NtupleReaderNuclearInteractions_2015::analyze()
           }
         }
       } 
-
 
     }
 
@@ -1698,6 +1701,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       } 
 
   }
+
 // end MC part
 
 // start RECO part
@@ -1751,14 +1755,14 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       hPFDV_deltaR3d_Associated_Rebin->Fill(PFDV_deltaR3d_Associated->at(i));
 
 
-      if ( fabs(ni_z) <20)
+      if ( fabs(ni_z) <25)
       {
       hPFDV_deltaR2d_Associated_Barrel->Fill(PFDV_deltaR2d_Associated->at(i));
       hPFDV_deltaR3d_Associated_Barrel->Fill(PFDV_deltaR3d_Associated->at(i));
       hPFDV_deltaR3d_Associated_Barrel_Rebin->Fill(PFDV_deltaR3d_Associated->at(i));
       }
 
-      if ( fabs(ni_z) >20)
+      if ( fabs(ni_z) >25)
       {
       hPFDV_deltaR3d_Associated_Forward->Fill(PFDV_deltaR3d_Associated->at(i));
       hPFDV_deltaR3d_Associated_Forward_Rebin->Fill(PFDV_deltaR3d_Associated->at(i));
@@ -1773,7 +1777,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       hPFDV_isAssociatedMC -> Fill (0.); 
       }
 
-      if ( fabs(ni_z) <20)
+      if ( fabs(ni_z) <25)
       {
         hPFDV_associationMC_TrkVIdx_Barrel->Fill(PFDV_associationMC_TrkVIdx->at(i));
         if ( PFDV_isAssociatedMC->at(i)){
@@ -1918,7 +1922,16 @@ void NtupleReaderNuclearInteractions_2015::analyze()
   } /// End of loop over events
       cout<<"number of events with NI = "<<hPFDV_CountEventsWithNI->Integral()<<endl;
       cout<<"number of NI events = "<<hPFDV_XY_Map->Integral()<<endl;
-
+    //set last bin to zero
+    hMC_TrkV_associationPFDV_deltaR3d->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3dParallel->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3dPerpendicular->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3d_Barrel->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3dParallel_Forward->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward->SetBinContent(100,0.0);
+    hMC_TrkV_associationPFDV_deltaR3d_Forward->SetBinContent(100,0.0);
 }
 
 
