@@ -20,7 +20,7 @@
 
   Float_t dR_xmax = 0.2;
   Float_t dR_xmax_Loose = 20.;
-  Int_t  dR_Nbin = 100;
+  Int_t  dR_Nbin = 25;
 
 /* Constructor (file opening and tree loading) */
 NtupleReaderNuclearInteractions_2015::NtupleReaderNuclearInteractions_2015( const std::string fileList, const Long64_t maxEvents )
@@ -53,7 +53,7 @@ NtupleReaderNuclearInteractions_2015::NtupleReaderNuclearInteractions_2015( cons
 
   //outputFile = new TFile( "prova.root", "RECREATE" );
   outputFile = new TFile( "prova_Pixel.root", "RECREATE" );
-  //outputFile = new TFile( "prova_Track.root", "RECREATE" );
+  //outputFile = new TFile( "prova_Strip.root", "RECREATE" );
 
 }
 
@@ -1421,8 +1421,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       ///////////
       
       hMC_TrkV_R->Fill( ni_MC_rho );
-      if( ni_MC_rho < 19) continue; //for pixel cuts
-      //if( ni_MC_rho > 5) continue; //for strip cuts
+      //if( ni_MC_rho < 19) continue; //for strip cuts
+      if( ni_MC_rho > 5) continue; //for pixel cuts
  
       hMC_TrkV_numberOftracks_0p2->Fill(MC_TrkV_numberOfChargedParticles_0p2->at(i));
       hMC_TrkV_numberOftracks_0p5->Fill(MC_TrkV_numberOfChargedParticles_0p5->at(i));
