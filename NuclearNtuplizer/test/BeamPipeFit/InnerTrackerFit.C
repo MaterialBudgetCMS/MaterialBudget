@@ -44,6 +44,7 @@
 #include "TLatex.h"
 #include "TGraphErrors.h"
 #include <TAttFill.h>
+#include "TImage.h"
 
 using namespace std;
 
@@ -94,15 +95,20 @@ void InnerTrackerFit()
   TH2D* h_RhoPhi;
   TCanvas* cPlots;
   TCanvas* cQuality;
+  TCanvas* cShield;
   TH1D* hQuality;
   TH1D* hYderivative;
   TH2D* hYderivative2D;
   TH2D* hXderivative2D;
-  
+  TGraph* ShieldPlusX;
+  TGraph* ShieldPlusY;
+  TGraph* ShieldMinusX;
+  TGraph* ShieldMinusY; 
+ 
   // fit mesurements:
-  Double_t x0_PixelShieldPlus = -0.107;
-  Double_t y0_PixelShieldPlus = -0.093;
-  Double_t r0_PixelShieldPlus = 3.780;
+  Double_t x0_PixelShieldPlus = -0.117;
+  Double_t y0_PixelShieldPlus = -0.059;
+  Double_t r0_PixelShieldPlus = 3.783;
   
   
   Double_t x0_PixelSupportPlus = -0.233;
@@ -125,6 +131,7 @@ void InnerTrackerFit()
   Int_t flag_ExcludeBadFitSector = 1; // = 1 exclude; = 0 not exclude;
   Int_t  flag_Sys = 1; // = 0 - don't superimpose systematic variation, = 1 - superimpose systematics
   
+  Int_t PlotCenter = 1; // PlotCenter = 1 to plot center of pixel shield sides in the z slices, = 0 to not plot.
 
   //*** to fit is uncomment line:
 
@@ -132,16 +139,35 @@ void InnerTrackerFit()
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
-  //FitObject = "PixelShieldMinus"; // work well 
+  FitObject = "PixelShieldMinus"; // work well 
   //FitObject = "PixelShieldEllipse"; //work well
   //FitObject = "PixelShieldEllipsePlus"; // status failed
   //FitObject = "PixelSupport"; // work well
   //FitObject = "PixelSupportPlus"; // work well, don't use it
   //FitObject = "PixelSupportMinus"; // work well, don't use it
-  FitObject = "PixelSupportEllipse"; //work well
+  //FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
   //FitObject = "PixelSupportRailsPositive"; // work well
   //FitObject = "PixelSupportRailsNegative"; // work wel
+
+  if(PlotCenter == 1){
+  cShield = new TCanvas("");
+  cShield->cd();
+  //Double_t xPlus[10],yPlus[10],xMinus[10],yMinus[10], Slice[10];
+  Double_t xPlus[] = {-0.76, -0.78, -0.84, -0.96, -1.06, -1.17, -1.07, -1.06, -1.09, -1.17};
+  Double_t yPlus[] = {-1.05, -0.82, -0.99, -0.86, -0.96, -1.02, -0.93, -0.94, -0.90, -0.59};
+  Double_t xMinus[] = {0.58, 0.41, 0.33, 0.46, 0.49, 0.48, 0.29, 0.18, 0.29, 0.42};
+  Double_t yMinus[] = {-1.20, -1.10, -0.81, -1.01, -0.93, -0.97, -0.88, -0.79, -0.78, -0.89};
+  Double_t Slice[] = {-22.5, -17.5, -12.5, -7.5, -2.5, 2.5, 7.5, 12.5, 17.5, 22.5};
+  
+  ShieldPlusX = new TGraph(10, Slice, xPlus);
+  ShieldPlusX->SetMarkerStyle(20);
+  ShieldPlusX->SetMarkerSize(0.5);
+  ShieldPlusX->SetMarkerColor(kRed);
+  ShieldPlusX->Draw("P");
+  //ShieldPlusX->Draw();
+  ShieldPlusX->SaveAs(("Plots/ShieldPlusX.png"));
+  }//end if plot center
   
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
@@ -184,9 +210,9 @@ void InnerTrackerFit()
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.007; // size of systematics in cm
      r_Sys = 0.007; // size of systematics in cm
-     x0 = -0.112;//-0.106; // in cm
-     y0 = -0.093;//-0.096; // in cm
-     r0 = 3.783;//3.783; // in cm
+     x0 = -0.125;//-0.106; // in cm
+     y0 = -0.101;//-0.096; // in cm
+     r0 = 3.783; // in cm
   }
   //*** with all phi sectors: 3.736, x0 = -0.02, y0 = -0.092
   
@@ -197,8 +223,8 @@ void InnerTrackerFit()
      RangeEstimatorQuality = 0.1; 
      x_Sys = 0.007; // size of systematics in cm
      r_Sys = 0.007; // size of systematics in cm
-     x0 = 0.052; // in cm
-     y0 = -0.095; // in cm
+     x0 = 0.037;//0.052; // in cm
+     y0 = -0.091;//-0.095; // in cm
      r0 = 3.777; // in cm
   }
   
@@ -363,7 +389,7 @@ void InnerTrackerFit()
 
 
   //  for ( int k = -7; k < 5; k++ )
-  for ( int k = -6; k < -5; k++ )
+  for ( int k = 4; k < 5; k++ )
   //for ( int k = -5; k < -4; k++ ) //for for list of histograms to fit
   {
     std::string  plot = std::string(PlotObject);
@@ -889,12 +915,12 @@ void InnerTrackerFit()
         }
       if(FitObject == "PixelShieldPlus")
         {
-        if (SignalUpperEdge > 1.15*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+        if (SignalUpperEdge > 1.9/*1.15*/*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
         std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
         }
       if(FitObject == "PixelShieldMinus")
         {
-        if (SignalUpperEdge > 1.15*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+        if (SignalUpperEdge > 1.7/*1.15*/*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
         std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
         }
       if(FitObject == "PixelShieldEllipse")
@@ -1379,6 +1405,7 @@ void InnerTrackerFit()
        fitterArcPlus->SetParameter( 0, "R",  r0, 0.01, RSmin, RSmax ); // in cm
        fitterArcPlus->SetParameter( 1, "x0", x0, 0.01, -0.3, 0.1 ); // in cm
        fitterArcPlus->SetParameter( 2, "y0", y0, 0.01, -0.3,  0.1 ); // in cm
+       fitterArcPlus->FixParameter(0);
 
        Double_t arglistArcPlus[10] = {0.};
        // Execute the fit
@@ -1414,7 +1441,8 @@ void InnerTrackerFit()
        fitterArcMinus->SetParameter( 0, "R",  r0, 0.01, RSmin, RSmax ); // in cm
        fitterArcMinus->SetParameter( 1, "x0", x0, 0.01, 0.,  0.1 ); // in cm
        fitterArcMinus->SetParameter( 2, "y0", y0, 0.01, -0.15,  -0.05 ); // in cm
-       
+       fitterArcMinus->FixParameter(0);
+     
        Double_t arglistArcPlus[10] = {0.};
        // Execute the fit
        fitterArcMinus->ExecuteCommand( "MIGRAD", arglistArcPlus, 0 );
@@ -1453,7 +1481,7 @@ void InnerTrackerFit()
 
     // If the object is not the plus or minus sides of the pixel shield, draw a circle using the parameters from the fit
     if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport" || FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative")
-    //if ( (FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportPlus") /*&& FitObject != "PixelSupportEllipse"*/ && FitObject != "PixelSupportMinus")
+    //if ( (FitObject != "PixelShieldPlus" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportPlus") /*&& FitObject != "PixelSupportEllipse" && FitObject != "PixelSupportMinus")*/
       {
       cout << "======    fitter->GetParameter(1) = " << fitter->GetParameter(1) << endl;
       TArc* arc = new TArc( fitter->GetParameter(1), fitter->GetParameter(2), fitter->GetParameter(0) );
