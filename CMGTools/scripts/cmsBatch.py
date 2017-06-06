@@ -17,68 +17,9 @@ from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
 
 
 
-def batchScriptCCIN2P3():
-   script = """!/usr/bin/env bash
-#PBS -l platform=LINUX,u_sps_cmsf,M=2000MB,T=2000000
-#PBS -q T
-#PBS -eo
-#PBS -me
-#PBS -V
-
-source $HOME/.bash_profile
-
-echo '***********************'
-
-ulimit -v 3000000
-
-# coming back to submission dir do setup the env
-cd $PBS_O_WORKDIR
-eval `scramv1 ru -sh`
-
-
-# back to the worker
-cd -
-
-# copy job dir here
-cp -r $PBS_O_WORKDIR .
-
-# go inside
-jobdir=`ls`
-echo $jobdir
-
-cd $jobdir
-
-cat > sysinfo.sh <<EOF
-#! env bash
-echo '************** ENVIRONMENT ****************'
-
-env
-
-echo
-echo '************** WORKER *********************'
-echo
-
-free
-cat /proc/cpuinfo 
-
-echo
-echo '************** START *********************'
-echo
-EOF
-
-source sysinfo.sh > sysinfo.txt
-
-cmsRun run_cfg.py
-
-# copy job dir do disk
-cd -
-cp -r $jobdir $PBS_O_WORKDIR
-"""
-   return script
-
-
 def batchScriptCERN( remoteDir, index ):
    '''prepare the LSF version of the batch script, to run on LSF'''
+  
    script = """#!/bin/bash
 #BSUB -q 8nm
 echo 'environment:'
@@ -96,19 +37,14 @@ echo 'running'
 %s run_cfg.py
 echo
 echo 'sending the job directory back lalalal'
-""" % prog
-
-   if remoteDir != '':
-      remoteDir = remoteDir.replace('/eos/cms','')
-      script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
 echo $file
 echo $newFileName
-cmsStage -f $file %s/$newFileName 
+cp -f $file %s/$newFileName 
 done
-""" % (index, remoteDir)         
-      script += 'rm *.root\n'
+""" % (prog, index, remoteDir)         
+   script += 'rm *.root\n'
    script += 'cp -rf * $LS_SUBCWD\n'
    
    return script
@@ -116,23 +52,17 @@ done
 
 def batchScriptLocal(  remoteDir, index ):
    '''prepare a local version of the batch script, to run using nohup'''
-
    script = """#!/bin/bash
 echo 'running'
 %s run_cfg.py
 echo
 echo 'sending the job directory back'
-""" % prog
-
-   if remoteDir != '':
-      remoteDir = remoteDir.replace('/eos/cms','')
-      script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-cmsStage -f $file %s/$newFileName 
+cp -f $file %s/$newFileName 
 done
-""" % (index, remoteDir)
-      script += 'rm *.root\n'
+""" % (prog, index, remoteDir)
+   script += 'rm *.root\n'
    return script
 
 

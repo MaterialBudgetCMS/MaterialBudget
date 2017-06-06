@@ -51,29 +51,15 @@ class BatchManager:
         else:
             # removing possible trailing slash
             self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/')
-            if not castortools.isLFN( self.remoteOutputDir_ ):
-                print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'
-                print self.remoteOutputDir_
-                sys.exit(1)          
-           # self.remoteOutputDir_ = castortools.lfnToEOS( self.remoteOutputDir_ )
- #           dirExist = castortools.isDirectory( self.remoteOutputDir_ )           
-            dirExist = False
-            # nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
-            # dirExist = os.system( nsls )
+
+            dirExist =  os.path.exists(self.remoteOutputDir_)
             if dirExist is False:
                 print 'creating ', self.remoteOutputDir_
-                if castortools.isEOSFile( self.remoteOutputDir_ ):
-                    # the output directory is currently a file..
-                    # need to remove it.
-                    castortools.rm( self.remoteOutputDir_ )
-                castortools.createEOSDir( self.remoteOutputDir_ )
+                os.makedirs(self.remoteOutputDir_)
             else:
                 # directory exists.
                 if self.options_.negate is False and self.options_.force is False:
-                    #COLIN need to reimplement protectedRemove in eostools
                     raise ValueError(  ' '.join(['directory ', self.remoteOutputDir_, ' already exists.']))
-                    # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
-                    # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
         self.ManageOutputDir()
 
