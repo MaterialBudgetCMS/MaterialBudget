@@ -69,7 +69,7 @@ def eosToLFN( path ):
     Just strip out /eos/cms from path.
     If this string is not found, return path.
     ??? Shouldn't we raise an exception instead?"""
-    return path.replace('/eos/cms','')
+    return path.replace('/store','/eos/cms/store')
 
 #also define an alias for backwards compatibility
 castorToLFN = eosToLFN
@@ -144,46 +144,13 @@ isCastorDir = isEOSDir
 
 
 def isEOSFile( path, tfcProt = 'rfio'):
-    """Returns True if path is a file or directory stored on EOS (checks for path existence)
-    ??? This function does not behave well if passed a non EOS path...
-    returns lots of error messages like:
->>> eostools.isEOSFile('/store/asdfasfd')
-Command (['ls', '/', 's', 't', 'o', 'r', 'e', '/', 'a', 's', 'd', 'f', 'a', 's', 'f', 'd', '/store']) failed with return code: 2
-ls: s: No such file or directory
-ls: t: No such file or directory
-ls: o: No such file or directory
-ls: r: No such file or directory
-ls: e: No such file or directory
-ls: a: No such file or directory
-ls: s: No such file or directory
-ls: d: No such file or directory
-ls: f: No such file or directory
-ls: a: No such file or directory
-ls: s: No such file or directory
-ls: f: No such file or directory
-ls: d: No such file or directory
-ls: /store: No such file or directory
 
-ls: s: No such file or directory
-ls: t: No such file or directory
-ls: o: No such file or directory
-ls: r: No such file or directory
-ls: e: No such file or directory
-ls: a: No such file or directory
-ls: s: No such file or directory
-ls: d: No such file or directory
-ls: f: No such file or directory
-ls: a: No such file or directory
-ls: s: No such file or directory
-ls: f: No such file or directory
-ls: d: No such file or directory
-ls: /store: No such file or directory
-
-False
-    """
+    
     lfn = eosToLFN(path)
-    entity = cmsIO.cmsFile( os.path.dirname(lfn), tfcProt )
-    return lfn in entity.ls(lfn)
+    print lfn
+    return lfn
+#    entity = cmsIO.cmsFile( os.path.dirname(lfn), tfcProt )
+#    return lfn in entity.ls(lfn)
 #also define an alias for backwards compatibility
 
 isCastorFile = isEOSFile
@@ -214,17 +181,7 @@ def createEOSDir( path ):
     a file, everything will 'work'. But then we have a file, and not a directory,
     while we expect a dir..."""
     
-
-    command = "cmsMkdir "+path
-    print command
-    os.system(command)
-    lfn = eosToLFN(path)
-#    if not isEOSFile(lfn):
-    # if not isDirectory(lfn):
-##        runEOSCommand(lfn,'cmsMkdir','-p')
-#        entity = cmsIO.cmsFile( lfn,"stageout")
-#        entity.mkdir([])
-#        # print 'created ', path
+    #mkdir path
     return path
 
 #also define an alias for backwards compatibility
