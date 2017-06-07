@@ -4,27 +4,17 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("MyNtupleMaker")
 
 ### Import real conditions
-from Configuration.StandardSequences.Services_cff import *
-from Configuration.StandardSequences.GeometryExtended_cff import *
-from Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff import *
-from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
 from Configuration.StandardSequences.FrontierConditions_GlobalTag_cff import *
-
-process.load('Configuration/StandardSequences/Services_cff')
-#process.load('Configuration/StandardSequences/GeometryExtended_cff')
-process.load("Configuration.StandardSequences.GeometryDB_cff")
-process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '90X_upgrade2017_realistic_v20', '')
+
 
 ### Define source
 process.source = cms.Source("PoolSource",
   fileNames = cms.untracked.vstring(
     #'file:/afs/cern.ch/work/m/mgouzevi/private/TRACKING/CMSSW_7_3_1/src/this_is_an_example.root'
-  'file:SinglePiPt10_pythia8_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_RAW2DIGI_RECO.root'
+  'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2017/50GeV/SinglePiPt10_pythia8_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_RAW2DIGI_RECO_71.root'
   ),
   secondaryFileNames = cms.untracked.vstring(
   )
@@ -50,7 +40,7 @@ process.MyNtupleMaking = cms.EDAnalyzer("NtupleMakerNuclearInteractions",
 
 ### Root output
 process.TFileService = cms.Service("TFileService",
-  fileName = cms.string('Ntuple_MC_prova_1.root' )
+  fileName = cms.string('Ntuple_MC_900.root' )
 )
 
 process.out = cms.OutputModule("PoolOutputModule",
