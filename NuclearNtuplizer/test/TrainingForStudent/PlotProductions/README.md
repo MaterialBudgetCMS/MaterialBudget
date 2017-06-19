@@ -5,6 +5,7 @@ To run in root:
     m.GetEntry(0) # run over all events
     m.Loop()  
 
+Modify Analyzer.C and run it again.    
 
 To produce new class Analyzer.C/h (only once, you don't need to do it):
 

@@ -12,6 +12,21 @@
 #include <TChain.h>
 #include <TFile.h>
 
+#include <memory>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <stdexcept>
+//#include <stdlib.h>
+
+#include <TChain.h>
+#include <TTree.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TMath.h>
+#include <TVector3.h>
+
 // Header file for the classes stored in the TTree if any.
 #include "vector"
 #include "vector"
