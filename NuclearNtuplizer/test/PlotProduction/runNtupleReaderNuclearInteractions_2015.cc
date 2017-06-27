@@ -14,4 +14,3 @@ void runNtupleReaderNuclearInteractions_2015( const std::string fileList = "prov
   m.analyze();
   m.endJob();
 }
-

@@ -18,9 +18,13 @@
   //Float_t dR_xmax_Loose = 900.;
   //Int_t   dR_Nbin = 200;
 
-  Float_t dR_xmax = 0.2;
+  Float_t dR_xmax = 1.0;
   Float_t dR_xmax_Loose = 20.;
-  Int_t  dR_Nbin = 25;
+  Int_t  dR_Nbin = 50;
+
+  int Min_IT=0;
+  std::vector<double> *MC_TrkV_associationPFDV_deltaR3d_Min = new std::vector<double>();
+  //std::vector<double> MC_TrkV_associationPFDV_deltaR3d_Min;
 
 /* Constructor (file opening and tree loading) */
 NtupleReaderNuclearInteractions_2015::NtupleReaderNuclearInteractions_2015( const std::string fileList, const Long64_t maxEvents )
@@ -51,9 +55,11 @@ NtupleReaderNuclearInteractions_2015::NtupleReaderNuclearInteractions_2015( cons
 
   std::cout << " entries are "<<inputChain->GetEntries()<<std::endl;
 
-  //outputFile = new TFile( "prova.root", "RECREATE" );
-  outputFile = new TFile( "prova_Pixel.root", "RECREATE" );
+  outputFile = new TFile( "prova.root", "RECREATE" );
+  //outputFile = new TFile( "prova_Perpendicular.root", "RECREATE" );
+  //outputFile = new TFile( "prova_Pixel.root", "RECREATE" );
   //outputFile = new TFile( "prova_Strip.root", "RECREATE" );
+  //outputFile = new TFile( "prova_BeamPipe.root", "RECREATE" );
 
 }
 
@@ -494,6 +500,89 @@ void NtupleReaderNuclearInteractions_2015::beginJob()
    //Bins[99]=0.0;
 
   //histo MC_TrkV
+  
+  //Zach's Histograms
+
+  hMC_TrkV_associationPFDV_deltaR3d_PixelSupport_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_PixelSupport_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_PixelSupport_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_PixelSupport_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_PixelSupport_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_PixelSupport_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_PixelSupport_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_PixelSupport_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_PixelSupport_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_EndCap_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_EndCap_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_EndCap_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_EndCap_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax/10.0);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_EndCap_Landau->Sumw2();  
+  hMC_TrkV_associationPFDV_deltaR3d_With_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_With_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_With_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_With_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_With_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_With_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_Without_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_Without_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_Without_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_Without_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_Without_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_Without_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3d_Without_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3d_Without_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3d_Without_EndCap_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_With_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_With_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_With_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_With_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_With_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_With_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_With_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_With_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_With_EndCap_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Both_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Both_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Both_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Barrel_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Barrel_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Barrel_Landau->Sumw2();
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Without_EndCap_Landau = new TH1D("hMC_TrkV_associationPFDV_deltaR3dParallel_Without_EndCap_Landau", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dParallel_Without_EndCap_Landau->Sumw2();
+
+  hMC_XY_Map = new TH2D("hMC_XY_Map", "Map of XY", 280, -25, 25, 280, -25, 25);
+  hMC_XY_Map->Sumw2();
+  hMC_RhoPhi_PixelSupport = new TH2D("hMC_RhoPhi_PixelSupport", "CMS work in progress", 280, -TMath::Pi(), TMath::Pi(), 280, 0, 25);
+  hMC_RhoPhi_PixelSupport->Sumw2();
+  hMC_XY_Map_Pipe = new TH2D("hMC_XY_Map_Pipe", "CMS work in progress", 280, -5, 5, 280, -5, 5);
+  hMC_XY_Map_Pipe->Sumw2();
+  hMC_XY_PixelSupport_AbsZ25 = new TH2D("hMC_XY_PixelSupport_AbsZ25", "CMS work in progress", 280, -25, 25, 280, -25, 25);
+  hMC_XY_PixelSupport_AbsZ25->Sumw2();
+  hMC_XY_PixelSupport = new TH2D("hMC_XY_PixelSupport", "CMS work in progress", 280, -25, 25, 280, -25, 25);
+  hMC_XY_PixelSupport->Sumw2();
+  hPFDV_RhoPhi_PixelSupport = new TH2D("hPFDV_RhoPhi_PixelSupport", "CMS work in progress", 280, -TMath::Pi(), TMath::Pi(), 280, 0, 25);
+  hPFDV_RhoPhi_PixelSupport->Sumw2();
+  //hPFDV_XY_Map_Pipe = new TH2D("hPFDV_XY_Map_Pipe", "CMS work in progress", 280, -5, 5, 280, -5, 5);
+  //hPFDV_XY_Map_Pipe->Sumw2();
+  hPFDV_XY_PixelSupport_AbsZ25 = new TH2D("hPFDV_XY_PixelSupport_AbsZ25", "CMS work in progress", 280, -25, 25, 280, -25, 25);
+  hPFDV_XY_PixelSupport_AbsZ25->Sumw2();
+  hPFDV_XY_PixelSupport = new TH2D("hPFDV_XY_PixelSupport", "CMS work in progress", 280, -25, 25, 280, -25, 25);
+  hPFDV_XY_PixelSupport->Sumw2();
+
   hMC_NumberNI = new TH1D( "hMC_NumberNI", "# NI pass good sel. per event", 31, -0.5, 30.5 );
   hMC_NumberNI->Sumw2();
 
@@ -1123,8 +1212,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     inputChain->GetEntry( jentry );
 
     /// Here all the branches are available
-    double ni_x, ni_y, ni_z, ni_rho, ni_phi;
-    double ni_x_c, ni_y_c, ni_rho_c, ni_phi_c;
+    double ni_x, ni_y, ni_z, ni_rho, ni_phi, ni_MC_phi;
+    //double ni_x_c, ni_y_c, ni_rho_c, ni_phi_c;
     int ni_z_i;
 
     double ni_MC_x, ni_MC_y, ni_MC_z, ni_MC_rho;
@@ -1178,8 +1267,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     else hMC_NumberNI -> Fill (30); 
 
     //if (NumberNI < 1 || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
-    // use this \/
-    if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    //if ( (NumberNI != 1) || numberOfPFDV > 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
+    if ( (NumberNI != 1) || numberOfPFDV != 1) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //if ( (NumberNI != 3) ) continue; // avoid event with more then 1 good SIM Ver. or more then 1 RECO Ver. for eff. calculation 
     //test for assosiation
 
@@ -1188,6 +1277,174 @@ void NtupleReaderNuclearInteractions_2015::analyze()
    int SimVer_MaxCut_Pointer = -100.;
    bool SimVer_MaxCut_Previous = false;
 
+    //new MC cycle
+    //Fill minimum deltaR histogram
+    double DeltaR3d_Min_Val=1000.;
+    double DeltaR3dParallel_Min_Val=0.0;
+    double DeltaR3dPerpendicular_Min_Val=0.0;
+    //modify cuts here
+    bool PixelSupport=false;
+    bool Both=false;
+    bool EndCap=true;
+    bool Barrel=false;
+    bool With=true;
+    bool Without=false;
+    
+    int j_min = -1;
+    for( unsigned int j=0; j<numberOfMC_TrkV; j++)
+    {
+     ni_MC_x = MC_TrkV_x->at(j);
+     ni_MC_y = MC_TrkV_y->at(j);
+     ni_MC_z = MC_TrkV_z->at(j);
+     ni_MC_phi = TMath::ATan2( ni_MC_y, ni_MC_x );
+     ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+     //default cuts
+     // remove very soft vertex:
+     if (ni_MC_rho < 1.7) continue; // we don't reconstruct vertex with r < 1.8
+     if (MC_TrkV_numberOfChargedParticles_0p2->at(j) < 3 ) continue;
+     if (MC_TrkV_momentumOut_pt->at(j) < 0.5 ) continue;
+     // reject Sim event with R > 65 cm, because we don't have after reco 
+     if (ni_MC_rho > 22) continue;
+     if(PixelSupport==true)
+     {
+      if (ni_MC_rho < 19) continue;
+     }
+     if (EndCap==true)
+     {
+      if (fabs(ni_MC_z) < 25) continue;
+     }
+     if (Barrel==true)
+     {
+      if (fabs(ni_MC_z) > 25) continue;
+     }
+     if (With==true)
+     {
+      if (ni_MC_rho > 5) continue;
+     }
+     if (Without==true)
+     {
+      if (ni_MC_rho < 19) continue;
+      if (ni_MC_rho > 22) continue;
+     }
+     if(DeltaR3d_Min_Val>(MC_TrkV_associationPFDV_deltaR3d->at(j)))
+      {
+       //set new Min
+       DeltaR3d_Min_Val=(MC_TrkV_associationPFDV_deltaR3d->at(j));
+       DeltaR3dParallel_Min_Val=(MC_TrkV_associationPFDV_deltaR3dParallel->at(j));
+       DeltaR3dPerpendicular_Min_Val=(MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(j));
+       j_min = j;
+       //get X, Y of this
+       ni_MC_x=MC_TrkV_x->at(j);
+       ni_MC_y=MC_TrkV_y->at(j);
+       ni_MC_z=MC_TrkV_z->at(j);
+       ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+       ni_MC_phi = TMath::ATan2( ni_MC_y, ni_MC_x );
+      }
+     }  
+    
+     
+     if(j_min > -1) {
+        if (PixelSupport==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3d_PixelSupport_Landau->Fill(DeltaR3d_Min_Val);
+         hMC_TrkV_associationPFDV_deltaR3dParallel_PixelSupport_Landau->Fill(DeltaR3dParallel_Min_Val);
+         hMC_TrkV_associationPFDV_deltaR3dPerpendicular_PixelSupport_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+        }
+	}
+    
+     if(j_min > -1) {
+	if (Both==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3d_Both_Landau->Fill(DeltaR3d_Min_Val);
+         hMC_TrkV_associationPFDV_deltaR3dParallel_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
+         hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+        }
+	}
+
+     if(j_min > -1) {
+	if (Barrel==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3d_Barrel_Landau->Fill(DeltaR3d_Min_Val);
+         hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	}
+	}
+     if(j_min > -1) {
+	if (EndCap==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3d_EndCap_Landau->Fill(DeltaR3d_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dParallel_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	}
+	}
+     if(j_min > -1) {
+	if (With==true && Both==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3d_With_Both_Landau->Fill(DeltaR3d_Min_Val);
+         hMC_TrkV_associationPFDV_deltaR3dParallel_With_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
+        }
+	}
+     if(j_min > -1) {
+        if( With==true && Barrel==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3d_With_Barrel_Landau->Fill(DeltaR3d_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dParallel_With_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
+	}
+	}
+     if(j_min > -1) { 
+	if( With==true && EndCap==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3dParallel_With_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau->Fill(DeltaR3d_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	}
+	}
+     if(j_min > -1) {
+	if (Without==true && Both==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3d_Without_Both_Landau->Fill(DeltaR3d_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	}
+	}
+     if(j_min > -1) {
+	if (Without==true && Barrel==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3d_Without_Barrel_Landau->Fill(DeltaR3d_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	}
+	}
+     if(j_min > -1) {
+        if (Without==true && EndCap==true)
+	{
+	 hMC_TrkV_associationPFDV_deltaR3dParallel_Without_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3d_Without_EndCap_Landau->Fill(DeltaR3d_Min_Val);
+	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+	}
+	}
+         //Plot XY Simulation for DeltaR_Min
+         //histogram hMC_XY_Map 
+         hMC_RhoPhi_PixelSupport->Fill(ni_MC_phi, ni_MC_rho);
+         if(fabs(ni_MC_x) < 5 && fabs(ni_MC_y) < 5)
+	 {
+	  hMC_XY_Map_Pipe->Fill(ni_MC_x, ni_MC_y);
+	 }
+	 hMC_XY_PixelSupport->Fill(ni_MC_x, ni_MC_y);
+         if(abs(ni_MC_z)<25)
+         {
+          hMC_XY_PixelSupport_AbsZ25->Fill(ni_MC_x, ni_MC_y);
+         }
+	  hMC_XY_Map->Fill(ni_MC_x, ni_MC_y);
+
+    //Note: to make vector to store all Minimums, can use push_back with a new vector and DeltaR3d_Min_Val
+
+
+    //end new MC cycle
+
+    //old MC cycle
     for ( unsigned int i = 0; i < numberOfMC_TrkV; i++ )
     {
       ni_MC_x = MC_TrkV_x->at(i);
@@ -1422,8 +1679,9 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       
       hMC_TrkV_R->Fill( ni_MC_rho );
       //if( ni_MC_rho < 19) continue; //for strip cuts
-      if( ni_MC_rho > 5) continue; //for pixel cuts
- 
+      //if( ni_MC_rho > 5) continue; //for pixel cuts
+      //if( ni_MC_rho > 2.35 || ni_MC_rho < 2.15) continue; //isolate Beam Pipe
+      
       hMC_TrkV_numberOftracks_0p2->Fill(MC_TrkV_numberOfChargedParticles_0p2->at(i));
       hMC_TrkV_numberOftracks_0p5->Fill(MC_TrkV_numberOfChargedParticles_0p5->at(i));
       hMC_TrkV_numberOftracks_1p0->Fill(MC_TrkV_numberOfChargedParticles_1p0->at(i));
@@ -1622,9 +1880,8 @@ void NtupleReaderNuclearInteractions_2015::analyze()
                hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0 -> Fill ( ni_MC_rho );
             }
           }
-        }
-      } 
-
+       }
+     }
     }
 
     //if(N_MCassociatePF > 1){ 
@@ -1700,7 +1957,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
             if (isMC_assosiated_PF_MaxCut) hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut->Fill( ni_MC_rho );
          }
       } 
-
+     
   }
 
 // end MC part
@@ -1739,7 +1996,15 @@ void NtupleReaderNuclearInteractions_2015::analyze()
       if ( fabs(ni_z) < 20 ) {
       hPFDV_R_BPix->Fill( ni_rho );
       }
-
+      //Zach
+      hPFDV_RhoPhi_PixelSupport->Fill(ni_phi, ni_rho);
+      if(fabs(ni_z) <25)
+      {
+       //std::cout << "Found NI" << std::endl;
+       hPFDV_XY_PixelSupport_AbsZ25->Fill(ni_x, ni_y);
+      }
+      hPFDV_XY_PixelSupport->Fill(ni_x, ni_y);
+      
       hPFDV_XY_Map->Fill( ni_x, ni_y );
       hPFDV_RhoPhi_Map->Fill( ni_phi, ni_rho );
 
@@ -1915,14 +2180,13 @@ void NtupleReaderNuclearInteractions_2015::analyze()
 //        m_hPFDV_RhoPhi_Map_Corr_BPix_Weight.find( ni_z_i )->second->Fill( ni_phi_c, ni_rho_c, ni_rho_c*ni_rho_c );
 //
 //        m_hPFDV_XY_Map_Corr_Pipe_Weight.find( ni_z_i )->second->Fill( ni_x_c, ni_y_c, ni_rho_c*ni_rho_c );
-//        m_hPFDV_RhoPhi_Map_Corr_Pipe_Weight.find( ni_z_i )->second->Fill( ni_phi_c, ni_rho_c, ni_rho_c*ni_rho_c );
-//      }
+//	}
 
-    }
+     }
 
-  } /// End of loop over events
-      cout<<"number of events with NI = "<<hPFDV_CountEventsWithNI->Integral()<<endl;
-      cout<<"number of NI events = "<<hPFDV_XY_Map->Integral()<<endl;
+  } /// End of loop over events      
+      std::cout<<"number of events with NI = "<<hPFDV_CountEventsWithNI->Integral()<<std::endl;
+      std::cout<<"number of NI events = "<<hPFDV_XY_Map->Integral()<<std::endl;
     //set last bin to zero
     hMC_TrkV_associationPFDV_deltaR3d->SetBinContent(100,0.0);
     hMC_TrkV_associationPFDV_deltaR3dParallel->SetBinContent(100,0.0);
@@ -1934,9 +2198,6 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward->SetBinContent(100,0.0);
     hMC_TrkV_associationPFDV_deltaR3d_Forward->SetBinContent(100,0.0);
 }
-
-
-
 /* End Job (close output files) */
 void NtupleReaderNuclearInteractions_2015::endJob()
 {
@@ -1947,6 +2208,7 @@ void NtupleReaderNuclearInteractions_2015::endJob()
 
 
 }
+
 
 #endif
 

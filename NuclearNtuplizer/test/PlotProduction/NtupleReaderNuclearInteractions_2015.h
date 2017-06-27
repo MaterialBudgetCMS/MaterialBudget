@@ -84,6 +84,49 @@ class NtupleReaderNuclearInteractions_2015
     TH1D* hMC_TrkV_associationPFDV_deltaR2d;
     TH1D* hMC_TrkV_associationPFDV_deltaR2d_Barrel;
 
+    //Zach's histograms deltaRs
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_PixelSupport_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_PixelSupport_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_PixelSupport_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_With_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_With_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_Without_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_Without_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3d_Without_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_With_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_With_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_With_EndCap_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Both_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Barrel_Landau;
+    TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Without_EndCap_Landau;
+    
+    
+    TH2D* hMC_XY_Map;
+    TH2D* hMC_RhoPhi_PixelSupport;
+    TH2D* hMC_XY_Map_Pipe;
+    TH2D* hMC_XY_PixelSupport_AbsZ25;
+    TH2D* hMC_XY_PixelSupport;
+    TH2D* hPFDV_RhoPhi_PixelSupport;
+    //TH2D* hPFDV_XY_Map_Pipe;
+    TH2D* hPFDV_XY_PixelSupport_AbsZ25;
+    TH2D* hPFDV_XY_PixelSupport;
+
     TH1D* hMC_TrkV_associationPFDV_deltaR3d;
     TH1D* hMC_TrkV_associationPFDV_deltaR3d_Barrel;
     TH1D* hMC_TrkV_associationPFDV_deltaR3d_Forward;
