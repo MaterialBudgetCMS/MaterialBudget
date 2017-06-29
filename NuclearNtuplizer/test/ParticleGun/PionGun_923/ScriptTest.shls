@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "" > PionGun50GeV.txt
+
+Max=200
+
+for (( i=1; i<=${Max}; i++ ))
+do
+    echo "$i"
+
+    edmFileUtil -P -f /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2017_923Geom/50GeV_RECO/SinglePiPt10_pythia8_cfi_RECO_${i}.root | grep DisplacedVertex 
+
+    if [[ $? -eq 0 ]]; then
+	if [[ i -lt ${Max} ]]; then
+	    echo "'/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2017_923Geom/50GeV_RECO/SinglePiPt10_pythia8_cfi_RECO_${i}.root'," >> PionGun50GeV.txt
+	else
+	    echo "'/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2017_923Geom/50GeV_RECO/SinglePiPt10_pythia8_cfi_RECO_${i}.root'" >> PionGun50GeV.txt
+	fi
+    fi
+done
+
+

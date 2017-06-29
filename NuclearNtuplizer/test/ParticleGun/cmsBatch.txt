@@ -1,0 +1,1 @@
+/afs/cern.ch/work/k/kropiv/Tracker/CMSSW_7_3_0/bin/slc6_amd64_gcc491/cmsBatch.py 20 SinglePiPt100_cfi_py_GEN_SIM_DIGI_L1_DIGI2RAW_RAW2DIGI_RECO.py -r /store/group/dpg_tracker_strip/tracker/MaterialBudget/MC/ParticleGun/PionGun100GeV -b bsub -q 2nd < ./batchScript.sh
