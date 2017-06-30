@@ -47,10 +47,12 @@ void Triaining_Fit(){
 //gROOT->Reset();
 
 // open file:
-TFile *f1 = new TFile("prova.root");
+//TFile *f1 = new TFile("prova.root");
+//TFile *f1 = new TFile("prova2015.root");
+TFile *f1 = new TFile("prova2017.root");
 
 //read histogram from file f1, here example with the same name but you could give any new name:
-const char* HistogramName="hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau";
+const char* HistogramName="hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau";
 TH1F* hMC_TrkV_associationPFDV = (TH1F*)f1->Get(HistogramName);
 
 //hPFDV_deltaR3d_Associated ->Fit("epxo");
@@ -118,7 +120,7 @@ if(Perpendicular==false)
 double widthTest=0.0;
 double width=0.0;
 double widthP=0.0;
-double range=100.0;
+double range=10.0;
 int counts=0;
 std::cout <<"Max Landau/histo Value/2 = " << hMC_TrkV_associationPFDV->GetMaximum()/2 << std::endl;
 for(int i=0; i<hMC_TrkV_associationPFDV->GetMaximum()*100000; i++)
@@ -176,7 +178,7 @@ double sigma68=0.0;
 int count=0;
 double sigma68value=integral7*0.68;
 std::cout << "68% of integral from 0->100.0 = " << sigma68value << std::endl;
-double ranges=100.0;
+double ranges=1000.0;
 for(int i=0; i<hMC_TrkV_associationPFDV->GetMaximum()*10000; i++)
 { 
  //break;
@@ -243,6 +245,6 @@ listOfLines->Remove(tconst3);
 //Update Canvas
 c1->Update();
 
-c1 -> SaveAs("c1.png");
-
+c1->SaveAs("c1.png");
+//c1 -> SaveAs(("Resolution_Plots/"+HistogramName+".png"));
 }

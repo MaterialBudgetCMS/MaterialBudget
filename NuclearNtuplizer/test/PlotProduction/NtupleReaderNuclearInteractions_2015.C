@@ -56,6 +56,8 @@ NtupleReaderNuclearInteractions_2015::NtupleReaderNuclearInteractions_2015( cons
   std::cout << " entries are "<<inputChain->GetEntries()<<std::endl;
 
   outputFile = new TFile( "prova.root", "RECREATE" );
+  //outputFile = new TFile( "prova2015.root", "RECREATE" );
+  //outputFile = new TFile( "prova2017.root", "RECREATE" );
   //outputFile = new TFile( "prova_Perpendicular.root", "RECREATE" );
   //outputFile = new TFile( "prova_Pixel.root", "RECREATE" );
   //outputFile = new TFile( "prova_Strip.root", "RECREATE" );
@@ -1283,14 +1285,7 @@ void NtupleReaderNuclearInteractions_2015::analyze()
     double DeltaR3dParallel_Min_Val=0.0;
     double DeltaR3dPerpendicular_Min_Val=0.0;
     //modify cuts here
-    bool PixelSupport=false;
-    bool Both=false;
-    bool EndCap=true;
-    bool Barrel=false;
-    bool With=true;
-    bool Without=false;
     
-    int j_min = -1;
     for( unsigned int j=0; j<numberOfMC_TrkV; j++)
     {
      ni_MC_x = MC_TrkV_x->at(j);
@@ -1305,34 +1300,12 @@ void NtupleReaderNuclearInteractions_2015::analyze()
      if (MC_TrkV_momentumOut_pt->at(j) < 0.5 ) continue;
      // reject Sim event with R > 65 cm, because we don't have after reco 
      if (ni_MC_rho > 22) continue;
-     if(PixelSupport==true)
-     {
-      if (ni_MC_rho < 19) continue;
-     }
-     if (EndCap==true)
-     {
-      if (fabs(ni_MC_z) < 25) continue;
-     }
-     if (Barrel==true)
-     {
-      if (fabs(ni_MC_z) > 25) continue;
-     }
-     if (With==true)
-     {
-      if (ni_MC_rho > 5) continue;
-     }
-     if (Without==true)
-     {
-      if (ni_MC_rho < 19) continue;
-      if (ni_MC_rho > 22) continue;
-     }
      if(DeltaR3d_Min_Val>(MC_TrkV_associationPFDV_deltaR3d->at(j)))
       {
        //set new Min
        DeltaR3d_Min_Val=(MC_TrkV_associationPFDV_deltaR3d->at(j));
        DeltaR3dParallel_Min_Val=(MC_TrkV_associationPFDV_deltaR3dParallel->at(j));
        DeltaR3dPerpendicular_Min_Val=(MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(j));
-       j_min = j;
        //get X, Y of this
        ni_MC_x=MC_TrkV_x->at(j);
        ni_MC_y=MC_TrkV_y->at(j);
@@ -1340,91 +1313,69 @@ void NtupleReaderNuclearInteractions_2015::analyze()
        ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
        ni_MC_phi = TMath::ATan2( ni_MC_y, ni_MC_x );
       }
+      if(ni_MC_rho > 19)
+      {
+       hMC_TrkV_associationPFDV_deltaR3d_PixelSupport_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dParallel_PixelSupport_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_PixelSupport_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      }
+      
+      
+       hMC_TrkV_associationPFDV_deltaR3d_Both_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dParallel_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      
+      if (fabs(ni_MC_z) < 25)
+      {
+       hMC_TrkV_associationPFDV_deltaR3d_Barrel_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      }
+      if (fabs(ni_MC_z) > 25)
+      {
+       hMC_TrkV_associationPFDV_deltaR3d_EndCap_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dParallel_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      }
+      if (ni_MC_rho < 5)
+      {
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3d_With_Both_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dParallel_With_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
+      }
+      if(ni_MC_rho < 5 && fabs(ni_MC_z) < 25)
+      {
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3d_With_Barrel_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dParallel_With_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
+      }
+      if(ni_MC_rho < 5 && fabs(ni_MC_z) > 25)
+      {
+       hMC_TrkV_associationPFDV_deltaR3dParallel_With_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      }
+      if (ni_MC_rho > 19)
+      {
+       hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3d_Without_Both_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      }
+      if (ni_MC_rho > 19 && fabs(ni_MC_z) < 25)
+      {
+       hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3d_Without_Barrel_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      }
+      if (ni_MC_rho > 19 && fabs(ni_MC_z) > 25)
+      {
+       hMC_TrkV_associationPFDV_deltaR3dParallel_Without_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3d_Without_EndCap_Landau->Fill(DeltaR3d_Min_Val);
+       hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
+      }
      }  
     
-     
-     if(j_min > -1) {
-        if (PixelSupport==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3d_PixelSupport_Landau->Fill(DeltaR3d_Min_Val);
-         hMC_TrkV_associationPFDV_deltaR3dParallel_PixelSupport_Landau->Fill(DeltaR3dParallel_Min_Val);
-         hMC_TrkV_associationPFDV_deltaR3dPerpendicular_PixelSupport_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-        }
-	}
-    
-     if(j_min > -1) {
-	if (Both==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3d_Both_Landau->Fill(DeltaR3d_Min_Val);
-         hMC_TrkV_associationPFDV_deltaR3dParallel_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
-         hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-        }
-	}
 
-     if(j_min > -1) {
-	if (Barrel==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3d_Barrel_Landau->Fill(DeltaR3d_Min_Val);
-         hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	}
-	}
-     if(j_min > -1) {
-	if (EndCap==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3d_EndCap_Landau->Fill(DeltaR3d_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dParallel_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	}
-	}
-     if(j_min > -1) {
-	if (With==true && Both==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3d_With_Both_Landau->Fill(DeltaR3d_Min_Val);
-         hMC_TrkV_associationPFDV_deltaR3dParallel_With_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
-        }
-	}
-     if(j_min > -1) {
-        if( With==true && Barrel==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3d_With_Barrel_Landau->Fill(DeltaR3d_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dParallel_With_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
-	}
-	}
-     if(j_min > -1) { 
-	if( With==true && EndCap==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3dParallel_With_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3d_With_EndCap_Landau->Fill(DeltaR3d_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_With_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	}
-	}
-     if(j_min > -1) {
-	if (Without==true && Both==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Both_Landau->Fill(DeltaR3dParallel_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3d_Without_Both_Landau->Fill(DeltaR3d_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Both_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	}
-	}
-     if(j_min > -1) {
-	if (Without==true && Barrel==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3dParallel_Without_Barrel_Landau->Fill(DeltaR3dParallel_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3d_Without_Barrel_Landau->Fill(DeltaR3d_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_Barrel_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	}
-	}
-     if(j_min > -1) {
-        if (Without==true && EndCap==true)
-	{
-	 hMC_TrkV_associationPFDV_deltaR3dParallel_Without_EndCap_Landau->Fill(DeltaR3dParallel_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3d_Without_EndCap_Landau->Fill(DeltaR3d_Min_Val);
-	 hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Without_EndCap_Landau->Fill(DeltaR3dPerpendicular_Min_Val);
-	}
-	}
          //Plot XY Simulation for DeltaR_Min
          //histogram hMC_XY_Map 
          hMC_RhoPhi_PixelSupport->Fill(ni_MC_phi, ni_MC_rho);
