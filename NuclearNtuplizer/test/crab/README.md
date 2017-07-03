@@ -32,7 +32,11 @@ Set enviroment:
 
     cmsenv
 
-Send crab job with python:
+Send crab job with python for 2017A:
+
+    python  crab_Run2017A_921.py samples/sample_Run2017A_921.py
+
+Send crab job with python for 2015:
 
     python multicrab_Run2015D_25ns_RECO.py samples/samples_Run2015D_25ns_reRECO.py
 
