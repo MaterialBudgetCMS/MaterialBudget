@@ -35,6 +35,7 @@ Set enviroment:
 Send crab job with python for 2017A:
 
     python  crab_Run2017A_921.py samples/sample_Run2017A_921.py
+    python  crab_Run2017B_923.py samples/sample_Run2017B_923.py
 
 Send crab job with python for 2015:
 
@@ -87,3 +88,30 @@ How to calculate luminosity for Run2
 please follow instructions at (OLD):
 
      https://twiki.cern.ch/twiki/bin/view/CMS/lcr2
+
+Information about Run2017 A B good for Pixel:
+===
+
+Run Era     | configuration     | run list of GOOD for Pixel and Tracker
+
+Run2017A        case-1          297003 296980 296979 296978 296977 296976 296972 296971 296970 296969 296968 296967 296966
+                                296898 296897 296888 296881 296880 296879 296867 296866 296801 296799 296791 296788 296787 296786
+
+Run2017B        case-1          297176 297175 297114 297113 297101 297100 297099 297057 297056 297050
+
+Run2017B        case-2          297227 297225 297224 297218 297215
+
+Run2017B        case-2 - HV=200 297474 297469 297433 297432 297430 297429 297425 297411 297359 297308 297296 297293 297292
+
+note: 296801 296799 are Low_stat runs
+
+if needed DC will update these list here : [1]
+
+Configuration meaning:( also described in [1])â?¨
+
+case 1          is the first stable timing configuration Pixel adopted, not optimal for Layer 1 but quite ok
+case 2          is a better timing configuration (optimizing Layer one response)â?¨
+case 2 HV 200   is the last setting Pixel is using, with the timing as above, but the HV in the Layer one has been moved from 100V to 200V
+
+
+
