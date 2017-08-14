@@ -48,17 +48,7 @@ void Resolution::Loop()
    Float_t dR_xmax = 1.0;
    Float_t dR_xmax_Loose = 20.;
    Int_t  dR_Nbin = 50;
-//by  b_branchname->GetEntry(ientry); //read only this branch
-   /*inputChain = new TChain("MyNtupleMaking/NuclearInteractionsTree");
-   MC_TrkV_numberOfChargedParticles_0p2 = new std::vector< unsigned int >();
-   if ( inputChain->GetBranchStatus( "MC_TrkV_numberOfChargedParticles_0p2" ) )
-    inputChain->SetBranchAddress( "MC_TrkV_numberOfChargedParticles_0p2", &MC_TrkV_numberOfChargedParticles_0p2, &b_MC_TrkV_numberOfChargedParticles_0p2 );
-   else cout << "Status1 Failed" << std::endl;
-   MC_TrkV_momentumOut_pt = new std::vector< double >();
-   if ( inputChain->GetBranchStatus( "MC_TrkV_momentumOut_pt" ) )
-    inputChain->SetBranchAddress( "MC_TrkV_momentumOut_pt", &MC_TrkV_momentumOut_pt, &b_MC_TrkV_momentumOut_pt );
-   else cout << "Status2 Failed" << std::endl;
-   */
+   
    TFile* outputFile;
    outputFile = new TFile("ResolutionPlots.root", "RECREATE");
    //initialize histograms
@@ -155,18 +145,21 @@ void Resolution::Loop()
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
        if (Cut(ientry) < 0) continue;
-      // print how many events are done:
+      //Get Branch addresses for cuts
       b_MC_TrkV_numberOfChargedParticles_0p2->GetEntry(ientry);
       b_MC_TrkV_momentumOut_pt->GetEntry(ientry);
+      // print how many events are done:
       if( jentry%100000 == 0 )
            std::cout << "Loop over entry " << jentry << "/" << nentries << "." << std::endl;
       int NumberNI=0;
       for ( unsigned int i = 0; i < numberOfMC_TrkV; i++ )
       {
+       //get values of x, y, and z of MC tracks
        ni_MC_x = MC_TrkV_x->at(i);
        ni_MC_y = MC_TrkV_y->at(i);
        ni_MC_z = MC_TrkV_z->at(i);
        ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+       //default cuts
        if (MC_TrkV_numberOfChargedParticles_0p2->at(i) < 3 ) continue;
        if (MC_TrkV_momentumOut_pt->at(i) < 0.5 ) continue;
        if (ni_MC_rho < 1.7) continue;
@@ -176,7 +169,6 @@ void Resolution::Loop()
          if ( (NumberNI != 1) || numberOfPFDV != 1) continue;
       for ( int j = 0; j < numberOfMC_TrkV; j++ )
       {
-        // if ( (NumberNI != 1) || numberOfPFDV != 1) continue;
          ni_MC_x = MC_TrkV_x->at(j);
          ni_MC_y = MC_TrkV_y->at(j);
          ni_MC_z = MC_TrkV_z->at(j);
@@ -189,6 +181,7 @@ void Resolution::Loop()
 	  if (MC_TrkV_numberOfChargedParticles_0p2->at(j) < 3 ) continue;
           if (MC_TrkV_momentumOut_pt->at(j) < 0.5 ) continue;
           if (ni_MC_rho > 22) continue;
+          //find the minimum deltaR
           if(DeltaR3d_Min_Val>(MC_TrkV_associationPFDV_deltaR3d->at(j)))
            {
 	    DeltaR3d_Min_Val=(MC_TrkV_associationPFDV_deltaR3d->at(j));
@@ -196,6 +189,7 @@ void Resolution::Loop()
             DeltaR3dPerpendicular_Min_Val=(MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(j));
             ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
            }
+   	  //fill histograms based on each region
           hMC_deltaR3d->Fill(DeltaR3d_Min_Val);
           hMC_deltaR3d_Parallel->Fill(DeltaR3dParallel_Min_Val);
           hMC_deltaR3d_Perpendicular->Fill(DeltaR3dPerpendicular_Min_Val);
