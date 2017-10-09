@@ -5,6 +5,8 @@
 <use   name="RecoVertex/KinematicFitPrimitives"/>
 <use   name="RecoEgamma/EgammaMCTools"/>
 <use   name="root"/>
+<use   name="rootgraphics"/>
+<use   name="roothistmatrix"/>
 <use   name="CondFormats/DataRecord"/>
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/PluginManager"/>
@@ -22,6 +24,7 @@
 <use   name="DataFormats/TrajectoryState"/>
 <use   name="SimDataFormats/TrackingAnalysis"/>
 <use   name="CommonTools/UtilAlgos"/>
+<use   name="CommonTools/Utils"/>
 <use   name="MagneticField/Engine"/>
 <use   name="MagneticField/Records"/>
 <use   name="PhysicsTools/PatUtils"/>
@@ -29,4 +32,3 @@
 <use   name="SimTracker/TrackAssociation"/>
 <use   name="TrackingTools/IPTools"/>
 <flags EDM_PLUGIN="1"/>
-

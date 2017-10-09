@@ -206,6 +206,9 @@ class NtupleMakerNuclearInteractions : public edm::EDAnalyzer
     std::vector< std::vector< double > > *PFDV_vTrack_pt;
     std::vector< std::vector< double > > *PFDV_vTrack_eta;
     std::vector< std::vector< double > > *PFDV_vTrack_phi;
+    std::vector< std::vector< double > > *PFDV_vTrack_chi2;
+    std::vector< std::vector< double > > *PFDV_vTrack_normalizedChi2;
+    //std::vector< std::vector< bool > > *PFDV_vTrack_isHighPurity;
     std::vector< std::vector< double > > *PFDV_vTrack_rho;
     std::vector< std::vector< unsigned int > > *PFDV_vTrack_numberOfValidHits;
     std::vector< std::vector< unsigned int > > *PFDV_vTrack_numberOfExpectedOuterHits;

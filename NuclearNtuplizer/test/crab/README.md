@@ -34,6 +34,9 @@ Set enviroment:
 
 Send crab job with python for 2017A:
 
+    python crab_Run2017B_930.py samples/sample_SingleMu_Run2017B_04Jul2017_v2.py 
+    python crab_Run2017B_930.py samples/sample_SingleMu_Run2017B_PromptReco_v1.py
+    python crab_Run2017B_930.py samples/sample_SingleMu_Run2017B_PromptReco_v2.py
     python  crab_Run2017A_921.py samples/sample_Run2017A_921.py
     python  crab_Run2017B_923.py samples/sample_Run2017B_923.py
 

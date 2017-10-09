@@ -155,6 +155,9 @@ void NtupleMakerNuclearInteractions::beginJob()
   PFDV_vTrack_pt = new std::vector< std::vector< double > >;
   PFDV_vTrack_eta = new std::vector< std::vector< double > >;
   PFDV_vTrack_phi = new std::vector< std::vector< double > >;
+  PFDV_vTrack_chi2 = new std::vector< std::vector< double > >;
+  PFDV_vTrack_normalizedChi2 = new std::vector< std::vector< double > >;
+  //PFDV_vTrack_isHighPurity = new std::vector< std::vector< bool > >;
   PFDV_vTrack_rho = new std::vector< std::vector< double > >;
   PFDV_vTrack_numberOfValidHits = new std::vector< std::vector< unsigned int > >;
   PFDV_vTrack_numberOfExpectedOuterHits = new std::vector< std::vector< unsigned int > >;
@@ -296,6 +299,8 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "PFDV_vTrack_pt", "std::vector< std::vector< double > >", &PFDV_vTrack_pt );
   outputTree->Branch( "PFDV_vTrack_eta", "std::vector< std::vector< double > >", &PFDV_vTrack_eta );
   outputTree->Branch( "PFDV_vTrack_phi", "std::vector< std::vector< double > >", &PFDV_vTrack_phi );
+  outputTree->Branch( "PFDV_vTrack_chi2", "std::vector< std::vector< double > >", &PFDV_vTrack_chi2 );
+  outputTree->Branch( "PFDV_vTrack_normalizedChi2", "std::vector< std::vector< double > >", &PFDV_vTrack_normalizedChi2 );
   outputTree->Branch( "PFDV_vTrack_rho", "std::vector< std::vector< double > >", &PFDV_vTrack_rho );
   outputTree->Branch( "PFDV_vTrack_numberOfValidHits", "std::vector< std::vector< unsigned int > >", &PFDV_vTrack_numberOfValidHits );
   outputTree->Branch( "PFDV_vTrack_numberOfExpectedOuterHits", "std::vector< std::vector< unsigned int > >", &PFDV_vTrack_numberOfExpectedOuterHits );
@@ -305,6 +310,7 @@ void NtupleMakerNuclearInteractions::beginJob()
   outputTree->Branch( "PFDV_vTrack_closestDzPVIdx", "std::vector< std::vector< unsigned int > >", &PFDV_vTrack_closestDzPVIdx );
   outputTree->Branch( "PFDV_vTrack_closestDzPVIdx_dxy", "std::vector< std::vector< double > >", &PFDV_vTrack_closestDzPVIdx_dxy );
   outputTree->Branch( "PFDV_vTrack_closestDzPVIdx_dz", "std::vector< std::vector< double > >", &PFDV_vTrack_closestDzPVIdx_dz );
+  //outputTree->Branch( "PFDV_vTrack_isHighPurity", "std::vector< std::vector< bool > >", &PFDV_vTrack_isHighPurity );
 }
 
 /* End Job */
@@ -752,6 +758,9 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   PFDV_vTrack_pt->clear();
   PFDV_vTrack_eta->clear();
   PFDV_vTrack_phi->clear();
+  PFDV_vTrack_chi2->clear();
+  PFDV_vTrack_normalizedChi2->clear();
+  //PFDV_vTrack_isHighPurity->clear();
   PFDV_vTrack_rho->clear();
   PFDV_vTrack_numberOfValidHits->clear();
   PFDV_vTrack_numberOfExpectedOuterHits->clear();
@@ -914,6 +923,9 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     std::vector< double > vTrack_pt;                               vTrack_pt.clear();
     std::vector< double > vTrack_eta;                              vTrack_eta.clear();
     std::vector< double > vTrack_phi;                              vTrack_phi.clear();
+    std::vector< double > vTrack_chi2;                             vTrack_chi2.clear();
+    std::vector< double > vTrack_normalizedChi2;                   vTrack_normalizedChi2.clear();
+    //std::vector< bool > vTrack_isHighPurity;                       vTrack_isHighPurity.clear();
     std::vector< double > vTrack_rho;                              vTrack_rho.clear();
     std::vector< unsigned int > vTrack_numberOfValidHits;          vTrack_numberOfValidHits.clear();
     std::vector< unsigned int > vTrack_numberOfExpectedOuterHits;  vTrack_numberOfExpectedOuterHits.clear();
@@ -976,6 +988,9 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       vTrack_algo.push_back( (*trackDisplacedVertex)->algo() );
       vTrack_eta.push_back( (*trackDisplacedVertex)->eta() );
       vTrack_phi.push_back( (*trackDisplacedVertex)->phi() );
+      vTrack_chi2.push_back( (*trackDisplacedVertex)->chi2() );
+      vTrack_normalizedChi2.push_back( (*trackDisplacedVertex)->normalizedChi2() );
+      //vTrack_isHighPurity.push_back( (*trackDisplacedVertex)->quality((*trackDisplacedVertex)->qualityByName("HighPurity") ) ); // high purity
       vTrack_rho.push_back( (*trackDisplacedVertex)->innerPosition().Rho() );
       vTrack_numberOfValidHits.push_back( (*trackDisplacedVertex)->numberOfValidHits() );
       vTrack_numberOfExpectedOuterHits.push_back( 0 );//(*trackDisplacedVertex)->trackerExpectedHitsOuter().numberOfHits() );
@@ -1033,6 +1048,9 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
     PFDV_vTrack_pt->push_back( vTrack_pt );
     PFDV_vTrack_eta->push_back( vTrack_eta );
     PFDV_vTrack_phi->push_back( vTrack_phi );
+    PFDV_vTrack_chi2->push_back( vTrack_chi2 );
+    PFDV_vTrack_normalizedChi2->push_back( vTrack_normalizedChi2 );
+    //PFDV_vTrack_isHighPurity->push_back( vTrack_isHighPurity );
     PFDV_vTrack_rho->push_back( vTrack_rho );
     PFDV_vTrack_numberOfValidHits->push_back( vTrack_numberOfValidHits );
     PFDV_vTrack_numberOfExpectedOuterHits->push_back( vTrack_numberOfExpectedOuterHits );
