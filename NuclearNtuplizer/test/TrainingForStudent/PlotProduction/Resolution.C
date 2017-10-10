@@ -20,29 +20,6 @@
 
 void Resolution::Loop()
 {
-//   In a ROOT session, you can do:
-//      Root > .L Resolution.C
-//      Root > Resolution t
-//      Root > t.GetEntry(12); // Fill t data members with entry number 12
-//      Root > t.Show();       // Show values of entry 12
-//      Root > t.Show(16);     // Read and show values of entry 16
-//      Root > t.Loop();       // Loop on all entries
-//
-
-//     This is the loop skeleton where:
-//    jentry is the global entry number in the chain
-//    ientry is the entry number in the current Tree
-//  Note that the argument to GetEntry must be:
-//    jentry for TChain::GetEntry
-//    ientry for TTree::GetEntry and TBranch::GetEntry
-//
-//       To read only selected branches, Insert statements like:
-// METHOD1:
-//    fChain->SetBranchStatus("*",0);  // disable all branches
-//    fChain->SetBranchStatus("branchname",1);  // activate branchname
-// METHOD2: replace line
-//    fChain->GetEntry(jentry);       //read all branches
-//by  b_branchname->GetEntry(ientry); //read only this branch
    if (fChain == 0) return;
    Float_t dR_xmin = 0.;
    Float_t dR_xmax = 1.0;
@@ -152,7 +129,7 @@ void Resolution::Loop()
       if( jentry%100000 == 0 )
            std::cout << "Loop over entry " << jentry << "/" << nentries << "." << std::endl;
       int NumberNI=0;
-      for ( unsigned int i = 0; i < numberOfMC_TrkV; i++ )
+      for ( int i = 0; i < numberOfMC_TrkV; i++ )
       {
        //get values of x, y, and z of MC tracks
        ni_MC_x = MC_TrkV_x->at(i);
