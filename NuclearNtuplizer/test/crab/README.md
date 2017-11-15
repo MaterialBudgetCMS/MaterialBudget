@@ -32,7 +32,10 @@ Set enviroment:
 
     cmsenv
 
-Send crab job with python for 2017A:
+Send crab job with python for 2017:
+
+    python crab_Run2017E_9212.py samples/sample_SingleMu_Run2017E_PromptReco_v1.py  # dataset is not availble in crab, need to be checked
+    python crab_Run2017E_9212.py samples/sample_ZeroBias_Run2017E_PromptReco_v1.py 
 
     python crab_Run2017B_930.py samples/sample_SingleMu_Run2017B_04Jul2017_v2.py 
     python crab_Run2017B_930.py samples/sample_SingleMu_Run2017B_PromptReco_v1.py
