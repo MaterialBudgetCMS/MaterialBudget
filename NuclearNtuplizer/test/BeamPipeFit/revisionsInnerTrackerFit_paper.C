@@ -94,7 +94,7 @@ Double_t func_EllipseRhoPhi(Double_t*, Double_t*);
 
 // Main Program to fit Inner Tracker: Beam Pipe, Pixel Shield, Pixel Support and Pixel Support Rails
 
-void revisionsInnerTrackerFit_2017()
+void revisionsInnerTrackerFit_paper()
 {
   //  gROOT->LoadMacro("tdrstyle.C");
   setTDRStyle();
@@ -103,14 +103,15 @@ void revisionsInnerTrackerFit_2017()
   //  gROOT->LoadMacro("CMS_lumi.C");
 
   writeExtraText = true;       // if extra text
+  extraText  = "";  // default extra text is "Preliminary"
   //extraText  = "Preliminary";  // default extra text is "Preliminary"
-  extraText  = "Work in Progress";  // default extra text is "Preliminary"
+  //extraText  = "Work in Progress";  // default extra text is "Preliminary"
   //extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   // BELOW IS ONE FOR 2015
-  //lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
-  lumi_13TeV  = " ";  // For MC 923 2017?
+  lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
+  //lumi_13TeV  = " ";  // For MC 923 2017?
   //lumi_sqrtS = "13 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
   int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 0=free form (uses lumi_sqrtS)
@@ -140,6 +141,7 @@ void revisionsInnerTrackerFit_2017()
   TH2D* h_RhoPhi;
   TH2D* h_RhoPhi_Extra;
   TH2D* h_ZR;
+  TH2D* h_XY;
   TCanvas* cPlots;
   TCanvas* cQuality;
   TH1D* hQuality;
@@ -200,12 +202,12 @@ void revisionsInnerTrackerFit_2017()
   
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
-     Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 3., RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
+     Rmin = 1.8, Rmax = 3., RBGmin = 2.4, RBGmax = 3., RSmin = 2., RSmax = 2.4, RPlot = 3.5;
      RangeEstimatorQuality = 0.1;  
      x_Sys = 0.003; //size of systematics in cm
      r_Sys = 0.003; //size of systematics in cm
-     x0 = 0.114; // from previous fits using this program that were based on 2017
-     y0 = -0.187; // from previous fits using this program that were based on 2017
+     x0 = 0.124; // from previous fits using this program that were based on 2015
+     y0 = 0.026; // from previous fits using this program that were based on 2015
      r0 = 2.21; // from previous fits using this program that were based on 2015
   }
   
@@ -439,16 +441,7 @@ void revisionsInnerTrackerFit_2017()
   //gROOT->ForceStyle();
 
   // 2015 data file
-  //TFile* inputFile = TFile::Open("Run2015DreReco.root");
-  // 2017 particle gun MC with proper geometry
-  //TFile* inputFile = TFile::Open("~/public/MC_923_plots.root");
-  // 2017 particle gun MC with incorrect geometry
-  //TFile* inputFile = TFile::Open("Run2017A_921_plots.root");
-  // 2017 reReco file --> good resolution, can use for fits
-  //TFile* inputFile = TFile::Open("~/work/NuclearInteraction/CMSSW_7_3_0/src/MaterialBudget/NuclearNtuplizer/test/PlotProduction/prova_2017_reReco.root");
-  TFile* inputFile = TFile::Open("Run2017E_ZeroBiasPromptReco.root");
-  // 2017 Prompt reco file --> poor resolution, don't use for measurements
-  //TFile* inputFile = TFile::Open("~/work/NuclearInteraction/CMSSW_7_3_0/src/MaterialBudget/NuclearNtuplizer/test/PlotProduction/prova_2017_PromptReco.root");
+  TFile* inputFile = TFile::Open("Run2015DreReco.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -583,6 +576,18 @@ void revisionsInnerTrackerFit_2017()
     h_ZR->GetYaxis()->SetLabelOffset(0.012);
     h_ZR->GetXaxis()->SetLabelOffset(0.012);
 
+    h_XY = new TH2D();
+    h_XY = (TH2D*)inputFile->Get("hPFDV_XY_PixelSupport_AbsZ25" );
+    h_XY->Sumw2();
+    //h_XY->Rebin2D(1,1);
+    h_XY->SetStats(0);
+    h_XY->GetXaxis()->SetTitle("x (cm)");
+    h_XY->GetYaxis()->SetTitle("y (cm)");
+    h_XY->GetYaxis()->SetTitleOffset(1.25);
+    h_XY->GetXaxis()->SetTitleOffset(1.2);
+    h_XY->GetYaxis()->SetLabelOffset(0.012);
+    h_XY->GetXaxis()->SetLabelOffset(0.012);
+
     cPlots = new TCanvas(("c_"+plot).c_str(),"");
 
     cPlots->cd();
@@ -677,10 +682,10 @@ void revisionsInnerTrackerFit_2017()
 
     TGraph* gr_BS;
     Double_t x_BS[1], y_BS[1];
-    //x_BS[0] = 0.077; // in cm for 2015
-    x_BS[0] = 0.081; // in cm for 2017
-    //y_BS[0] = 0.092; // in cm for 2015
-    y_BS[0] = -0.035; // in cm for 2017
+    x_BS[0] = 0.077; // in cm for 2015
+    //x_BS[0] = 0.081; // in cm for 2017
+    y_BS[0] = 0.092; // in cm for 2015
+    //y_BS[0] = -0.035; // in cm for 2017
     gr_BS = new TGraph(1,x_BS,y_BS);
     gr_BS->SetMarkerStyle(20);
     gr_BS->SetMarkerSize(1.5);
@@ -707,9 +712,9 @@ void revisionsInnerTrackerFit_2017()
 
 
     CMS_lumi( cPlots, iPeriod, 0 );
-    if (FitObject == "BeamPipe" )latex_circle.DrawLatex(/*-4.75*/-3., /*4.75*/ 3., "Data 2017");
-    if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(3., 5.5, "Data 2017");
-    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(10., 15., "Data 2017");
+    if (FitObject == "BeamPipe" )latex_circle.DrawLatex(-3., 3., "Data 2015");
+    if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(3., 5.5, "Data 2015");
+    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(10., 15., "Data 2015");
     if (FitObject == "BeamPipe"){
        gr_arc->Draw("P");
        gr_BS->Draw("P");
@@ -724,11 +729,19 @@ void revisionsInnerTrackerFit_2017()
     cPlots -> SetLogz();
     h_ZR->Draw("COLZ");
     CMS_lumi( cPlots, iPeriod, 0 ); 
-    latex_circle.DrawLatex(-33., 66., "Data 2017");
+    latex_circle.DrawLatex(-33., 66., "Data 2015");
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.png"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.pdf"));
     cPlots -> SetLogz(1);
-    //cPlots -> SetLinz();
+
+    cPlots -> SetLogz();
+    h_XY->Draw("COLZ");
+    CMS_lumi( cPlots, iPeriod, 0 ); 
+    latex_circle.DrawLatex(15., 22., "Data 2015");
+    cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.png"));
+    cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.pdf"));
+    cPlots -> SetLogz(1);
+
 
     h_Draw->Draw("LEGO");
     h_Draw->GetXaxis()->SetTitleOffset(1.5);
@@ -869,7 +882,7 @@ void revisionsInnerTrackerFit_2017()
 
       cPlots->cd();
       hbgua0->SetMinimum(0);
-      hbgua0->GetXaxis()->SetTitle("#rho (x^{2017}_{0},y^{2017}_{0}) (cm)");
+      hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) (cm)");
       //hbgua0->GetXaxis()->SetRangeUser(PipeInf, FitSup+0.1);
       hbgua0->GetXaxis()->SetRangeUser(Rmin, Rmax);
 
@@ -903,8 +916,8 @@ void revisionsInnerTrackerFit_2017()
       //TF1 *fitBg = new TF1( "fitBg","[0]*[0]*TMath::Exp([1]*x)", RBGmin , RBGmax );
       TF1 *fitBg = new TF1( "fitBg",func_fitBg, RBGmin , RBGmax, 2 );
       fitBg->SetParameter(0, 10);
-      //fitBg->SetParameter(1, 0.01);
-      fitBg->FixParameter(1,0);
+      fitBg->SetParameter(1, 0.01);
+      //fitBg->FixParameter(1,0);
       fitBg->SetParName(0, "N0");
       fitBg->SetParName(1, "k");
       //we  need set limits here to avoid negative values in fit (it will crash)
@@ -926,7 +939,7 @@ void revisionsInnerTrackerFit_2017()
       legBg->SetTextSize(0.03*ScaleSize);
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
-      legBg->AddEntry(hbgua0,"Data 2017","l");
+      legBg->AddEntry(hbgua0,"Data 2015","l");
       legBg->AddEntry(hbgua2,"signal fit region","f");
       legBg->AddEntry(hbgua1,"sideband fit region","f");
       legBg->AddEntry(fitBg,"sideband fit function","l");
@@ -1252,8 +1265,8 @@ void revisionsInnerTrackerFit_2017()
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
       if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hbgua0,"EXCLUDED from FIT","");
-      //legBg->AddEntry(hbgua0,Form("Data 2017, #phi sector = %d", phiSect),"");
-      legBg->AddEntry(hbgua0,Form("Data 2017, #phi sector = %d", phiSect),"l");
+      //legBg->AddEntry(hbgua0,Form("Data 2015, #phi sector = %d", phiSect),"");
+      legBg->AddEntry(hbgua0,Form("Data 2015, #phi sector = %d", phiSect),"l");
       legBg->AddEntry(hbgua2,"signal fit region","f");
       legBg->AddEntry(hbgua1,"sideband fit region","f");
       //legBg->AddEntry(fitBg,"sideband fit function","l");
@@ -1954,8 +1967,8 @@ void revisionsInnerTrackerFit_2017()
       if(fitterDraw->GetParError(2) >= ErrPrecision)legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10 << "}";
       else legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10 << "}";
 
-      latex_circle.DrawLatex(-1.75, -3, legCenter.str().c_str());
-      latex_circle.DrawLatex(-1.75, -2.5, legRadius.str().c_str());
+      latex_circle.DrawLatex(0.5, -2.9, legCenter.str().c_str());
+      latex_circle.DrawLatex(-3.1, -2.7, legRadius.str().c_str());
 
       //latex_circle.DrawLatex(-8, -17, legCenter.str().c_str());
       //latex_circle.DrawLatex(-8, -13.7, legRadius.str().c_str());
@@ -2182,8 +2195,8 @@ void revisionsInnerTrackerFit_2017()
       legData->SetTextColor(kBlack);
 
       
-      //if(FitObject == "PixelShield2Arcs") {legData->AddEntry(arc,"Data 2017","");} 
-      //else {legArc->AddEntry(arc,"Data 2017","");}
+      if(FitObject == "PixelShield2Arcs") {legData->AddEntry(arc,"Data 2015","");} 
+      else {legArc->AddEntry(arc,"Data 2015","");}
 
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport") 
         {
@@ -2318,7 +2331,7 @@ void revisionsInnerTrackerFit_2017()
       legArc_RhoPhi->SetTextColor(kBlack);
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport")
         {
-        legArc_RhoPhi->AddEntry(arc,"Data 2017","");
+        legArc_RhoPhi->AddEntry(arc,"Data 2015","");
         legArc_RhoPhi->AddEntry(arc,"Circle fit","l");
         }
 
@@ -2350,7 +2363,7 @@ void revisionsInnerTrackerFit_2017()
       legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
       legArc_RhoPhi->SetFillColor(kWhite);
       legArc_RhoPhi->SetTextColor(kBlack);
-      legArc_RhoPhi->AddEntry(arc,"Data 2017","");
+      legArc_RhoPhi->AddEntry(arc,"Data 2015","");
       legArc_RhoPhi->AddEntry(arc,"Ellipse fit","l");
 
       legArc_RhoPhi->Draw("same");
@@ -2433,7 +2446,7 @@ void revisionsInnerTrackerFit_2017()
       legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
       legArc_RhoPhi->SetFillColor(kWhite);
       legArc_RhoPhi->SetTextColor(kBlack);
-      legArc_RhoPhi->AddEntry(arc,"Data 2017","");
+      legArc_RhoPhi->AddEntry(arc,"Data 2015","");
       if(k > -5 && k < 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+2)*5),""); 
       if(k == -5 || k == 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+1)*5),""); 
       legArc_RhoPhi->AddEntry(ArcShieldPlus,"Circle fit Near","l");
@@ -3280,7 +3293,7 @@ void revisionsInnerTrackerFit_2017()
        lineBottom->SetLineWidth(2);
        lineBottom->Draw("same");
 
-       latex_circle.DrawLatex(17., 27., "Data 2017");
+       latex_circle.DrawLatex(17., 27., "Data 2015");
        TLatex *t_bottom = new TLatex(.5,y1+3.7,Form("Bottom Rail y = %3.2f #pm %3.2f cm",y1, yerr));
        latex_circle.DrawLatex(-15., -25., Form("Bottom Rail y = %3.2f #pm %3.2f cm",y1, yerr));
        t_bottom->SetTextAlign(22);

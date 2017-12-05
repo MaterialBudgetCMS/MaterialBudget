@@ -4,8 +4,15 @@ Universal Fit program could fit Beam Pipe, Pixel Shield or Pixel Support, just u
 
 Compiled version works for any CMSSW versions:
 
-      root.exe -b InnerTrackerFit.C++
+For 2017 data:
+      root.exe -b revisionsInnerTrackerFit_2017.C++
 
+For paper last version (2015):
+      root.exe -b revisionsInnerTrackerFit_paper.C++
+
+For paper v1 (2015):
+      root.exe -b InnerTrackerFit.C++
+ 
 For 2015 reReco Data:
      cmsrel CMSSW_7_4_14
 
