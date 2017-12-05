@@ -377,10 +377,8 @@ void revisionsInnerTrackerFit_paper()
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
      //PlotObject = "hPFDV_XY_PixelSupport";
      //PlotObjectBg = "hPFDV_RhoPhi_PixelSupport";
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 31.; 
-     //Rmin = /*18.*/1., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = /*21.1*/1., RSmax = 22.3, RPlot = 31.; 
-     //Rmin = 18./*1.*/, Rmax = 15., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1/*1.*/, RSmax = 15., RPlot = 17.; 
-     RangeEstimatorQuality = 0.5;  
+     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 31.;
+     RangeEstimatorQuality = 0.5;
      x_Sys = 0.007; //size of systematics in cm
      r_Sys = 0.007; //size of systematics in cm
      x0 = -0.075;//-0.082;// from previous fits using this program that were based on 2015
@@ -714,7 +712,7 @@ void revisionsInnerTrackerFit_paper()
     CMS_lumi( cPlots, iPeriod, 0 );
     if (FitObject == "BeamPipe" )latex_circle.DrawLatex(-3., 3., "Data 2015");
     if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(3., 5.5, "Data 2015");
-    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(10., 15., "Data 2015");
+    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 25., "Data 2015");
     if (FitObject == "BeamPipe"){
        gr_arc->Draw("P");
        gr_BS->Draw("P");
@@ -1163,7 +1161,7 @@ void revisionsInnerTrackerFit_paper()
       if( FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse")
         {
          //if (SignalLowEdge > 0.2*BgUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-         if (BgUpperEdge > 20.0*SignalUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+         if (BgUpperEdge > 2.0*SignalUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
          std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   BgUpperEdge/SignalUpperEdge = "<< BgUpperEdge/SignalUpperEdge << std::endl;
          //cout << " BgUpperEdge = " << BgUpperEdge << " SignalUpperEdge = " << SignalUpperEdge << endl;
         }
