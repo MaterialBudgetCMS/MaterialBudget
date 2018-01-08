@@ -106,6 +106,10 @@ class CutAnalyzer
     TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_Forward;
     TH1D* hMC_TrkV_associationPFDV_deltaR3dParallelRel;
 
+    TH1D* hMC_TrkV_rho;
+    TH1D* hMC_TrkV_z;
+    TH1D* hMC_TrkV_rho_Barrel;
+    TH1D* hMC_TrkV_z_Barrel;
     TH1D* hMC_TrkV_associationPFDV_deltaChargeSource_Barrel;
     TH1D* hMC_TrkV_associationPFDV_deltaChargeSource_Forward;
     TH1D* hMC_TrkV_momentumOut_pt_Barrel;
@@ -131,6 +135,10 @@ class CutAnalyzer
     TH1D* hMC_TrkV_numberOftracks_Out1p0;
 
     //Cut RECO Histograms
+    TH1D* hPFDV_rho_Barrel;
+    TH1D* hPFDV_z_Barrel;
+    TH1D* hPFDV_rho;
+    TH1D* hPFDV_z;
     TH1D* hPFDV_momentumInc_pt;
     TH1D* hPFDV_Inc_charge;
     TH1D* hPFDV_momentumInc_phi;
@@ -173,6 +181,7 @@ class CutAnalyzer
     TH1D* hPFDV_associationMC_TrkVIdx;
     TH1D* hPFDV_associationMC_TrkVIdx_Barrel;
     TH1D* hPFDV_vTrack_pt;
+    TH1D* hPFDV_vTrack_pt_Pixel;
     TH1D* hPFDV_vTrack_eta;
     TH1D* hPFDV_vTrack_phi;
     TH1D* hPFDV_vTrack_rho;
