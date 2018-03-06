@@ -104,8 +104,7 @@ void revisionsInnerTrackerFit_2017()
 
   writeExtraText = true;       // if extra text
   //extraText  = "Preliminary";  // default extra text is "Preliminary"
-  extraText  = "Work in Progress";  // default extra text is "Preliminary"
-  //extraText  = "work in progress";  // default extra text is "Preliminary"
+  extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   // BELOW IS ONE FOR 2015
@@ -200,13 +199,13 @@ void revisionsInnerTrackerFit_2017()
   
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
-     Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 3., RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
+     Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
      RangeEstimatorQuality = 0.1;  
      x_Sys = 0.003; //size of systematics in cm
      r_Sys = 0.003; //size of systematics in cm
-     x0 = 0.114; // from previous fits using this program that were based on 2017
-     y0 = -0.187; // from previous fits using this program that were based on 2017
-     r0 = 2.21; // from previous fits using this program that were based on 2015
+     x0 = 0.113; // from previous fits using this program that were based on 2017
+     y0 = -0.180; // from previous fits using this program that were based on 2017
+     r0 = 2.210; // from previous fits using this program that were based on 2015
   }
   
   //*** set parameters for Beam Pipe Ellipse fit
@@ -293,16 +292,17 @@ void revisionsInnerTrackerFit_2017()
 
   //*** set parameters for Pixel Shield with 2 Arcs with the same radius
   if(FitObject == "PixelShield2Arcs"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4., RPlot = 6.5;
+     Rmin = 2.45, Rmax = 4.0, RBGmin = 2.6, RBGmax = 2.7, RSmin = 2.45, RSmax = 2.6, RPlot = 5.0;
+     //Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4., RPlot = 6.5;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.017; // size of systematics in cm
      r_Sys = 0.017; // size of systematics in cm
      //**** for |z| < 25 cm
-     x0 = -0.095; // in cm
-     y0 = -0.092; // in cm
-     x0_Far = 0.043; // in cm
-     y0_Far = -0.098; // in cm
-     r0 = 3.773; // in cm, the initial x radius
+     x0 = 0.; // in cm
+     y0 = -0.; // in cm
+     x0_Far = 0.; // in cm
+     y0_Far = -0.; // in cm
+     r0 = 2.55; // in cm, the initial x radius
      //***** for z: -25 to -20 cm
      //x0 = -0.032; // in cm
      //x0_Far = -0.096; // in cm
@@ -371,13 +371,12 @@ void revisionsInnerTrackerFit_2017()
   
   //*** set parameters for Pixel Support Ellipse
   if(FitObject == "PixelSupportEllipse"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     //PlotObject = "hPFDV_XY_PixelSupport";
-     //PlotObjectBg = "hPFDV_RhoPhi_PixelSupport";
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 31.; 
-     //Rmin = /*18.*/1., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = /*21.1*/1., RSmax = 22.3, RPlot = 31.; 
-     //Rmin = 18./*1.*/, Rmax = 15., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1/*1.*/, RSmax = 15., RPlot = 17.; 
+     //PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
+     //PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
+     PlotObject = "hPFDV_XY_PixelSupport";
+     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport";
+     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 31.;
+     //Rmin = 18., Rmax = 24.5, RBGmin = 22.3, RBGmax = 24.5, RSmin = 21.1, RSmax = 22.3, RPlot = 31.; 
      RangeEstimatorQuality = 0.5;  
      x_Sys = 0.007; //size of systematics in cm
      r_Sys = 0.007; //size of systematics in cm
@@ -709,7 +708,7 @@ void revisionsInnerTrackerFit_2017()
     CMS_lumi( cPlots, iPeriod, 0 );
     if (FitObject == "BeamPipe" )latex_circle.DrawLatex(/*-4.75*/-3., /*4.75*/ 3., "Data 2017");
     if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(3., 5.5, "Data 2017");
-    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(10., 15., "Data 2017");
+    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 25., "Data 2017");
     if (FitObject == "BeamPipe"){
        gr_arc->Draw("P");
        gr_BS->Draw("P");
@@ -1150,7 +1149,7 @@ void revisionsInnerTrackerFit_2017()
       if( FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse")
         {
          //if (SignalLowEdge > 0.2*BgUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-         if (BgUpperEdge > 20.0*SignalUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
+         if (BgUpperEdge > 1.2*SignalUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
          std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   BgUpperEdge/SignalUpperEdge = "<< BgUpperEdge/SignalUpperEdge << std::endl;
          //cout << " BgUpperEdge = " << BgUpperEdge << " SignalUpperEdge = " << SignalUpperEdge << endl;
         }
@@ -1954,8 +1953,10 @@ void revisionsInnerTrackerFit_2017()
       if(fitterDraw->GetParError(2) >= ErrPrecision)legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << fitterDraw->GetParError(2)*10 << " #pm " << x_Sys*10 << "}";
       else legCenter << "{y_{0} (mm) \t = \t" << fixed << setprecision(2) << fitterDraw->GetParameter(2)*10 << " #pm " << x_Sys*10 << "}";
 
-      latex_circle.DrawLatex(-1.75, -3, legCenter.str().c_str());
-      latex_circle.DrawLatex(-1.75, -2.5, legRadius.str().c_str());
+      //latex_circle.DrawLatex(-1.75, -3, legCenter.str().c_str());
+      //latex_circle.DrawLatex(-1.75, -2.5, legRadius.str().c_str());
+      latex_circle.DrawLatex(0.5, -2.9, legCenter.str().c_str());
+      latex_circle.DrawLatex(-3.1, -2.7, legRadius.str().c_str());
 
       //latex_circle.DrawLatex(-8, -17, legCenter.str().c_str());
       //latex_circle.DrawLatex(-8, -13.7, legRadius.str().c_str());
@@ -2182,8 +2183,8 @@ void revisionsInnerTrackerFit_2017()
       legData->SetTextColor(kBlack);
 
       
-      //if(FitObject == "PixelShield2Arcs") {legData->AddEntry(arc,"Data 2017","");} 
-      //else {legArc->AddEntry(arc,"Data 2017","");}
+      if(FitObject == "PixelShield2Arcs") {legData->AddEntry(arc,"Data 2017","");} 
+      else {legArc->AddEntry(arc,"Data 2017","");}
 
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport") 
         {
@@ -2287,7 +2288,7 @@ void revisionsInnerTrackerFit_2017()
       {
       h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
       }
-    if(FitObject == "PixelShield2Arcs") h_RhoPhi->GetYaxis()->SetRangeUser(3.4, Rmax);
+    //if(FitObject == "PixelShield2Arcs") h_RhoPhi->GetYaxis()->SetRangeUser(3.4, Rmax);
     if(FitObject == "PixelSupportMinus" || FitObject == "PixelSupportEllipse")
       {
       h_RhoPhi->GetYaxis()->SetRangeUser(19, 23);
