@@ -184,10 +184,10 @@ void revisionsInnerTrackerFit_paper()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupportEllipse"; //work well
-  FitObject = "PixelSupportRails"; // work well
+  //FitObject = "PixelSupportRails"; // work well
 
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
@@ -2473,8 +2473,8 @@ void revisionsInnerTrackerFit_paper()
       legArc_RhoPhi->AddEntry(arc,"Data 2015","");
       if(k > -5 && k < 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+2)*5),""); 
       if(k == -5 || k == 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+1)*5),""); 
-      legArc_RhoPhi->AddEntry(ArcShieldPlus,"Circle fit Near","l");
-      legArc_RhoPhi->AddEntry(ArcShieldFar,"Circle fit Far","l");
+      legArc_RhoPhi->AddEntry(ArcShieldPlus,"Circle fit, near","l");
+      legArc_RhoPhi->AddEntry(ArcShieldFar,"Circle fit, far","l");
 
       legArc_RhoPhi->Draw("same");
 
