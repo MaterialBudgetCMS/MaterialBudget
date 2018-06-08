@@ -184,10 +184,10 @@ void revisionsInnerTrackerFit_paper()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupportEllipse"; //work well
-  //FitObject = "PixelSupportRails"; // work well
+  FitObject = "PixelSupportRails"; // work well
 
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
@@ -560,10 +560,16 @@ void revisionsInnerTrackerFit_paper()
     //if(FitObject == "BeamPipe")h_RhoPhi->Rebin2D(1,1);
     h_RhoPhi->SetStats(0);
     h_RhoPhi->GetXaxis()->SetTitle("#phi (rad)");
-    h_RhoPhi->GetYaxis()->SetTitle("R (cm)");
+    h_RhoPhi->GetYaxis()->SetTitle("r (cm)");
     //h_RhoPhi->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h_RhoPhi->GetZaxis()->SetTitle(Form("Events/(%1.3f rad #times%1.2f mm)", h_RhoPhi->GetXaxis()->GetBinWidth(1),  h_RhoPhi->GetYaxis()->GetBinWidth(1)*10));
     h_RhoPhi->GetZaxis()->SetTitleOffset(1.5);
+    // don't plot "0" at z axis
+    Double_t MaxZhRhoPhi = h_RhoPhi->GetMaximum();
+    cout << "******** Maximum Z value for h_RhoPhi = " << MaxZhRhoPhi << endl;
+    /// doesn't work for PixelShield2Arcs and PixelSupportEllipse (calculate in whole range), so don't apply to it:
+    if(FitObject == "PixelSupportEllipse")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, 48); //only for paper version, if scale will change, all change
+    if(FitObject == "BeamPipe"||FitObject == "PixelSupportRails")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, MaxZhRhoPhi);
 
     h_ZR = new TH2D();
     h_ZR = (TH2D*)inputFile->Get("hPFDV_ZR_Map" );
@@ -571,7 +577,7 @@ void revisionsInnerTrackerFit_paper()
     //h_ZR->Rebin2D(1,1);
     h_ZR->SetStats(0);
     h_ZR->GetXaxis()->SetTitle("z (cm)");
-    h_ZR->GetYaxis()->SetTitle("R (cm)");
+    h_ZR->GetYaxis()->SetTitle("r (cm)");
     h_ZR->GetYaxis()->SetTitleOffset(1.25);
     h_ZR->GetXaxis()->SetTitleOffset(1.2);
     h_ZR->GetYaxis()->SetLabelOffset(0.012);
@@ -666,6 +672,9 @@ void revisionsInnerTrackerFit_paper()
     h_Draw->GetYaxis()->SetTitle("y (cm)");
     h_Draw->GetZaxis()->SetTitle(Form("Events/(%1.1f#times%1.1f mm^{2})    ", h_Draw->GetXaxis()->GetBinWidth(1)*10,  h_Draw->GetYaxis()->GetBinWidth(1)*10));
     h_Draw->GetZaxis()->SetTitleOffset(1.4);
+    Double_t MaxZ = h_Draw->GetMaximum();     
+    cout << "******** Maximum Z value = " << MaxZ << endl;
+    h_Draw->GetZaxis()->SetRangeUser(0.01, MaxZ);
     h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
@@ -1489,6 +1498,10 @@ void revisionsInnerTrackerFit_paper()
     //h1->SetStats(0);
     h1->SetStats(1);
     h = h1;
+    // don't plot "0" at z axis
+    Double_t MaxZh = h->GetMaximum();
+    cout << "******** Maximum Z value for h = " << MaxZh << endl;
+    h->GetZaxis()->SetRangeUser(0.01, MaxZh);
 
 
     /// par[0] = R
