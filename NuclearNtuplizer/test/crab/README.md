@@ -1,3 +1,9 @@
+
+How to check collections inside file:
+====
+
+     edmDumpEventContent FileName.root| grep DisplacedVertex
+
 CRAB3
 ====
 
@@ -31,6 +37,10 @@ MultiCRAB
 Set enviroment:
 
     cmsenv
+
+Sent crab job with python for 2018:
+
+    python crab_Run2018_run315646.py samples/sample_ZeroBias_Run2018_run315646.py
 
 Send crab job with python for 2017:
 
