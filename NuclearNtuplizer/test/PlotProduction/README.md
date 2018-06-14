@@ -10,7 +10,7 @@ root -l runNtupleReaderNuclearInteractions_2015.cc
 To run (PlotProduction):
 
 root -l
-[] PlotProduction.C++
+[] .x PlotProduction.C++
 [] PlotProduction m
 [] m.GetEntry(0)
 [] m.Loop()
@@ -18,7 +18,7 @@ root -l
 To run (CutAnalyzer):
 
 root -l
-[] CutAnalyzer.C++
+[] .x CutAnalyzer.C++
 [] CutAnalyzer m
 [] m.GetEntry(0)
 [] m.Loop()
