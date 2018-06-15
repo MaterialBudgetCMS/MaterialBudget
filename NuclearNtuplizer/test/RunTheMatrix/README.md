@@ -28,3 +28,18 @@ We output:
     step3_RAW2DIGI_L1Reco_RECO_RECOSIM.root 
 
 DisplacedVertex collection is inside.
+
+
+How to run in batch:
+
+1. Compile code in src directory to have cmsBatch.py inside of the CMSSW. 
+
+2.  Modify number of events in SinglePiPt10_pythia8_cfi_GEN_SIM.py and create 1st step:
+
+    cmsBatch.py 10 SinglePiPt10_pythia8_cfi_GEN_SIM.py -o TEST -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test -b 'bsub -q 8nh < ./batchScript.sh'
+
+"../test" directory shouldn't exist, otherwise could will give error.
+
+3. Create 2nd step
+
+
