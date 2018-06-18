@@ -25,13 +25,25 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(-1)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:step2_SIM.root'),
+    fileNames = cms.untracked.vstring(
+#file:step2_SIM.root
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_0.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_1.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_2.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_3.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_4.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_5.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_6.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_7.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_8.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test/SinglePiPt10_pythia8_cfi_GEN_SIM_9.root'
+),
     inputCommands = cms.untracked.vstring(
         'keep *', 
         'drop *_genParticles_*_*', 

@@ -30,7 +30,19 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:step3_DIGI2RAW.root'),
+    fileNames = cms.untracked.vstring(
+#'file:step3_DIGI2RAW.root'
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_0.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_1.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_2.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_3.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_4.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_5.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_6.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_7.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_8.root',
+'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_9.root'
+),
     secondaryFileNames = cms.untracked.vstring()
 )
 
