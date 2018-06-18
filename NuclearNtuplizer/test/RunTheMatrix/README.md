@@ -29,7 +29,7 @@ We output:
 
 DisplacedVertex collection is inside.
 
-
+===
 How to run in batch:
 
 1. Compile code in src directory to have cmsBatch.py inside of the CMSSW. 
@@ -40,6 +40,32 @@ How to run in batch:
 
 "../test" directory shouldn't exist, otherwise could will give error.
 
-3. Create 2nd step
+When you submit jobs, please ignore error in the end: "ERROR: Cannot find release package/tag list at ..."
 
+3. Create 2nd step, by adding all files in python file, produced in step 1 (see below how to print all files from one directory for python): 
 
+    cmsBatch.py 1 step2_DIGI_L1_DIGI2RAW_HLT.py -o TEST_step2 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2 -b 'bsub -q 8nh < ./batchScript.sh'
+
+4. Submit reconstruction again by modifying another python file:
+
+    cmsBatch.py 1 step3_RAW2DIGI_L1Reco_RECO_RECOSIM.py -o TEST_step3 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step3 -b 'bsub -q 8nh < ./batchScript.sh'
+
+===
+For 10 GeV pions 100 files 10.000 events (Anna did it):
+
+    cmsBatch.py 100 SinglePiPt10_pythia8_cfi_GEN_SIM.py -o CMSSW_10_1_6_Pion10GeV_step1 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_step1 -b 'bsub -q 8nh < ./batchScript.sh'
+    cmsBatch.py 1 step2_SinglePiPt10_DIGI_L1_DIGI2RAW_HLT.py -o CMSSW_10_1_6_Pion10GeV_step2 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_step2 -b 'bsub -q 1nd < ./batchScript.sh'
+    cmsBatch.py 1 step3_SinglePiPt10_RAW2DIGI_L1Reco_RECO_RECOSIM.py -o CMSSW_10_1_6_Pion10GeV_step3 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_RECO -b 'bsub -q 1nd < ./batchScript.sh'
+
+===
+For 100 GeV pions 100 files 10.000 events (Eilish):
+
+    cmsBatch.py 100 SinglePiPt100_pythia8_cfi_GEN_SIM.py -o CMSSW_10_1_6_Pion100GeV_step1 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion100GeV_step1 -b 'bsub -q 8nh < ./batchScript.sh'
+    cmsBatch.py 1 step2_SinglePiPt100_DIGI_L1_DIGI2RAW_HLT.py -o CMSSW_10_1_6_Pion100GeV_step2 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion100GeV_step2 -b 'bsub -q 1nd < ./batchScript.sh'
+    cmsBatch.py 1 step3_SinglePiPt100_RAW2DIGI_L1Reco_RECO_RECOSIM.py -o CMSSW_10_1_6_Pion100GeV_step3 -r /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion100GeV_RECO -b 'bsub -q 1nd < ./batchScript.sh'
+
+===
+To Print all existing files in derictory for python file use the following script:
+
+    ./FilePrint.sh dirName/
+    ./FilePrint.sh /eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_step1/    
