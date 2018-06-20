@@ -207,8 +207,10 @@ void revisionsInnerTrackerFit_2018()
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.003; //size of systematics in cm
      r_Sys = 0.003; //size of systematics in cm
-     x0 = 0.172; // from previous fits using this program that were based on 2017
-     y0 = -0.175; // from previous fits using this program that were based on 2017
+     x0 = 0.; // from MC
+     y0 = 0.; // from MC
+     //x0 = 0.172; // from previous fits using this program that were based on 2018
+     //y0 = -0.175; // from previous fits using this program that were based on 2018
      r0 = 2.210; // from previous fits using this program that were based on 2015
      //Rmin = 1.8, Rmax = 3., RBGmin = 2.4, RBGmax = 3., RSmin = 2., RSmax = 2.4, RPlot = 3.5;
      //RangeEstimatorQuality = 0.1;  
@@ -446,8 +448,9 @@ void revisionsInnerTrackerFit_2018()
   //gROOT->SetBatch(1);
   //gROOT->ForceStyle();
 
-  // 2015 data file
-  TFile* inputFile = TFile::Open("PlotProduced_2018.root");
+  // 2018 data file
+  //TFile* inputFile = TFile::Open("PlotProduced_2018.root");
+  TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)

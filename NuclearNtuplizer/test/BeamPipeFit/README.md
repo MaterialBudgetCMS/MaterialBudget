@@ -4,6 +4,9 @@ Universal Fit program could fit Beam Pipe, Pixel Shield or Pixel Support, just u
 
 Compiled version works for any CMSSW versions:
 
+For 2018 data:
+      root.exe -b revisionsInnerTrackerFit_2018.C++
+
 For 2017 data:
       root.exe -b revisionsInnerTrackerFit_2017.C++
 
