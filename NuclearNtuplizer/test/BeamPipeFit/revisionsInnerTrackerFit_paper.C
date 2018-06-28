@@ -6,6 +6,10 @@
 /*                    Eilish Gibson                  */
 /*              2013: Nicola Pozzobon for Beam Pipe  */
 /*                                                   */
+/* compatible with CMSSW_9_2_12                      */
+/* to run:                                           */
+/*    root.exe -b revisionsInnerTrackerFit_paper.C++ */
+/*                                                   */
 /* ************************************************* */
 
 #include <memory>
@@ -184,10 +188,10 @@ void revisionsInnerTrackerFit_paper()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupportEllipse"; //work well
-  FitObject = "PixelSupportRails"; // work well
+  //FitObject = "PixelSupportRails"; // work well
 
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
