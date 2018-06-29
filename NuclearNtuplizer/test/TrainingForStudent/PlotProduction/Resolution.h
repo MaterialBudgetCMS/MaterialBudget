@@ -253,13 +253,12 @@ Resolution::Resolution(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("Ntuple_MC_10and100GeVpions.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../../Ntuple_MC_10and100GeVpions.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("Ntuple_MC_10and100GeVpions.root");
+         f = new TFile("../../Ntuple_MC_10and100GeVpions.root");
       }
-      TDirectory * dir = (TDirectory*)f->Get("Ntuple_MC_10and100GeVpions.root:/MyNtupleMaking");
+      TDirectory * dir = (TDirectory*)f->Get("../../Ntuple_MC_10and100GeVpions.root:/MyNtupleMaking");
       dir->GetObject("NuclearInteractionsTree",tree);
-
    }
    Init(tree);
 }
