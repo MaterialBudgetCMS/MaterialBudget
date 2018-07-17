@@ -63,7 +63,7 @@ void Resolution::Loop()
    hMC_deltaR3d_Parallel = new TH1D("hMC_deltaR3d_Parallel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
    hMC_deltaR3d_Parallel->Sumw2();
    hMC_deltaR3d_Perpendicular = new TH1D("hMC_deltaR3d_Perpendicular", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
-   hMC_deltaR3d_Parallel->Sumw2();
+   hMC_deltaR3d_Perpendicular->Sumw2();
    hMC_deltaR3d_EndCap = new TH1D("hMC_deltaR3d_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
    hMC_deltaR3d_EndCap->Sumw2();
    hMC_deltaR3d_Parallel_EndCap = new TH1D("hMC_deltaR3d_Parallel_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
