@@ -27,7 +27,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
     #input = cms.untracked.int32(10000)
-    input = cms.untracked.int32(2000)
+    #input = cms.untracked.int32(2000)
+    input = cms.untracked.int32(5000)
 )
 
 # Input source
@@ -54,7 +55,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('SinglePiPt100_pythia8_cfi_GEN_SIM.root'),
+    fileName = cms.untracked.string('SinglePiPt50_pythia8_cfi_GEN_SIM.root'),
     outputCommands = process.FEVTDEBUGEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -72,10 +73,10 @@ process.generator = cms.EDFilter("Pythia8PtGun",
         AddAntiParticle = cms.bool(True),
         MaxEta = cms.double(2.5),
         MaxPhi = cms.double(3.14159265359),
-        MaxPt = cms.double(100.01),
+        MaxPt = cms.double(50.01),
         MinEta = cms.double(-2.5),
         MinPhi = cms.double(-3.14159265359),
-        MinPt = cms.double(99.99),
+        MinPt = cms.double(49.99),
         ParticleID = cms.vint32(211)
     ),
     PythiaParameters = cms.PSet(
