@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step3 --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent RECOSIM --runUnscheduled -s RAW2DIGI,L1Reco,RECO,RECOSIM --datatier GEN-SIM-RECO --geometry DB:Extended
+# with command line options: step3 --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent FEVTDEBUGHLT --runUnscheduled -s RAW2DIGI,L1Reco,RECO,RECOSIM --datatier GEN-SIM-RECO --geometry DB:Extended
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
@@ -25,24 +25,12 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(10)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-#'file:step3_DIGI2RAW.root'
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_0.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_1.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_2.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_3.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_4.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_5.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_6.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_7.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_8.root',
-'file:/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/test_step2/step2_DIGI_L1_DIGI2RAW_HLT_9.root'
-),
+    fileNames = cms.untracked.vstring('file:step3_DIGI2RAW.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -59,13 +47,13 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
-process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
+process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-RECO'),
         filterName = cms.untracked.string('')
     ),
     fileName = cms.untracked.string('step3_RAW2DIGI_L1Reco_RECO_RECOSIM.root'),
-    outputCommands = process.RECOSIMEventContent.outputCommands,
+    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
@@ -81,10 +69,10 @@ process.L1Reco_step = cms.Path(process.L1Reco)
 process.reconstruction_step = cms.Path(process.reconstruction)
 process.recosim_step = cms.Path(process.recosim)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
+process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.recosim_step,process.endjob_step,process.RECOSIMoutput_step)
+process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.recosim_step,process.endjob_step,process.FEVTDEBUGHLToutput_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 

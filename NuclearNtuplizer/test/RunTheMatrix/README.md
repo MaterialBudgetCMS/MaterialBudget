@@ -19,11 +19,14 @@ You get out put bellow, so modify for your needs and run:
 
      mv step2_DIGI_L1_DIGI2RAW_HLT.root step3_DIGI2RAW.root
 
-In principle, both command below are working, but we don't need DQM, validation and AOD, so I used the 2nd command
+In principle, only 2nd command below is working, and we don't need DQM, validation and AOD, and replace "--eventcontent RECOSIM" by "--eventcontent FEVTDEBUGHLT" 
+to produce "MergedTrackTruth" collection
 
      cmsDriver.py step3  --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent RECOSIM,MINIAODSIM,DQM --runUnscheduled  -s RAW2DIGI,L1Reco,RECO,RECOSIM,EI,PAT,VALIDATION:@standardValidation+@miniAODValidation,DQM:@standardDQM+@ExtraHLT+@miniAODDQM --datatier GEN-SIM-RECO,MINIAODSIM,DQMIO --geometry DB:Extended
 
-     cmsDriver.py step3  --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent RECOSIM --runUnscheduled  -s RAW2DIGI,L1Reco,RECO,RECOSIM --datatier GEN-SIM-RECO --geometry DB:Extended
+so I used this command:
+
+     cmsDriver.py step3  --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent FEVTDEBUGHLT --runUnscheduled  -s RAW2DIGI,L1Reco,RECO,RECOSIM --datatier GEN-SIM-RECO --geometry DB:Extended
 
 We output: 
     step3_RAW2DIGI_L1Reco_RECO_RECOSIM.root 

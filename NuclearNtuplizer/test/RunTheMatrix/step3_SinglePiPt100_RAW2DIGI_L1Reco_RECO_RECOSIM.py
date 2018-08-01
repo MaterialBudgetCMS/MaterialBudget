@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step3 --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent RECOSIM --runUnscheduled -s RAW2DIGI,L1Reco,RECO,RECOSIM --datatier GEN-SIM-RECO --geometry DB:Extended
+# with command line options: step3 --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent FEVTDEBUGHLT --runUnscheduled -s RAW2DIGI,L1Reco,RECO,RECOSIM --datatier GEN-SIM-RECO --geometry DB:Extended
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
@@ -298,13 +298,13 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
-process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
+process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-RECO'),
         filterName = cms.untracked.string('')
     ),
     fileName = cms.untracked.string('step3_RAW2DIGI_L1Reco_RECO_RECOSIM.root'),
-    outputCommands = process.RECOSIMEventContent.outputCommands,
+    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
@@ -320,10 +320,10 @@ process.L1Reco_step = cms.Path(process.L1Reco)
 process.reconstruction_step = cms.Path(process.reconstruction)
 process.recosim_step = cms.Path(process.recosim)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
+process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.recosim_step,process.endjob_step,process.RECOSIMoutput_step)
+process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.recosim_step,process.endjob_step,process.FEVTDEBUGHLToutput_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
