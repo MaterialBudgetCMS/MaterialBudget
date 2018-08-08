@@ -252,13 +252,24 @@ Resolution::Resolution(TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
+
+   // MC Pion gun
+   //TString FileNameRoot = "/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_Ntuple/MC_Pi10GeV_1016.root"; 
+   TString FileNameRoot = "../../Ntuple_MC_10and100GeVpions.root";
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../../Ntuple_MC_10and100GeVpions.root");
+      //TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/reReco2015D_SingleMu.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(FileNameRoot);
       if (!f || !f->IsOpen()) {
-         f = new TFile("../../Ntuple_MC_10and100GeVpions.root");
+         f = new TFile(FileNameRoot);
       }
-      TDirectory * dir = (TDirectory*)f->Get("../../Ntuple_MC_10and100GeVpions.root:/MyNtupleMaking");
-      dir->GetObject("NuclearInteractionsTree",tree);
+      TDirectory * dir = (TDirectory*)f->Get(FileNameRoot+":/MyNtupleMaking");
+      /*TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../Ntuple_MC_923.root");
+      if (!f || !f->IsOpen()) {
+         f = new TFile("../Ntuple_MC_923.root");
+      }
+      TDirectory * dir = (TDirectory*)f->Get("../Ntuple_MC_923.root:/MyNtupleMaking");
+      */dir->GetObject("NuclearInteractionsTree",tree);
+
    }
    Init(tree);
 }

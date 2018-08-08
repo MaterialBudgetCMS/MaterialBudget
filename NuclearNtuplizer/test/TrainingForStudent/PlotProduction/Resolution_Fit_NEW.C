@@ -181,11 +181,13 @@ gStyle->SetOptFit(1111);
 gStyle->SetPalette(1);
 gStyle->SetOptTitle(0);
 
-const char *fname = "ResolutionPlots.root";
+//const char *fname = "ResolutionPlots_10GeV_2018.root";
+const char *fname = "ResolutionPlots_2015.root";
 
 // open file:
-TFile *f1 = new TFile("ResolutionPlots.root","READ");
-
+TFile *f1 = new TFile(fname,"READ");
+//bool FixMean=true;
+bool FixMean=false;
 std::vector<TH1*> vect_hist = list_histos(fname);
 
 std::vector<TCanvas*> vect_canvas;
@@ -199,13 +201,26 @@ for (int i = 0; i < vect_hist.size(); i++)
  canvasname += "_canvas";
  TCanvas* dummy_canvas = new TCanvas((canvasname).c_str(),(canvasname).c_str(),750,500);
  vect_canvas.push_back(dummy_canvas);
+ //string dir = "10GeV_2018_Results";
+ string dir = "2015_Results";
+ if(FixMean)
+ {
+  dir+="_ZeroMean/";
+ }
+ else
+ {
+  dir+="_Default/";
+ }
  string filename = vect_hist[i]->GetName();
- filename += ".png";
- vect_filename.push_back(filename);
+ dir += filename;
+ dir += ".png";
+ vect_filename.push_back(dir);
 }
 
 for (int i = 0; i < vect_hist.size(); i++)
 {
+ vect_hist[i]->GetXaxis()->SetTitle("DeltaR");
+ vect_hist[i]->GetYaxis()->SetTitle("Number Of Events");
  vect_canvas[i]->cd();
  cout << endl << "Fitting " << vect_hist[i]->GetName() << "   (" << i+1 << "/27)" << endl;
  const char* histname = vect_hist[i]->GetName();
@@ -225,8 +240,14 @@ for (int i = 0; i < vect_hist.size(); i++)
  TF1 *func = new TF1("func", Fit_Cauchy, 0.0, 0.95/PerpendicularFactor, 3);
  
  func->SetParameter(0,0.5*vect_hist[i]->GetNormFactor());
- func->SetParameter(1,0.0);
- //func->FixParameter(1,0.0); //25!
+ if(FixMean)
+ {
+  func->FixParameter(1,0.0);
+ }
+ else
+ {
+  func->SetParameter(1,0.0);
+ }
  func->SetParameter(2,0.07*vect_hist[i]->GetRMS());
 
  //func->SetParLimits(0,0.0,10000.0);
@@ -270,8 +291,14 @@ for (int i = 0; i < vect_hist.size(); i++)
  TF1* landau_fit = new TF1("func_landau","landau");//,0.0,0.95/PerpendicularFactor);
  landau_fit->SetLineColor(kBlue);
  landau_fit->SetParameter(0,0.5*vect_hist_clone->GetNormFactor());
- landau_fit->SetParameter(1,0.0);
- //landau_fit->FixParameter(1,0.0);
+ if(FixMean)
+ {
+  landau_fit->FixParameter(1,0.0);
+ }
+ else
+ {
+  landau_fit->SetParameter(1,0.0);
+ }
  landau_fit->SetParameter(2,0.08*vect_hist_clone->GetRMS());
  vect_hist_clone->Fit(landau_fit,"QEMR","SAMES",0.0,0.95/PerpendicularFactor);
  vect_canvas[i]->Update();
@@ -292,27 +319,6 @@ for (int i = 0; i < vect_hist.size(); i++)
 
  TString status_cauchy_leg = "Cauchy Status = ";
  status_cauchy_leg+=status_cauchy;
- 
- TLegend* leg_cauchy = new TLegend(0.55,0.4,0.98,0.5,"");
- leg_cauchy->SetTextFont(42);
- leg_cauchy->SetTextSize(0.04);
- leg_cauchy->SetFillColor(kWhite);
- leg_cauchy->SetTextColor(kRed);
- leg_cauchy->AddEntry((TObject*)0, status_cauchy_leg, "");
- leg_cauchy->Draw("SAMES");
- 
- vect_canvas[i]->Update();
-
- TLegend* leg_landau = new TLegend(0.55,0.3,0.98,0.4,"");
- leg_landau->SetTextFont(42);
- leg_landau->SetTextSize(0.04);
- leg_landau->SetFillColor(kWhite);
- leg_landau->SetTextColor(kBlue);
- leg_landau->AddEntry((TObject*)0, status_landau_leg, "");
- leg_landau->Draw("SAMES");
- 
- vect_canvas[i]->Update();
-
 
 double widthTest=0.0;
 double width=0.0;
@@ -404,6 +410,43 @@ cauchy_gamma_line->SetLineStyle(5);
 cauchy_gamma_line->SetLineWidth(2);
 cauchy_gamma_line->Draw("SAMES");
 vect_canvas[i]->Update();
+
+ string cauchy_sigma68_start = "Cauchy #sigma68 = ";
+ string landau_sigma68_start = "Landau #sigma68 = ";
+
+ char cauchy_sigma68_char[50];
+ char landau_sigma68_char[50];
+
+ sprintf(cauchy_sigma68_char, "%.3lf", cauchy_sigma68);
+ sprintf(landau_sigma68_char, "%.3lf", sigma68);
+
+ cauchy_sigma68_start += cauchy_sigma68_char; 
+ TString cauchy_sigma68_tstr = cauchy_sigma68_start;
+ 
+ landau_sigma68_start += landau_sigma68_char; 
+ TString landau_sigma68_tstr = landau_sigma68_start;
+
+ TLegend* leg_cauchy = new TLegend(0.55,0.4,0.98,0.5,"");
+ leg_cauchy->SetTextFont(42);
+ leg_cauchy->SetTextSize(0.04);
+ leg_cauchy->SetFillColor(kWhite);
+ leg_cauchy->SetTextColor(kRed);
+ leg_cauchy->AddEntry((TObject*)0, status_cauchy_leg, "");
+ leg_cauchy->AddEntry((TObject*)0, cauchy_sigma68_tstr, "");
+ leg_cauchy->Draw("SAMES");
+ 
+ vect_canvas[i]->Update();
+
+ TLegend* leg_landau = new TLegend(0.55,0.3,0.98,0.4,"");
+ leg_landau->SetTextFont(42);
+ leg_landau->SetTextSize(0.04);
+ leg_landau->SetFillColor(kWhite);
+ leg_landau->SetTextColor(kBlue);
+ leg_landau->AddEntry((TObject*)0, status_landau_leg, "");
+ leg_landau->AddEntry((TObject*)0, landau_sigma68_tstr, "");
+ leg_landau->Draw("SAMES");
+ 
+ vect_canvas[i]->Update();
 
  vect_canvas[i]->SaveAs(vect_filename[i].c_str()); 
 
