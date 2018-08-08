@@ -181,8 +181,8 @@ gStyle->SetOptFit(1111);
 gStyle->SetPalette(1);
 gStyle->SetOptTitle(0);
 
-//const char *fname = "ResolutionPlots_10GeV_2018.root";
-const char *fname = "ResolutionPlots_2015.root";
+const char *fname = "ResolutionPlots_10GeV_2018.root";
+//const char *fname = "ResolutionPlots_2015.root";
 
 // open file:
 TFile *f1 = new TFile(fname,"READ");
@@ -201,8 +201,8 @@ for (int i = 0; i < vect_hist.size(); i++)
  canvasname += "_canvas";
  TCanvas* dummy_canvas = new TCanvas((canvasname).c_str(),(canvasname).c_str(),750,500);
  vect_canvas.push_back(dummy_canvas);
- //string dir = "10GeV_2018_Results";
- string dir = "2015_Results";
+ string dir = "10GeV_2018_Results";
+ //string dir = "2015_Results";
  if(FixMean)
  {
   dir+="_ZeroMean/";
@@ -237,7 +237,7 @@ for (int i = 0; i < vect_hist.size(); i++)
  }
 
  //Cauchy
- TF1 *func = new TF1("func", Fit_Cauchy, 0.0, 0.95/PerpendicularFactor, 3);
+ TF1 *func = new TF1("func", Fit_Cauchy, 0.0, 0.95*vect_hist[i]->GetXaxis()->GetXmax(), 3);
  
  func->SetParameter(0,0.5*vect_hist[i]->GetNormFactor());
  if(FixMean)
@@ -261,9 +261,10 @@ for (int i = 0; i < vect_hist.size(); i++)
  vect_hist[i]->SetLineColor(kBlack);
  TH1* vect_hist_clone = (TH1*)(vect_hist[i]->Clone());
 
- cout << endl << "Fit Cauchy" << endl;
+ //cout << endl << "Fit Cauchy" << endl;
 
- func->SetLineColor(kRed); 
+ //func->SetLineColor(kRed); 
+ func->SetLineColorAlpha(kRed,0.0); 
  vect_hist[i]->Fit(func,"QEMR");
 
  TString status_cauchy = gMinuit->fCstatu;
@@ -279,7 +280,7 @@ for (int i = 0; i < vect_hist.size(); i++)
  stats_cauchy->SetLineColor(kRed);
  stats_cauchy->SetY1NDC(0.9);
  stats_cauchy->SetY2NDC(0.7);
- stats_cauchy->Draw("SAMES");
+ //stats_cauchy->Draw("SAMES");
  vect_canvas[i]->Update(); 
 
 //Landau
@@ -300,14 +301,14 @@ for (int i = 0; i < vect_hist.size(); i++)
   landau_fit->SetParameter(1,0.0);
  }
  landau_fit->SetParameter(2,0.08*vect_hist_clone->GetRMS());
- vect_hist_clone->Fit(landau_fit,"QEMR","SAMES",0.0,0.95/PerpendicularFactor);
+ vect_hist_clone->Fit(landau_fit,"QEMR","SAMES",0.0,0.95*vect_hist_clone->GetXaxis()->GetXmax());
  vect_canvas[i]->Update();
  
  TPaveStats *stats_landau = (TPaveStats*)vect_hist_clone->FindObject("stats");
  stats_landau->SetTextColor(kBlue);
  stats_landau->SetLineColor(kBlue);
- stats_landau->SetY1NDC(0.7);
- stats_landau->SetY2NDC(0.5);
+ stats_landau->SetY1NDC(0.9);
+ stats_landau->SetY2NDC(0.7);
  vect_canvas[i]->Update(); 
 
  TString status_landau = gMinuit->fCstatu;
@@ -395,20 +396,20 @@ if(cauchy_sigma68 == 0.0)
  cout << "\033[1;31mCheck Cauchy\033[0m\n " << cauchy_sigma68 << endl;
 }
 
-cout << "Cauchy Sigma68 = " << cauchy_sigma68 << endl;
+//cout << "Cauchy Sigma68 = " << cauchy_sigma68 << endl;
 
 TLine* cauchy_sigma_line = new TLine(cauchy_sigma68,0.0,cauchy_sigma68,func->Eval(cauchy_sigma68));
 cauchy_sigma_line->SetLineColor(kRed);
 cauchy_sigma_line->SetLineStyle(2);
 cauchy_sigma_line->SetLineWidth(2);
-cauchy_sigma_line->Draw("SAMES");
+//cauchy_sigma_line->Draw("SAMES");
 vect_canvas[i]->Update();
 
 TLine* cauchy_gamma_line = new TLine(func->GetParameter(2),0.0,func->GetParameter(2),func->Eval(func->GetParameter(2)));
 cauchy_gamma_line->SetLineColor(kGreen+2);
 cauchy_gamma_line->SetLineStyle(5);
 cauchy_gamma_line->SetLineWidth(2);
-cauchy_gamma_line->Draw("SAMES");
+//cauchy_gamma_line->Draw("SAMES");
 vect_canvas[i]->Update();
 
  string cauchy_sigma68_start = "Cauchy #sigma68 = ";
@@ -417,32 +418,36 @@ vect_canvas[i]->Update();
  char cauchy_sigma68_char[50];
  char landau_sigma68_char[50];
 
- sprintf(cauchy_sigma68_char, "%.3lf", cauchy_sigma68);
- sprintf(landau_sigma68_char, "%.3lf", sigma68);
+ sprintf(cauchy_sigma68_char, "%.0lf", cauchy_sigma68*10000.0);
+ sprintf(landau_sigma68_char, "%.0lf", sigma68*10000.0);
+ 
+ string units = "#mum";
 
- cauchy_sigma68_start += cauchy_sigma68_char; 
+ cauchy_sigma68_start += cauchy_sigma68_char;
+ cauchy_sigma68_start += units; 
  TString cauchy_sigma68_tstr = cauchy_sigma68_start;
  
  landau_sigma68_start += landau_sigma68_char; 
+ landau_sigma68_start += units; 
  TString landau_sigma68_tstr = landau_sigma68_start;
 
- TLegend* leg_cauchy = new TLegend(0.55,0.4,0.98,0.5,"");
+ TLegend* leg_cauchy = new TLegend(0.55,0.3,0.98,0.4,"");
  leg_cauchy->SetTextFont(42);
  leg_cauchy->SetTextSize(0.04);
  leg_cauchy->SetFillColor(kWhite);
  leg_cauchy->SetTextColor(kRed);
  leg_cauchy->AddEntry((TObject*)0, status_cauchy_leg, "");
  leg_cauchy->AddEntry((TObject*)0, cauchy_sigma68_tstr, "");
- leg_cauchy->Draw("SAMES");
+ //leg_cauchy->Draw("SAMES");
  
  vect_canvas[i]->Update();
 
- TLegend* leg_landau = new TLegend(0.55,0.3,0.98,0.4,"");
+ TLegend* leg_landau = new TLegend(0.62,0.6,0.98,0.7,"");
  leg_landau->SetTextFont(42);
  leg_landau->SetTextSize(0.04);
  leg_landau->SetFillColor(kWhite);
  leg_landau->SetTextColor(kBlue);
- leg_landau->AddEntry((TObject*)0, status_landau_leg, "");
+ //leg_landau->AddEntry((TObject*)0, status_landau_leg, "");
  leg_landau->AddEntry((TObject*)0, landau_sigma68_tstr, "");
  leg_landau->Draw("SAMES");
  
@@ -454,6 +459,6 @@ vect_canvas[i]->Update();
  delete cauchy_sigma_line;
  delete cauchy_gamma_line;
 }
- Results(vect_status_landau, vect_status_cauchy);
+ //Results(vect_status_landau, vect_status_cauchy);
 }
 

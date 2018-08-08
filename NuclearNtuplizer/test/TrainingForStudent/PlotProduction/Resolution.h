@@ -254,8 +254,8 @@ Resolution::Resolution(TTree *tree) : fChain(0)
 // used to generate this class and read the Tree.
 
    // MC Pion gun
-   //TString FileNameRoot = "/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_Ntuple/MC_Pi10GeV_1016.root"; 
-   TString FileNameRoot = "../../Ntuple_MC_10and100GeVpions.root";
+   TString FileNameRoot = "/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_Ntuple/MC_Pi10GeV_1016.root"; 
+   //TString FileNameRoot = "../../Ntuple_MC_10and100GeVpions.root";
    if (tree == 0) {
       //TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/reReco2015D_SingleMu.root");
       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(FileNameRoot);

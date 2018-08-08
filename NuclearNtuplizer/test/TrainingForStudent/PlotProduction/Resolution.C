@@ -27,8 +27,8 @@ void Resolution::Loop()
    Int_t  dR_Nbin = 50;
    
    TFile* outputFile;
-   //outputFile = new TFile("ResolutionPlots_10GeV_2018.root", "RECREATE");
-   outputFile = new TFile("ResolutionPlots_2015.root", "RECREATE");
+   outputFile = new TFile("ResolutionPlots_10GeV_2018.root", "RECREATE");
+   //outputFile = new TFile("ResolutionPlots_2015.root", "RECREATE");
    //initialize histograms
    TH1D* hMC_deltaR3d;
    TH1D* hMC_deltaR3d_Parallel;
@@ -95,11 +95,11 @@ void Resolution::Loop()
    hMC_deltaR3d_Parallel_Outer_Barrel->Sumw2();
    hMC_deltaR3d_Perpendicular_Outer_Barrel = new TH1D("hMC_deltaR3d_Perpendicular_Outer_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
    hMC_deltaR3d_Perpendicular_Outer_Barrel->Sumw2();
-   hMC_deltaR3d_Inner = new TH1D("hMC_deltaR3d_Inner", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Inner = new TH1D("hMC_deltaR3d_Inner", "CMS work in Progress", dR_Nbin, dR_xmin, 0.25*dR_xmax);
    hMC_deltaR3d_Inner->Sumw2();
-   hMC_deltaR3d_Parallel_Inner = new TH1D("hMC_deltaR3d_Parallel_Inner", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_Inner = new TH1D("hMC_deltaR3d_Parallel_Inner", "CMS work in Progress", dR_Nbin, dR_xmin, 0.25*dR_xmax);
    hMC_deltaR3d_Parallel_Inner->Sumw2();
-   hMC_deltaR3d_Perpendicular_Inner = new TH1D("hMC_deltaR3d_Perpendicular_Inner", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Inner = new TH1D("hMC_deltaR3d_Perpendicular_Inner", "CMS work in Progress", dR_Nbin, dR_xmin, 0.25*dR_xmax/10.0);
    hMC_deltaR3d_Perpendicular_Inner->Sumw2();
    hMC_deltaR3d_Inner_EndCap = new TH1D("hMC_deltaR3d_Inner_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
    hMC_deltaR3d_Inner_EndCap->Sumw2();
@@ -107,11 +107,11 @@ void Resolution::Loop()
    hMC_deltaR3d_Parallel_Inner_EndCap->Sumw2();
    hMC_deltaR3d_Perpendicular_Inner_EndCap = new TH1D("hMC_deltaR3d_Perpendicular_Inner_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
    hMC_deltaR3d_Perpendicular_Inner_EndCap->Sumw2();
-   hMC_deltaR3d_Inner_Barrel = new TH1D("hMC_deltaR3d_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Inner_Barrel = new TH1D("hMC_deltaR3d_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin,0.25*dR_xmax);
    hMC_deltaR3d_Inner_Barrel->Sumw2();
-   hMC_deltaR3d_Parallel_Inner_Barrel = new TH1D("hMC_deltaR3d_Parallel_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_Inner_Barrel = new TH1D("hMC_deltaR3d_Parallel_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, 0.25*dR_xmax);
    hMC_deltaR3d_Parallel_Inner_Barrel->Sumw2();
-   hMC_deltaR3d_Perpendicular_Inner_Barrel = new TH1D("hMC_deltaR3d_Perpendicular_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Inner_Barrel = new TH1D("hMC_deltaR3d_Perpendicular_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, 0.25*dR_xmax/10.0);
    hMC_deltaR3d_Perpendicular_Inner_Barrel->Sumw2();
 
    Long64_t nentries = fChain->GetEntriesFast();
