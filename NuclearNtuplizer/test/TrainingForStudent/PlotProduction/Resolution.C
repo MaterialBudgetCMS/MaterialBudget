@@ -27,7 +27,7 @@ void Resolution::Loop()
    Int_t  dR_Nbin = 50;
    
    TFile* outputFile;
-   outputFile = new TFile("ResolutionPlots_10GeV_2018.root", "RECREATE");
+   outputFile = new TFile("ResolutionPlots_100GeV_2018.root", "RECREATE");
    //outputFile = new TFile("ResolutionPlots_2015.root", "RECREATE");
    //initialize histograms
    TH1D* hMC_deltaR3d;

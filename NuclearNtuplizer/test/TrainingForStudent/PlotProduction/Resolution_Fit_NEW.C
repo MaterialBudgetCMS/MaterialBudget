@@ -181,7 +181,7 @@ gStyle->SetOptFit(1111);
 gStyle->SetPalette(1);
 gStyle->SetOptTitle(0);
 
-const char *fname = "ResolutionPlots_10GeV_2018.root";
+const char *fname = "ResolutionPlots_100GeV_2018.root";
 //const char *fname = "ResolutionPlots_2015.root";
 
 // open file:
@@ -201,7 +201,7 @@ for (int i = 0; i < vect_hist.size(); i++)
  canvasname += "_canvas";
  TCanvas* dummy_canvas = new TCanvas((canvasname).c_str(),(canvasname).c_str(),750,500);
  vect_canvas.push_back(dummy_canvas);
- string dir = "10GeV_2018_Results";
+ string dir = "100GeV_2018_Results";
  //string dir = "2015_Results";
  if(FixMean)
  {
@@ -321,9 +321,11 @@ for (int i = 0; i < vect_hist.size(); i++)
  TString status_cauchy_leg = "Cauchy Status = ";
  status_cauchy_leg+=status_cauchy;
 
+//calculate Gamma
+/*
 double widthTest=0.0;
 double width=0.0;
-double widthP=0.0;
+double widthP=0.0; //Gamma
 double range=100.0;
 int counts=0;
 std::cout <<"Max Landau/histo Value/2 = " << vect_hist_clone->GetMaximum()/2.0 << std::endl;
@@ -337,7 +339,7 @@ for(int i=0; i<vect_hist_clone->GetMaximum()*100000; i++)
  widthTest=landau_fit->Eval((i)*0.00001);
  if(widthTest<=((vect_hist_clone->GetMaximum()/2.0)+1.0/range) && widthTest>=((vect_hist_clone->GetMaximum()/2.0)-1.0/range))
  {
-  widthP=i*0.00001;
+  widthP=i*0.00001; //Gamma
   counts++;
  }
  if(counts>0) break;
@@ -346,6 +348,7 @@ width=landau_fit->Eval(widthP);
 std::cout << "Width Value Checker  = " << width << std::endl;
 double integral=landau_fit->Integral(0.,100.0/PerpendicularFactor);
 std::cout << "Integral(0->100.0)=" << integral << std::endl;
+*/
 
 //calculate sigma at 68%
 double sigmaTest=0.0;
@@ -369,7 +372,7 @@ for(int i=0; i<vect_hist_clone->GetMaximum()*10000000; i++)
  if(integralTest<=(sigma68value+1.0/ranges) && integralTest>=(sigma68value-1.0/ranges))
  {
   count++;
-  sigma68=i*0.000001;
+  sigma68=sigmaTest;
  }
  if(count>0) break;
 }
