@@ -188,9 +188,9 @@ void revisionsInnerTrackerFit_paper()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "PixelShield2Arcs"; // status failed
-  //FitObject = "PixelSupportEllipse"; //work well
+  FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
 
   //FitObject = "BeamPipeEllipse"; //work well
@@ -732,9 +732,18 @@ void revisionsInnerTrackerFit_paper()
 
 
     CMS_lumi( cPlots, iPeriod, 0 );
-    if (FitObject == "BeamPipe" )latex_circle.DrawLatex(-3., 3., "Data 2015");
-    if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(3., 5.5, "Data 2015");
-    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 25., "Data 2015");
+    if (FitObject == "BeamPipe" ){
+        latex_circle.DrawLatex(-3., 3., "Data 2015");
+        latex_circle.DrawLatex(-3., 2.6, "|z| < 25 cm");
+    }
+    if (FitObject == "PixelShield2Arcs" ){
+        latex_circle.DrawLatex(3., 5.5, "Data 2015");
+        latex_circle.DrawLatex(3., 4.8, "|z| < 25 cm");
+    }
+    if (FitObject == "PixelSupportEllipse" ){
+       latex_circle.DrawLatex(15., 25., "Data 2015");
+       latex_circle.DrawLatex(15., 22., "|z| < 25 cm");
+    }
     if (FitObject == "BeamPipe"){
        gr_arc->Draw("P");
        gr_BS->Draw("P");
@@ -758,6 +767,7 @@ void revisionsInnerTrackerFit_paper()
     h_XY->Draw("COLZ");
     CMS_lumi( cPlots, iPeriod, 0 ); 
     latex_circle.DrawLatex(15., 22., "Data 2015");
+    latex_circle.DrawLatex(15., 19., "|z| < 25 cm");
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.png"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.pdf"));
     cPlots -> SetLogz(1);
@@ -1295,6 +1305,7 @@ void revisionsInnerTrackerFit_paper()
       if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hbgua0,"EXCLUDED from FIT","");
       //legBg->AddEntry(hbgua0,Form("Data 2015, #phi sector = %d", phiSect),"");
       legBg->AddEntry(hbgua0,Form("Data 2015, #phi sector = %d", phiSect),"l");
+      legBg->AddEntry(hbgua0,"|z| < 25 cm ","");
       legBg->AddEntry(hbgua2,"Signal fit region","f");
       legBg->AddEntry(hbgua1,"Sideband fit region","f");
       //legBg->AddEntry(fitBg,"sideband fit function","l");
@@ -2224,8 +2235,8 @@ void revisionsInnerTrackerFit_paper()
       // Create the legend for all 2D XY map plots, include (0,0) point
       //TLegend* legArc = new TLegend(0.75, 0.75, 0.95, 0.9, "");
       TLegend* legData = new TLegend(0.42, 0.70, 0.52, 0.82, "");
-      TLegend* legArc = new TLegend(0.67, 0.69, 0.77, 0.81, "");
-      if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ) legArc = new TLegend(0.65, 0.70, 0.75, 0.83, "");
+      TLegend* legArc = new TLegend(0.67, 0.67, 0.77, 0.81, "");
+      //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ) legArc = new TLegend(0.65, 0.70, 0.75, 0.83, "");
       legArc->SetTextFont(42);
       legArc->SetTextSize(0.04*ScaleSize);
       legArc->SetFillColor(kWhite);
@@ -2236,8 +2247,11 @@ void revisionsInnerTrackerFit_paper()
       legData->SetTextColor(kBlack);
 
       
-      if(FitObject == "PixelShield2Arcs") {legData->AddEntry(arc,"Data 2015","");} 
-      else {legArc->AddEntry(arc,"Data 2015","");}
+      if(FitObject == "PixelShield2Arcs") {
+         legData->AddEntry(arc,"Data 2015","");
+         legData->AddEntry(arc,"|z| < 25 cm","");
+      } 
+      else {legArc->AddEntry(arc,"Data 2015",""); legArc->AddEntry(arc,"|z| < 25 cm","");}
 
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport") 
         {
@@ -2365,7 +2379,7 @@ void revisionsInnerTrackerFit_paper()
       bpAlt ->Draw("same");
       CMS_lumi( cPlots, iPeriod, 0 );
 
-      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.75, 0.82, 0.81, "");
+      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.72, 0.82, 0.81, "");
       legArc_RhoPhi->SetTextFont(42);
       legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
       legArc_RhoPhi->SetFillColor(kWhite);
@@ -2373,6 +2387,7 @@ void revisionsInnerTrackerFit_paper()
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport")
         {
         legArc_RhoPhi->AddEntry(arc,"Data 2015","");
+        legArc_RhoPhi->AddEntry(arc,"|z| < 25 cm","");
         legArc_RhoPhi->AddEntry(arc,"Circle fit","l");
         }
 
@@ -2399,12 +2414,13 @@ void revisionsInnerTrackerFit_paper()
       bpEllipseAlt ->Draw("same");
       CMS_lumi( cPlots, iPeriod, 0 );
 
-      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.75, 0.82, 0.81, "");
+      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.72, 0.82, 0.81, "");
       legArc_RhoPhi->SetTextFont(42);
       legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
       legArc_RhoPhi->SetFillColor(kWhite);
       legArc_RhoPhi->SetTextColor(kBlack);
       legArc_RhoPhi->AddEntry(arc,"Data 2015","");
+      legArc_RhoPhi->AddEntry(arc,"|z| < 25 cm","");
       legArc_RhoPhi->AddEntry(arc,"Ellipse fit","l");
 
       legArc_RhoPhi->Draw("same");
@@ -2481,13 +2497,13 @@ void revisionsInnerTrackerFit_paper()
 
       CMS_lumi( cPlots, iPeriod, 0 );
 
-      TLegend* legArc_RhoPhi = new TLegend(0.60, 0.75, 0.82, 0.84, "");
+      TLegend* legArc_RhoPhi = new TLegend(0.48, 0.75, 0.82, 0.84, "");
       if(k> -6 && k < 6) legArc_RhoPhi = new TLegend(0.58, 0.71, 0.82, 0.84, "");
       legArc_RhoPhi->SetTextFont(42);
       legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
       legArc_RhoPhi->SetFillColor(kWhite);
       legArc_RhoPhi->SetTextColor(kBlack);
-      legArc_RhoPhi->AddEntry(arc,"Data 2015","");
+      legArc_RhoPhi->AddEntry(arc,"Data 2015, |z| < 25 cm","");
       if(k > -5 && k < 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+2)*5),""); 
       if(k == -5 || k == 4) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+1)*5),""); 
       legArc_RhoPhi->AddEntry(ArcShieldPlus,"Circle fit, near","l");
