@@ -28,7 +28,9 @@ void Resolution::Loop()
    
    TFile* outputFile;
    //outputFile = new TFile("ResolutionPlots_10GeV_2018.root", "RECREATE");
-   outputFile = new TFile("ResolutionPlots_2015.root", "RECREATE");
+   //outputFile = new TFile("ResolutionPlots_50GeV_2018.root", "RECREATE");
+   outputFile = new TFile("ResolutionPlots_100GeV_2018.root", "RECREATE");
+   //outputFile = new TFile("ResolutionPlots_2015.root", "RECREATE");
    //initialize histograms
    TH1D* hMC_deltaR3d;
    TH1D* hMC_deltaR3d_Parallel;
@@ -39,15 +41,6 @@ void Resolution::Loop()
    TH1D* hMC_deltaR3d_Barrel;
    TH1D* hMC_deltaR3d_Parallel_Barrel;
    TH1D* hMC_deltaR3d_Perpendicular_Barrel;
-   TH1D* hMC_deltaR3d_Outer;
-   TH1D* hMC_deltaR3d_Parallel_Outer;
-   TH1D* hMC_deltaR3d_Perpendicular_Outer;
-   TH1D* hMC_deltaR3d_Outer_EndCap;
-   TH1D* hMC_deltaR3d_Parallel_Outer_EndCap;
-   TH1D* hMC_deltaR3d_Perpendicular_Outer_EndCap;
-   TH1D* hMC_deltaR3d_Outer_Barrel;
-   TH1D* hMC_deltaR3d_Parallel_Outer_Barrel;
-   TH1D* hMC_deltaR3d_Perpendicular_Outer_Barrel;
    TH1D* hMC_deltaR3d_Inner;
    TH1D* hMC_deltaR3d_Parallel_Inner;
    TH1D* hMC_deltaR3d_Perpendicular_Inner;
@@ -57,6 +50,15 @@ void Resolution::Loop()
    TH1D* hMC_deltaR3d_Inner_Barrel;
    TH1D* hMC_deltaR3d_Parallel_Inner_Barrel;
    TH1D* hMC_deltaR3d_Perpendicular_Inner_Barrel;
+   TH1D* hMC_deltaR3d_Outer;
+   TH1D* hMC_deltaR3d_Parallel_Outer;
+   TH1D* hMC_deltaR3d_Perpendicular_Outer;
+   TH1D* hMC_deltaR3d_Outer_EndCap;
+   TH1D* hMC_deltaR3d_Parallel_Outer_EndCap;
+   TH1D* hMC_deltaR3d_Perpendicular_Outer_EndCap;
+   TH1D* hMC_deltaR3d_Outer_Barrel;
+   TH1D* hMC_deltaR3d_Parallel_Outer_Barrel;
+   TH1D* hMC_deltaR3d_Perpendicular_Outer_Barrel;
 
    //create histograms
    hMC_deltaR3d = new TH1D("hMC_deltaR3d", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);

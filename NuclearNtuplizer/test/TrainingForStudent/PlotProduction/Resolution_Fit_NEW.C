@@ -15,6 +15,95 @@
 #include <TMinuit.h>
 #include <TLine.h>
 #include <stdlib.h>
+#include <TSystem.h>
+#include <sstream>
+#include <TPaveStats.h>
+#include <TLegend.h>
+#include <TKey.h>
+#include <TFile.h>
+#include <TClass.h>
+#include <Math/Minimizer.h>
+
+TH1D* res_TH1D_TF1(TH1D* hist, TF1* fit_func, char Option)
+{
+    bool redo = false;
+    int Bins=hist->GetNbinsX();  
+    string name = "res_";
+    string histname = hist->GetName();
+    name+=histname;
+    TH1D* res_hist = new TH1D(name.c_str(),name.c_str(),Bins,hist->GetXaxis()->GetXmin(),hist->GetXaxis()->GetXmax());
+    res_hist->SetEntries(hist->GetEntries());
+    res_hist->Sumw2();
+    res_hist->SetLineColor(kBlue);
+    res_hist->SetBinContent(1,0.0); //underflow bin
+    for(int i=1; i <= Bins; i++)
+    { 
+       if(Option == 'B')
+       {
+	double res_val = 1.0-((fit_func->Eval(hist->GetBinCenter(i)))-hist->GetBinContent(i));
+	if(hist->GetBinError(i) != 0.0)
+	{
+	 res_val = res_val/hist->GetBinError(i);
+	}
+	else
+	{
+	 res_val = 0.0;
+	}
+        res_hist->SetBinContent(i,res_val);
+       }
+       else
+       {
+	if(fit_func->Eval(hist->GetBinCenter(i)) != 0.0)
+	{
+	 res_hist->SetBinContent(i,hist->GetBinContent(i)/fit_func->Eval(hist->GetBinCenter(i)));
+	 res_hist->SetBinError(i,hist->GetBinError(i)/fit_func->Eval(hist->GetBinCenter(i)));
+	}
+	else
+	{
+	 res_hist->SetBinContent(i,0.0);
+	}
+       }
+    }
+    for(int i=0; i < Bins; i++)
+    {
+     if(res_hist->GetBinContent(i) == 0 && res_hist->GetBinContent(i) == 0)
+     {
+	double res_val = hist->GetBinContent(i);
+	if(fit_func->Eval(hist->GetBinCenter(i)) != 0.0)
+	{
+	 res_val = res_val/fit_func->Eval(hist->GetBinCenter(i));
+	}
+	else
+	{
+	 res_val = 0.0;
+	}
+     }
+    }
+    //if the first, last, and middle bin are zero then likely that the whole histogram has zeros
+    if(res_hist->GetBinContent(1) == 0.0 && res_hist->GetBinContent(Bins-1) == 0.0 && res_hist->GetBinContent(Bins/2) == 0.0)
+     {
+      redo = true;
+     }
+     if(redo)
+     {
+      //adjust parameter by some machine precision to avoid zeros again
+      TF1* func_test = (TF1*) fit_func->Clone("test");
+      func_test->SetParameter(2,fit_func->GetParameter(2)+1E8);
+      for(int i=0; i < Bins; i++)
+      {
+	double res_val = hist->GetBinContent(i);
+	if(func_test->Eval(hist->GetBinCenter(i)) != 0.0)
+	{
+	 res_val = res_val/func_test->Eval(hist->GetBinCenter(i));
+	}
+	else
+	{
+	 res_val = 0.0;
+	}       
+      }
+     }    
+    return res_hist;
+}
 
 int getPrecision(double num)
 {
@@ -22,7 +111,8 @@ int getPrecision(double num)
  num_str.erase ( num_str.find_last_not_of('0') + 1, std::string::npos );
  int pre = 0;
  bool point = false;
- for(int i=0; i<num_str.length(); i++)
+ int num_str_length = num_str.length();
+ for(int i=0; i<num_str_length; i++)
  {
   if(point)
   {
@@ -65,13 +155,14 @@ void Rounding(double sigma68_abs_err, double sigma68_rel_err, double sigma68, TS
   string landau_rel_err = "Relative Error = ";
   string format_sprintf = "%.";
   format_sprintf+="lf";
+  int scale = 1000.0;
  if(sigma68_abs_err > 0.001)
  {
   sigma68_abs_err = toPrecision(sigma68_abs_err,2);
   int precision =  getPrecision(sigma68_abs_err); //get number of places after decimal point
   sigma68 = toPrecision(sigma68,precision);
-  sigma68=sigma68*10000.0;
-  sigma68_abs_err=sigma68_abs_err*10000.0;
+  sigma68=sigma68*scale;
+  sigma68_abs_err=sigma68_abs_err*scale;
   precision = getPrecision(sigma68_abs_err);
   string precision_str = std::to_string(precision);
   format_sprintf+=precision_str;
@@ -92,8 +183,8 @@ void Rounding(double sigma68_abs_err, double sigma68_rel_err, double sigma68, TS
   sigma68_abs_err = toPrecision(sigma68_abs_err,1);
   int precision =  getPrecision(sigma68_abs_err); //get number of places after decimal point
   sigma68 = toPrecision(sigma68,precision);
-  sigma68=sigma68*10000.0;
-  sigma68_abs_err=sigma68_abs_err*10000.0;
+  sigma68=sigma68*scale;
+  sigma68_abs_err=sigma68_abs_err*scale;
   precision = getPrecision(sigma68_abs_err);
   string precision_str = std::to_string(precision);
   format_sprintf+=precision_str;
@@ -134,7 +225,7 @@ Double_t Fit_Cauchy(Double_t *x,Double_t *par)
    return norm*(b/(pi * ((x[0]-x0)*(x[0]-x0) + b*b)));
 }
 
-double GammaCalc(TH1* hist, TF1* func, double PerpendicularFactor)
+double GammaCalc(TH1D* hist, TF1* func, double PerpendicularFactor)
 {
  double widthTest=0.0;
  double width=0.0;
@@ -164,7 +255,7 @@ double GammaCalc(TH1* hist, TF1* func, double PerpendicularFactor)
  return widthP;
 }
 
-double sigma68calc(TF1* fit, TH1* hist, double PerpendicularFactor)
+double sigma68calc(TF1* fit, TH1D* hist, double PerpendicularFactor)
 {
  //calculate sigma at 68% for landau
  double integral=fit->Integral(0.,100.0/PerpendicularFactor);
@@ -197,7 +288,7 @@ double sigma68calc(TF1* fit, TH1* hist, double PerpendicularFactor)
  return sigma68;
 }
 
-double sigma68errcalc(TF1* fit,TH1* hist,double sigma68,double PerpendicularFactor)
+double sigma68errcalc(TF1* fit,TH1D* hist,double sigma68,double PerpendicularFactor)
 {
  TF1* fit_copy = fit;
  
@@ -310,9 +401,89 @@ double sigma68errcalc(TF1* fit,TH1* hist,double sigma68,double PerpendicularFact
  return sigma68_rel_err;
 }
  
-void LandauDrawing(TCanvas*& canvas, TH1* hist, double PerpendicularFactor, TF1* func, TString status_landau, string filename)
+TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, char Option)
 {
- canvas->Update();
+ string histname = hist->GetName();
+
+ string canvasname = histname;
+ canvasname += "_canvas";
+ if(Option == 'A')
+ {
+  canvasname+='A';
+ }
+ else if(Option == 'B')
+ {
+  canvasname+='B';
+ }
+ TCanvas* canvas = new TCanvas((canvasname).c_str(),(canvasname).c_str(),750,500);
+ 
+ string padname = histname;
+ padname += "_pad";
+ if(Option == 'A')
+ {
+  padname+='A';
+ }
+ else if(Option == 'B')
+ {
+  padname+='B';
+ }
+ TPad* pad = new TPad((padname).c_str(),(padname).c_str(),0.0,0.3,1.0,1.0);
+ pad->SetBottomMargin(0.95);
+ //pad->SetLogy();
+ pad->Draw();
+ pad->cd(); 
+
+ hist->Draw();
+
+ TF1* landau_fit = new TF1("func_landau","landau");
+ landau_fit->SetLineColor(kBlue);
+
+ if(Option == 'A')
+ {
+  filename+="A"; 
+  TF1* func_clone = new TF1("func_landau_clone","landau");
+  func_clone->SetParameter(0,0.5*hist->GetNormFactor());
+  func_clone->SetParameter(1,0.0);
+  func_clone->SetParameter(2,0.08*hist->GetRMS());
+  hist->Fit(func_clone,"QMR0","0",0.0,hist->GetXaxis()->GetXmax());
+  landau_fit->SetParameter(0,func_clone->GetParameter(0));
+  landau_fit->SetParameter(1,func_clone->GetParameter(1));
+  landau_fit->SetParameter(2,func_clone->GetParameter(2));
+  hist->Fit(landau_fit,"QMR0","",0.0,hist->GetXaxis()->GetXmax()); 
+ }
+ 
+ else if(Option == 'B')
+ {
+  filename+="B";
+  landau_fit->SetParameter(0,0.5*hist->GetNormFactor());
+  landau_fit->SetParameter(1,0.0);
+  landau_fit->SetParameter(2,0.08*hist->GetRMS());
+  //hist->Fit(landau_fit,"QMR","SAMES",0.0,0.5*hist->GetXaxis()->GetXmax());
+  hist->Fit(landau_fit,"QMR0","",0.0,hist->GetXaxis()->GetXmax());
+ }
+
+ else
+ {
+  /* old ICs
+  landau_fit->SetParameter(0,0.5*hist->GetNormFactor());
+  landau_fit->SetParameter(1,0.0);
+  landau_fit->SetParameter(2,0.08*hist->GetRMS());
+  */ 
+  landau_fit->SetParameter(0,hist->GetEntries());
+  landau_fit->SetParameter(1,0.0);
+  landau_fit->SetParameter(2,0.1*hist->GetRMS());
+  
+  landau_fit->SetParLimits(1,-0.25,0.25);
+  landau_fit->SetParLimits(2,-0.25,0.25);
+  
+  hist->Fit(landau_fit,"MR0","",0.0,hist->GetXaxis()->GetXmax());
+ }
+
+ TString status = gMinuit->fCstatu;
+ //landau_fit->SetNpx(10000000);
+ landau_fit->Draw("SAMES");
+ 
+ pad->Update();
  filename+=".png"; 
 
  TPaveStats *stats_landau = (TPaveStats*)hist->FindObject("stats");
@@ -320,15 +491,15 @@ void LandauDrawing(TCanvas*& canvas, TH1* hist, double PerpendicularFactor, TF1*
  stats_landau->SetLineColor(kBlue);
  stats_landau->SetY1NDC(0.95);
  stats_landau->SetY2NDC(0.7);
- canvas->Update(); 
+ pad->Update(); 
  
  TString status_landau_leg = "Landau Status = ";
- status_landau_leg+=status_landau;
+ status_landau_leg+=status;
 
- //double gamma = GammaCalc(hist, func, PerpendicularFactor);
+ //double gamma = GammaCalc(hist, landau_fit, PerpendicularFactor);
 
- std::cout << "Calculating Landau Sigma 68%" << std::endl;
- double sigma68 = sigma68calc(func, hist, PerpendicularFactor);
+ //std::cout << "Calculating Landau Sigma 68%" << std::endl;
+ double sigma68 = sigma68calc(landau_fit, hist, PerpendicularFactor);
 
  if(sigma68 == 0.0)
  {
@@ -336,21 +507,17 @@ void LandauDrawing(TCanvas*& canvas, TH1* hist, double PerpendicularFactor, TF1*
  }
  //std::cout << "sigma68: " << sigma68 << endl;
 
- std::cout << "Calculating Error on Landau Sigma 68%" << std::endl;
+ //std::cout << "Calculating Error on Landau Sigma 68%" << std::endl;
 
- double sigma68_rel_err = sigma68errcalc(func, hist, sigma68, PerpendicularFactor);
+ double sigma68_rel_err = sigma68errcalc(landau_fit, hist, sigma68, PerpendicularFactor);
  double sigma68_abs_err = sigma68*sigma68_rel_err;
- //std::cout << "sigma68=" << sigma68*10000.0 << " um" << std::endl;
- //std::cout << "sigma68 absolute err=" << sigma68_abs_err*10000.0 << " um" << std::endl;
- //std::cout << "sigma68 relative err=" << sigma68_rel_err*100.0 << "%" << std::endl;
 
-
- TLine* landau_sigma_line = new TLine(sigma68,0.0,sigma68,func->Eval(sigma68));
+ TLine* landau_sigma_line = new TLine(sigma68,0.0,sigma68,landau_fit->Eval(sigma68));
  landau_sigma_line->SetLineColor(kBlue);
  landau_sigma_line->SetLineStyle(7);
  landau_sigma_line->SetLineWidth(2);
  landau_sigma_line->Draw("SAMES");
- canvas->Update();
+ pad->Update();
 
 
  //rounding sigma68 and errrors
@@ -358,56 +525,67 @@ void LandauDrawing(TCanvas*& canvas, TH1* hist, double PerpendicularFactor, TF1*
  TString landau_rel_err_tstr="";
  Rounding(sigma68_abs_err,sigma68_rel_err,sigma68,landau_sigma68_tstr,landau_rel_err_tstr);
  
- canvas->Update();
- TLegend* leg_landau = new TLegend(0.62,0.6,0.98,0.7,"");
+ pad->Update();
+ TLegend* leg_landau = new TLegend(0.62,0.5,0.98,0.7,"");
  leg_landau->SetFillColor(kWhite);
  leg_landau->SetTextColor(kBlue);
  leg_landau->AddEntry((TObject*)0, status_landau_leg, "");
  leg_landau->AddEntry((TObject*)0, landau_sigma68_tstr, "");
  leg_landau->AddEntry((TObject*)0, landau_rel_err_tstr, "");
  leg_landau->Draw("SAMES");
- 
+
+ /* 
+ pad->Update();
+ TString filename_tstr = filename;
+ TLegend* leg_landau_name = new TLegend(0.4,0.3,0.98,0.5,"");
+ leg_landau_name->SetFillColor(kWhite);
+ leg_landau_name->SetTextColor(kBlue);
+ leg_landau_name->AddEntry((TObject*)0, filename_tstr, "");
+ leg_landau_name->Draw("SAMES");
+ */
+
+ pad->Update(); 
+ canvas->cd();
+ string padname_res = histname;
+ padname_res += "_pad_res";
+ if(Option == 'A')
+ {
+  padname_res+='A';
+ }
+ else if(Option == 'B')
+ {
+  padname_res+='B';
+ }
+ TPad* pad_res = new TPad((padname_res).c_str(),(padname_res).c_str(),0.0,0.05,1.0,0.3);
+ pad_res->Draw();
+ pad_res->cd();
+ pad_res->SetTopMargin(0.05);
+ pad_res->Update();
+ canvas->Update();
+ TH1D* res_hist = res_TH1D_TF1(hist, landau_fit, Option);
+ res_hist->GetXaxis()->SetLabelSize(0.1);
+ res_hist->GetYaxis()->SetLabelSize(0.1);
+ res_hist->Draw();
+ pad_res->Update();
+ TLine* res_hist_one_line = new TLine(res_hist->GetXaxis()->GetXmin(),1.0,res_hist->GetXaxis()->GetXmax(),1.0);
+ res_hist_one_line->SetLineColor(kBlack);
+ res_hist_one_line->SetLineStyle(7);
+ res_hist_one_line->SetLineWidth(2);
+ res_hist_one_line->Draw("SAMES");
+ pad_res->Update();
  canvas->Update();
  canvas->SaveAs(filename.c_str());
- cout << endl; 
-}
-
-TString FitOptionA(TH1* hist, TF1* func, double PerpendicularFactor, string filename)
-{
- filename+="A";
- string canvasname = hist->GetName();
- canvasname += "_canvasA";
- TCanvas* canvas = new TCanvas((canvasname).c_str(),(canvasname).c_str(),750,500);
- canvas->cd();
- TH1* hist_clone = (TH1*)(hist->Clone());
- TF1* func_clone = new TF1("func_landau","landau");
- func_clone->SetLineColor(kBlue);
- func_clone->SetParameter(0,func->GetParameter(0));
- func_clone->SetParameter(1,func->GetParameter(1));
- func_clone->SetParameter(2,func->GetParameter(2));
- hist_clone->Fit(func_clone,"QER","",0.0,0.95*hist_clone->GetXaxis()->GetXmax());
- TString status_landau = gMinuit->fCstatu;
- LandauDrawing(canvas,hist_clone,PerpendicularFactor,func_clone,status_landau,filename);
- return status_landau;
-}
-
-TString FitOptionB(TH1* hist, TF1* func, double PerpendicularFactor, string filename)
-{
- filename+="B";
- string canvasname = hist->GetName();
- canvasname += "_canvasB";
- TCanvas* canvas = new TCanvas((canvasname).c_str(),(canvasname).c_str(),750,500);
- canvas->cd();
- TH1* hist_clone = (TH1*)(hist->Clone());
- TF1* landau_fit = new TF1("func_landau","landau");
- landau_fit->SetLineColor(kBlue);
- landau_fit->SetParameter(0,0.5*hist_clone->GetNormFactor());
- landau_fit->SetParameter(1,0.0);
- landau_fit->SetParameter(2,0.08*hist_clone->GetRMS());
- hist_clone->Fit(landau_fit,"QER","SAMES",0.0,0.5*hist_clone->GetXaxis()->GetXmax());
- TString status_landau = gMinuit->fCstatu;
- LandauDrawing(canvas,hist_clone,PerpendicularFactor,landau_fit,status_landau,filename);
- return status_landau;
+ //delete everything
+ delete landau_sigma_line;
+ delete leg_landau;
+ delete hist;
+ delete landau_fit;
+ delete pad;
+ delete res_hist;
+ delete res_hist_one_line;
+ delete pad_res;
+ delete canvas;
+ return status;
 }
 
 vector<TH1*> list_histos(const char *fname)
@@ -415,6 +593,7 @@ vector<TH1*> list_histos(const char *fname)
  std::vector<TH1*> vect_hist;
  TKey *key;
  TFile *f = TFile::Open(fname,"READ");
+ string skip = "Inner_EndCap";
  if(!f || f->IsZombie())
  {
   cout << "Unable to open " << fname << " for reading..." << endl;
@@ -428,6 +607,7 @@ vector<TH1*> list_histos(const char *fname)
   {
    TH1 *h = (TH1*)key->ReadObj();
    string name = h->GetName();
+   if(name.find(skip) != std::string::npos) continue;
    vect_hist.push_back(h);
   }
  }
@@ -482,28 +662,44 @@ int problems_landau = 0;
 int failed_landau = 0;
 int failure_landau = 0;
 int call_limit_landau = 0;
+int ok_landau = 0;
+int not_posdef_landau = 0;
+int converged_landau = 0;
 
-for(int i=0; i<vect_status_landau.size(); i++)
+int vect_status_landau_size = vect_status_landau.size();
+for(int i=0; i<vect_status_landau_size; i++)
 {
- if(vect_status_landau[i] == "SUCCESSFUL")
+ if(vect_status_landau[i] == "NOT POSDEF")
+ {
+  not_posdef_landau++;
+ }
+ else if(vect_status_landau[i] == "OK        ")
+ {
+  ok_landau++;
+ }
+ else if(vect_status_landau[i] == "SUCCESSFUL")
  {
   success_landau++;
  }
- if(vect_status_landau[i] == "PROBLEMS  ")
+ else if(vect_status_landau[i] == "PROBLEMS  ")
  {
   problems_landau++;
  }
- if(vect_status_landau[i] == "FAILED    ")
+ else if(vect_status_landau[i] == "FAILED    ")
  {
   failed_landau++;
  }
- if(vect_status_landau[i] == "FAILURE   ")
+ else if(vect_status_landau[i] == "FAILURE   ")
  {
   failure_landau++;
  }
- if(vect_status_landau[i] == "CALL LIMIT")
+ else if(vect_status_landau[i] == "CALL LIMIT")
  {
   call_limit_landau++;
+ }
+ else if(vect_status_landau[i] == "CONVERGED ")
+ {
+  converged_landau++;
  }
 }
  cout << "Total Successful fits = " << success_landau << "/" << vect_status_landau.size() << " or " << 100.0*(1.0*success_landau/vect_status_landau.size()) << "%" << endl;
@@ -511,75 +707,90 @@ for(int i=0; i<vect_status_landau.size(); i++)
  cout << "Total Failed fits = " << failed_landau << "/" << vect_status_landau.size() << " or " << 100.0*(1.0*failed_landau/vect_status_landau.size()) << "%" << endl;
  cout << "Total Failure fits = " << failure_landau << "/" << vect_status_landau.size() << " or " << 100.0*(1.0*failure_landau/vect_status_landau.size()) << "%" << endl; 
  cout << "Total Call Limit fits = " << call_limit_landau << "/" << vect_status_landau.size() << " or " << 100.0*(1.0*call_limit_landau/vect_status_landau.size()) << "%" << endl;
- cout << "Total Number of Fits  = " << success_landau+problems_landau+failed_landau+failure_landau+call_limit_landau << "/" << vect_status_landau.size() << endl;
- 
+ cout << "Total OK fits = " << ok_landau << "/" << vect_status_landau.size() << " or " << 100.0*(1.0*ok_landau/vect_status_landau.size()) << "%" << endl;
+ cout << "Total NOT POSDEF fits = " << not_posdef_landau << "/" << vect_status_landau.size() << " or " << 100.0*(1.0*not_posdef_landau/vect_status_landau.size()) << "%" << endl;
+ cout << "Total Converged fits = " << converged_landau << "/" << vect_status_landau.size() << " or " << 100.0*(1.0*converged_landau/vect_status_landau.size()) << "%" << endl;
+ cout << "Total Number of Fits = " << success_landau+problems_landau+failed_landau+failure_landau+call_limit_landau+ok_landau+not_posdef_landau+converged_landau << "/" << vect_status_landau.size() << endl; 
+
  cout << endl;
 
 }
 
-
 void Resolution_Fit_NEW(){
 
+Long64_t start = gSystem->Now();
 cout << endl << endl << endl << endl;
-/*
-ROOT::Math::MinimizerOptions::SetDefaultTolerance(1);
-int numcalls = 10000;
-ROOT::Math::MinimizerOptions::SetDefaultMaxFunctionCalls(numcalls);
-*/
-gROOT->Clear();
-gStyle->SetOptStat(0);
-gStyle->SetOptFit(1111);
-gStyle->SetPalette(1);
-gStyle->SetOptTitle(0);
 
-const char *fname1 = "ResolutionPlots_10GeV_2018.root";
-//const char *fname1 = "ResolutionPlots_2015.root";
+//ROOT::Math::MinimizerOptions::SetDefaultTolerance(1);
+//int numcalls = 10000;
+//ROOT::Math::MinimizerOptions::SetDefaultMaxFunctionCalls(numcalls);
 
-// open file:
-//bool FixMean=true;
-bool FixMean=false;
-std::vector<TH1*> vect_hist = list_histos(fname1);
 
-std::vector<TCanvas*> vect_canvas;
-std::vector<string> vect_filename;
 std::vector<TString> vect_status_landau;
 std::vector<TString> vect_status_landauA;
 std::vector<TString> vect_status_landauB;
 //std::vector<TString> vect_status_cauchy;
 
-for (int i = 0; i < vect_hist.size(); i++)
+gROOT->Clear();
+gStyle->SetOptStat(0);
+gStyle->SetOptFit(1111);
+gStyle->SetPalette(1);
+gStyle->SetOptTitle(0);
+string fname;
+
+for(int k = 0; k < 3; k++)
 {
- string canvasname = vect_hist[i]->GetName();
- canvasname += "_canvas";
- TCanvas* dummy_canvas = new TCanvas((canvasname).c_str(),(canvasname).c_str(),750,500);
- vect_canvas.push_back(dummy_canvas);
- string dir = "10GeV_2018_Results";
+ if(k==0)
+ {
+  fname = "ResolutionPlots_10GeV_2018.root";
+ }
+ if(k==1)
+ {
+  fname = "ResolutionPlots_50GeV_2018.root";
+ }
+ if(k==2)
+ {
+  fname = "ResolutionPlots_100GeV_2018.root";
+ }
+
+//const char *fname1 = "ResolutionPlots_2015.root";
+
+// open file:
+std::vector<TH1*> vect_hist = list_histos(fname.c_str());
+std::vector<string> vect_filename;
+
+int vect_hist_size = vect_hist.size();
+for (int i = 0; i < vect_hist_size; i++)
+{
+ string dir = "Resolution/";
+ if(k == 0)
+ { 
+  dir += "10GeV_2018_Results/";
+ }
+ if(k == 1)
+ { 
+  dir += "50GeV_2018_Results/";
+ }
+ if(k == 2)
+ { 
+  dir += "100GeV_2018_Results/";
+ }
  //string dir = "2015_Results";
- if(FixMean)
- {
-  dir+="_ZeroMean/";
- }
- else
- {
-  dir+="_Default/";
- }
  string filename = vect_hist[i]->GetName();
  dir += filename;
  vect_filename.push_back(dir);
 }
 
-for (int i = 0; i < vect_hist.size(); i++)
+for (int i = 0; i < vect_hist_size; i++)
 {
  vect_hist[i]->GetXaxis()->SetTitle("DeltaR [cm]");
  vect_hist[i]->GetYaxis()->SetTitle("Number Of Events");
  vect_hist[i]->SetLineColor(kBlack);
- vect_canvas[i]->cd();
- cout << endl << "Fitting " << vect_hist[i]->GetName() << "   (" << i+1 << "/27)" << endl;
- const char* histname = vect_hist[i]->GetName();
- string histname_str = histname;
+ cout << endl << "Fitting " << vect_hist[i]->GetName() << "   (" << i+1 << "/" << vect_hist.size() << ")" << endl;
+ string histname = vect_hist[i]->GetName();
  string perp = "Perpendicular";
  double PerpendicularFactor;
- if(histname_str.find(perp) != std::string::npos)
+ if(histname.find(perp) != std::string::npos)
  {
   PerpendicularFactor=10.0;
  }
@@ -587,51 +798,38 @@ for (int i = 0; i < vect_hist.size(); i++)
  {
   PerpendicularFactor=1.0;
  }
+
 //Landau
  cout << endl << "Fit Landau" << endl;
- TH1* vect_hist_clone = (TH1*)(vect_hist[i]->Clone());
- //vect_hist_clone->Fit("landau","EMR","SAMES",0.,0.95/PerpendicularFactor); //default fit
- //TF1* landau_fit = (TF1*)vect_hist_clone->GetFunction("landau");
+ TH1D* vect_hist_clone = (TH1D*)(vect_hist[i]->Clone());
+ TH1D* vect_hist_cloneA = (TH1D*)(vect_hist[i]->Clone());
+ TH1D* vect_hist_cloneB = (TH1D*)(vect_hist[i]->Clone());
+ string histnameA = histname + "A"; 
+ string histnameB = histname + "B"; 
+ vect_hist_cloneA->SetName(histnameA.c_str());
+ vect_hist_cloneB->SetName(histnameB.c_str());
 
- //fix MPV of Landau to 0
- TF1* landau_fit = new TF1("func_landau","landau");//,0.0,0.95/PerpendicularFactor);
- landau_fit->SetLineColor(kBlue);
- landau_fit->SetParameter(0,0.5*vect_hist_clone->GetNormFactor());
- if(FixMean)
- {
-  landau_fit->FixParameter(1,0.0);
- }
- else
- {
-  landau_fit->SetParameter(1,0.0);
- }
- landau_fit->SetParameter(2,0.08*vect_hist_clone->GetRMS());
- vect_hist_clone->Fit(landau_fit,"QER","SAMES",0.0,0.95*vect_hist_clone->GetXaxis()->GetXmax());
- 
- TString status_landau = gMinuit->fCstatu;
+ char FitOption = '.'; //Default
+ char FitOptionA = 'A';
+ char FitOptionB = 'B';
+
+ TString status_landau = LandauDrawing(vect_hist_clone,PerpendicularFactor,vect_filename[i],FitOption);
  vect_status_landau.push_back(status_landau);
- LandauDrawing(vect_canvas[i],vect_hist_clone,PerpendicularFactor,landau_fit,status_landau,vect_filename[i]);
-
+ /*
  cout << "Redoing Fit with Option A" << endl; 
- TString optionA = FitOptionA(vect_hist_clone,landau_fit,PerpendicularFactor,vect_filename[i]);
+ TString optionA = LandauDrawing(vect_hist_cloneA,PerpendicularFactor,vect_filename[i],FitOptionA);
  vect_status_landauA.push_back(optionA);
- cout << "Redoing Fit with Option B" << endl; 
- TString optionB = FitOptionB(vect_hist_clone,landau_fit,PerpendicularFactor,vect_filename[i]);
- vect_status_landauB.push_back(optionB);
  
+ cout << "Redoing Fit with Option B" << endl; 
+ TString optionB = LandauDrawing(vect_hist_cloneB,PerpendicularFactor,vect_filename[i],FitOptionB);
+ vect_status_landauB.push_back(optionB);
+ */
  //Cauchy
  /*
  TF1 *func = new TF1("func", Fit_Cauchy, 0.0, 0.95*vect_hist[i]->GetXaxis()->GetXmax(), 3);
  
  func->SetParameter(0,0.5*vect_hist[i]->GetNormFactor());
- if(FixMean)
- {
-  func->FixParameter(1,0.0);
- }
- else
- {
-  func->SetParameter(1,0.0);
- }
+ func->SetParameter(1,0.0);
  func->SetParameter(2,0.07*vect_hist[i]->GetRMS());
 
  //func->SetParLimits(0,0.0,10000.0);
@@ -710,12 +908,15 @@ vect_canvas[i]->Update();
   leg_cauchy->AddEntry((TObject*)0, cauchy_sigma68_tstr, "");
   leg_cauchy->Draw("SAMES");
  */
+ }
 }
  cout << "Default Fit Results" << endl;
  Results(vect_status_landau);//, vect_status_cauchy);
- cout << "Option A Results" << endl;
- Results(vect_status_landauA);
- cout << "Option B Results" << endl;
- Results(vect_status_landauB);
+ //cout << "Option A Results" << endl;
+ //Results(vect_status_landauA);
+ //cout << "Option B Results" << endl;
+ //Results(vect_status_landauB);
+ Long64_t end = gSystem->Now();
+ cout << "Time to process = " << (end-start)/1000.0 << " seconds" << endl;
 }
 
