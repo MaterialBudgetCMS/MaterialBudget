@@ -184,10 +184,10 @@ void revisionsInnerTrackerFit_2018()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupportEllipse"; //work well
-  //FitObject = "PixelSupportRails"; // work well
+  FitObject = "PixelSupportRails"; // work well
 
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
@@ -207,11 +207,11 @@ void revisionsInnerTrackerFit_2018()
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.003; //size of systematics in cm
      r_Sys = 0.003; //size of systematics in cm
-     x0 = 0.; // from MC
-     y0 = 0.; // from MC
-     //x0 = 0.172; // from previous fits using this program that were based on 2018
-     //y0 = -0.175; // from previous fits using this program that were based on 2018
-     r0 = 2.210; // from previous fits using this program that were based on 2015
+     //x0 = 0.; // from MC
+     //y0 = 0.; // from MC
+     x0 = 0.171; // from previous fits using this program that were based on 2018
+     y0 = -0.175; // from previous fits using this program that were based on 2018
+     r0 = 2.211; // from previous fits using this program that were based on 2015
      //Rmin = 1.8, Rmax = 3., RBGmin = 2.4, RBGmax = 3., RSmin = 2., RSmax = 2.4, RPlot = 3.5;
      //RangeEstimatorQuality = 0.1;  
      //x_Sys = 0.003; //size of systematics in cm
@@ -305,7 +305,7 @@ void revisionsInnerTrackerFit_2018()
 
   //*** set parameters for Pixel Shield with 2 Arcs with the same radius
   if(FitObject == "PixelShield2Arcs"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4., RPlot = 6.5;
+     Rmin = 2.5, Rmax = 4.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6, RPlot = 4.;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.017; // size of systematics in cm
      r_Sys = 0.017; // size of systematics in cm
@@ -450,7 +450,8 @@ void revisionsInnerTrackerFit_2018()
 
   // 2018 data file
   //TFile* inputFile = TFile::Open("PlotProduced_2018.root");
-  TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
+  //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
+  TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -563,6 +564,7 @@ void revisionsInnerTrackerFit_2018()
     if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield2Ellipses") h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield2Arcs") h_RhoPhi->Rebin2D(2,2);
+    //if(FitObject == "PixelShield2Arcs") h_RhoPhi->Rebin2D(4,4);
     //if(FitObject == "PixelShield2Arcs"&& k != -6 ) h_RhoPhi->Rebin2D(5,5);
     if(FitObject == "PixelShieldEllipse")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShieldPlus")h_RhoPhi->Rebin2D(2,2);
@@ -740,8 +742,8 @@ void revisionsInnerTrackerFit_2018()
 
     CMS_lumi( cPlots, iPeriod, 0 );
     if (FitObject == "BeamPipe" )latex_circle.DrawLatex(-3., 3., "Data 2018");
-    if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(3., 5.5, "Data 2018");
-    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 25., "Data 2018");
+    if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(2.5, 3.5, "Data 2018");
+    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 22., "Data 2018");
     if (FitObject == "BeamPipe"){
        gr_arc->Draw("P");
        gr_BS->Draw("P");
@@ -1560,8 +1562,7 @@ void revisionsInnerTrackerFit_2018()
     h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
        hEmpty -> Draw();
-       //h->Draw("COLZsame");
-       h->Draw("COLZ");
+       h->Draw("COLZsame");
        //h->Draw("COLZ");
     //}
     //else {
@@ -2349,7 +2350,7 @@ void revisionsInnerTrackerFit_2018()
       {
       h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
       }
-    if(FitObject == "PixelShield2Arcs") h_RhoPhi->GetYaxis()->SetRangeUser(3.4, Rmax);
+    //if(FitObject == "PixelShield2Arcs") h_RhoPhi->GetYaxis()->SetRangeUser(3.4, Rmax);
     if(FitObject == "PixelSupportMinus" || FitObject == "PixelSupportEllipse")
       {
       h_RhoPhi->GetYaxis()->SetRangeUser(19, 23);
@@ -3309,8 +3310,8 @@ void revisionsInnerTrackerFit_2018()
     // end Plot Derivative
 
     hEmpty -> Draw();
-    //h->Draw("COLZsame");
-    h->Draw("COLZ");
+    h->Draw("COLZsame");
+    //h->Draw("COLZ");
     if (FitObject == "PixelSupportRails" || FitObject == "PixelSupportRailsPositive" || FitObject == "PixelSupportRailsNegative") {
        //std::cout << " yRailTop = " << hYderivative->GetXaxis()->GetBinCenter(yRailTop) << " +- " << hYderivative->GetXaxis()->GetBinWidth(yRailTop)/2. << std::endl;
        Double_t x1 = -RPlot;

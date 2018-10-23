@@ -40,6 +40,7 @@ Set enviroment:
 
 Sent crab job with python for 2018:
 
+    python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018D_SingleMu_RawToReco.py
     python crab_Run2018_2018D.py samples/sample_Run2018D_SingleMu_21Aug.py
     python crab_Run2018_2018D.py samples/sample_Run2018D_21Aug.py 
     python crab_Run2018_run315646.py samples/sample_ZeroBias_Run2018_run315646.py
