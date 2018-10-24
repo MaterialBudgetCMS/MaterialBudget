@@ -6,6 +6,7 @@ Compiled version works for any CMSSW versions:
 
 For 2018 data:
       root.exe -b revisionsInnerTrackerFit_2018.C++
+      root.exe -b PixelFit_2018.C++
 
 For 2017 data:
       root.exe -b revisionsInnerTrackerFit_2017.C++
