@@ -310,15 +310,15 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
   //*** set parameters for Pixel Shield with 2 Arcs with the same radius
   if(FitObject == "PixelShield2Arcs"){
-     Rmin = 2.3, Rmax = 4.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6, RPlot = 4.;
+     Rmin = 2.28, Rmax = 4.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6, RPlot = 4.0;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.017; // size of systematics in cm
      r_Sys = 0.017; // size of systematics in cm
      //**** for |z| < 25 cm
-     x0 = 0.0; // in cm
-     y0 = 0.0; // in cm
-     x0_Far = 0.0; // in cm
-     y0_Far = -0.0; // in cm
+     x0 = -0.; // in cm
+     y0 = -0.; // in cm
+     x0_Far = 0.1; // in cm
+     y0_Far = -0.1; // in cm
      r0 = 3.0; // in cm, the initial x radius
      //***** for z: -25 to -20 cm
      //x0 = -0.032; // in cm
@@ -676,10 +676,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
         Double_t binNum = h->GetBinContent( ix, iy );
 
 
-        //Double_t Radius = TMath::Sqrt( x*x + y*y );
-        Double_t Radius = TMath::Sqrt( (x-x0_BeamPipe)*(x-x0_BeamPipe) + (y-y0_BeamPipe)*(y-y0_BeamPipe) );
+        Double_t Radius = TMath::Sqrt( x*x + y*y );
+        Double_t Radius_corr = TMath::Sqrt( (x-x0_BeamPipe)*(x-x0_BeamPipe) + (y-y0_BeamPipe)*(y-y0_BeamPipe) );
 
-        if ( Radius < Rmin || Radius > Rmax ) continue;
+        if ( Radius_corr < Rmin || Radius > Rmax ) continue;
 
             h_Draw->Fill( x, y, binNum );
       }
@@ -752,10 +752,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     plot_L1c->Draw("SAME");
     plot_L1c_3->Draw("SAME");
     plot_L1c_1->Draw("SAME");
-    //}
-    //else {
-    //   h_Draw->Draw("COLZ");
-    //}
 
     TGraph* gr_arc;
     Double_t x_arc0[1], y_arc0[1];
@@ -893,6 +889,85 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.png"));
     //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_COLZ.png"));
 
+    /// Creat histograms for each facet for Pixel Layer 1
+    TH2D* hfacet[12];
+    for(int i = 0; i < 12; i++){
+       std::ostringstream fn;
+       fn.str("");
+       fn << "Plots/"<<FitObject<<"_facet_" << i;
+       hfacet[i] =  new TH2D( fn.str().c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );  
+       hfacet[i]->GetXaxis()->SetTitle("x (cm)");
+       hfacet[i]->GetYaxis()->SetTitle("y (cm)");
+
+       //Int_t numBinsX = h0->GetNbinsX();
+       //Int_t numBinsY = h0->GetNbinsY();
+    }
+    for(int i = 0; i < 6; i++){
+       for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+       {
+         for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+         {
+           Double_t binNum = h->GetBinContent( ix, iy );
+           Double_t x = hfacet[i]->GetXaxis()->GetBinCenter( ix );
+           Double_t y = hfacet[i]->GetYaxis()->GetBinCenter( iy );
+
+           // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
+           // positions of the two halves so that the background subtraction is cleaner.
+           Double_t x0ref = x0;
+           Double_t y0ref = y0;
+          if (i > 2) {x0ref = x0_Far; y0ref = y0_Far;} // for far side
+
+           Double_t xc = x - x0ref;
+           Double_t yc = y - y0ref;
+
+           Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
+
+           if ( rc < Rmin || rc > Rmax ) continue;
+
+           // select facet "i"
+           Double_t phi_facetFar = Pi/12. + Pi/3.*(i-1);
+           Double_t phi_facetNear = Pi/12. + Pi/3.*(i-1)-Pi/6.;
+           Double_t thikness_facetNear = 0.5/fabs(sin(phi_facetNear)); // in cm
+           Double_t thikness_facetFar = 0.5/fabs(sin(phi_facetFar)); // in cm
+           Double_t R_facetNear = 2.8;
+           Double_t R_facetFar = 3.2;
+           Double_t x_facet[1];
+           x_facet[0] = xc;
+
+           Double_t par_facetNear[4];
+           par_facetNear[0] = R_facetNear;
+           par_facetNear[1] = phi_facetNear;
+           par_facetNear[2] = x0ref;
+           par_facetNear[3] = y0ref;
+           Double_t y_facet = funPixelLayer1(x_facet, par_facetNear);
+           if (fabs(yc - y_facet) < thikness_facetNear) hfacet[2*i]->Fill( x, y, binNum ); // seelect region near facet i
+
+           Double_t par_facetFar[4];
+           par_facetFar[0] = R_facetFar;
+           par_facetFar[1] = phi_facetFar;
+           par_facetFar[2] = x0ref;
+           par_facetFar[3] = y0ref;
+           Double_t y_facetFar = funPixelLayer1(x_facet, par_facetFar);
+           if (fabs(yc - y_facetFar) < thikness_facetFar) hfacet[2*i+1]->Fill( x, y, binNum ); // seelect region near facet i
+
+        //Double_t pc = TMath::ATan2( yc, xc );
+        //if(pc < 0) pc = pc + 2*TMath::Pi();
+
+    }}} /// end hfacet
+
+    for(int i = 0; i < 12; i++){
+
+       hfacet[i]->Draw("COLZ");
+       cPlots->Update();
+       std::ostringstream fn;
+       fn.str("");
+       fn << "Plots/"<<FitObject<<"_facet_" << i <<".png";
+       cPlots->SaveAs(fn.str().c_str());
+    }
+    // take df/(dxdy) derivaty
+    //for(int i = 0; i < 12; i++){
+    //}
 
     /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
 
@@ -3880,7 +3955,7 @@ Double_t funPixelLayer1(Double_t *x, Double_t *par)
 {
 //Double_t Long_facets = 0.88; // in cm \pm from (x_R, y_R)
 //Double_t Long_facets = 1.1; // in cm \pm from (x_R, y_R)
-Double_t Long_facets = 1000.; // in cm \pm from (x_R, y_R)
+Double_t Long_facets =2.5; // in cm \pm from (x_R, y_R)
 
 Double_t R_L1 = par[0];
 Double_t phi_L1 = par[1];
@@ -3895,7 +3970,7 @@ if (fabs(sin(phi_L1)) > 0.0001) y_corr = R_L1/sin(phi_L1)-cos(phi_L1)/sin(phi_L1
 Double_t x_R = R_L1*cos(phi_L1);
 Double_t y_R = R_L1*sin(phi_L1);
 Double_t L_facets = sqrt((x_R - x_corr)*(x_R - x_corr) + (y_R - y_corr)* (y_R - y_corr));
-if (L_facets > Long_facets) {y_L1 = 0.0;}
+if (L_facets > Long_facets) {y_L1 = -100.0;}
 else {y_L1 = y_corr + y0_L1;}
 
 return y_L1;
