@@ -926,7 +926,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     }
     //Int_t numBinsX = h0->GetNbinsX();
     //Int_t numBinsY = h0->GetNbinsY();
-    for(int i = 0; i < 6; i++){
+    for(int i = 0; i < 12; i++){
        for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
        {
          for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
@@ -940,7 +940,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            // positions of the two halves so that the background subtraction is cleaner.
            Double_t x0ref = x0;
            Double_t y0ref = y0;
-          if (i > 2) {x0ref = x0_Far; y0ref = y0_Far;} // for far side
+          if (i > 5) {x0ref = x0_Far; y0ref = y0_Far;} // for far side
 
            Double_t xc = x - x0ref;
            Double_t yc = y - y0ref;
@@ -950,24 +950,31 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            if ( rc < Rmin || rc > Rmax ) continue;
 
            // select facet "i"
-           Double_t phi_facetFar = Pi/12. + Pi/3.*(i-1);
-           Double_t phi_facetNear = Pi/12. + Pi/3.*(i-1)-Pi/6.;
-           Double_t thikness_facetNear = 0.35/fabs(sin(phi_facetNear)); // in cm
-           Double_t thikness_facetFar = 0.35/fabs(sin(phi_facetFar)); // in cm
+           //Double_t phi_facetFar = Pi/12. + Pi/3.*(i-1);
+           //Double_t phi_facetNear = Pi/12. + Pi/3.*(i-1)-Pi/6.;
+           Double_t phi_facet = Pi/12. + Pi/6.*(i-2)-Pi/6.;
+           Double_t thikness_facet = 0.35/fabs(sin(phi_facet)); // in cm
            Double_t R_facetNear = 2.8;
            Double_t R_facetFar = 3.2;
            Double_t x_facet[1];
            x_facet[0] = xc;
+ 
+           //select Near facet (each even) and Far facet (odd):
+           Double_t R_facet = R_facetFar;
+           if (i == int(i/2)*2){
+              R_facet = R_facetNear;
+           }
+           //cout << "Test i = " << i << " R_facet = " << R_facet << endl;
 
-           Double_t par_facetNear[4];
-           par_facetNear[0] = R_facetNear;
-           par_facetNear[1] = phi_facetNear;
-           par_facetNear[2] = x0ref;
-           par_facetNear[3] = y0ref;
-           Double_t y_facet = funPixelLayer1(x_facet, par_facetNear);
+           Double_t par_facet[4];
+           par_facet[0] = R_facet;
+           par_facet[1] = phi_facet;
+           par_facet[2] = x0ref;
+           par_facet[3] = y0ref;
+           Double_t y_facet = funPixelLayer1(x_facet, par_facet);
 
-           if (fabs(yc - y_facet) < thikness_facetNear){// seelect region near facet 2*i
-              hfacet[2*i]->Fill( x, y, binNum );
+           if (fabs(yc - y_facet) < thikness_facet){// seelect region near facet 2*i
+              hfacet[i]->Fill( x, y, binNum );
               // calculate y Derivative in 2D, we use 2D histo without BG subtraction
               // formula is correct if all bins has the same width. If it is not true then you have to introduce bin width in this formula!
               if (ix>1 && Int_t(ix)<numBinsX && iy>1 && Int_t(iy)<numBinsY){
@@ -984,13 +991,11 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
                  //if (x < 0) fxDer2D = -fxDer2D;
                  //Double_t fxyDer2D = fabs(fyDer2D*fxDer2D)/binNum/binNum;
                  Double_t fxyDer2D = fabs(fyDer2D*fxDer2D);
-                 //if(fxyDer2D < 20000./fabs(sin(phi_facetNear)/cos(phi_facetNear))) fxyDer2D = 0;
-                 //if(fxyDer2D < 20000./fabs(sin(phi_facetNear)) || fxyDer2D < 20000./fabs(cos(phi_facetNear))) fxyDer2D = 0;
-                 hfacet_der[2*i] -> Fill (x, y, fxyDer2D);
+                 //if(fxyDer2D < 20000./fabs(sin(phi_facet)/cos(phi_facet))) fxyDer2D = 0;
+                 //if(fxyDer2D < 20000./fabs(sin(phi_facet)) || fxyDer2D < 20000./fabs(cos(phi_facet))) fxyDer2D = 0;
+                 hfacet_der[i] -> Fill (x, y, fxyDer2D);
               }
               //Rotate in phi R system of facet
-              Double_t R_facet = R_facetNear;
-              Double_t phi_facet = phi_facetNear;
               Double_t xf_0 = R_facet*cos(phi_facet);
               Double_t yf_0 = R_facet*sin(phi_facet);
               Double_t xf_prime = xc - xf_0;
@@ -998,36 +1003,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
               // in phi, R system:
               Double_t xf = xf_prime*cos(phi_facet) + yf_prime*sin(phi_facet);
               Double_t yf = -xf_prime*sin(phi_facet) + yf_prime*cos(phi_facet);
-              hfacet_Phi[2*i]->Fill( xf, yf, binNum );  
+              hfacet_Phi[i]->Fill( xf, yf, binNum );  
            }
-
-           Double_t par_facetFar[4];
-           par_facetFar[0] = R_facetFar;
-           par_facetFar[1] = phi_facetFar;
-           par_facetFar[2] = x0ref;
-           par_facetFar[3] = y0ref;
-           Double_t y_facetFar = funPixelLayer1(x_facet, par_facetFar);
-           if (fabs(yc - y_facetFar) < thikness_facetFar){
-              hfacet[2*i+1]->Fill( x, y, binNum ); // seelect region near facet i
-              if (ix>1 && Int_t(ix)<numBinsX && iy>1 && Int_t(iy)<numBinsY){
-                 Double_t u0 = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix, iy-1 ) + h->GetBinContent( ix+1, iy-1 );
-                 Double_t u2 = h->GetBinContent( ix-1, iy+1 ) + 2*h->GetBinContent( ix, iy+1 ) + h->GetBinContent( ix+1, iy+1 );
-                 Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
-                 // revert in negative y plain:
-                 //if (y < 0) fyDer2D = -fyDer2D;
-
-                 Double_t u0x = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix-1, iy ) + h->GetBinContent( ix-1, iy+1 );
-                 Double_t u2x = h->GetBinContent( ix+1, iy-1 ) + 2*h->GetBinContent( ix+1, iy ) + h->GetBinContent( ix+1, iy+1 );
-                 Double_t fxDer2D = u2x-u0x;// calculate derivative at iy (y1) point
-                 // revert in negative y plain:
-                 //if (x < 0) fxDer2D = -fxDer2D;
-                 //Double_t fxyDer2D = fabs(fyDer2D*fxDer2D)/binNum/binNum;
-                 Double_t fxyDer2D = fabs(fyDer2D*fxDer2D);
-                 //if(fxyDer2D < 20000./fabs(sin(phi_facetFar)/cos(phi_facetFar))) fxyDer2D = 0;
-                 //if(fxyDer2D < 20000./fabs(sin(phi_facetFar)) || fxyDer2D < 20000./fabs(cos(phi_facetFar))) fxyDer2D = 0;
-                 hfacet_der[2*i+1] -> Fill (x, y, fxyDer2D);
-              }
-        }
 
         //Double_t pc = TMath::ATan2( yc, xc );
         //if(pc < 0) pc = pc + 2*TMath::Pi();
@@ -1043,8 +1020,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        fn_der << "Plots/"<<FitObject<<"_facet_der_" << i <<".png";
        cPlots->SaveAs(fn_der.str().c_str());
 
-       //Double_t phi_facetFar = Pi/12. + Pi/3.*(i-1);
-       //Double_t phi_facetNear = Pi/12. + Pi/3.*(i-1)-Pi/6.;
        Double_t phi = Pi/12. + Pi/6.*(i-2)-Pi/6.;
        Double_t Threshold = 20000.;
        Double_t ThresholdX = Threshold/fabs(sin(phi));
