@@ -891,7 +891,11 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     /// Creat histograms for each facet for Pixel Layer 1
     TH2D* hfacet[12];
+    TH2D* hfacet_Phi[12];
+    TH2D* hfacet_der[12];
     for(int i = 0; i < 12; i++){
+       //hfacet[i] -> Sumw2();
+       //hfacet_der[i] -> Sumw2();
        std::ostringstream fn;
        fn.str("");
        fn << "Plots/"<<FitObject<<"_facet_" << i;
@@ -899,16 +903,36 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
                                                       h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );  
        hfacet[i]->GetXaxis()->SetTitle("x (cm)");
        hfacet[i]->GetYaxis()->SetTitle("y (cm)");
+       hfacet[i]->GetZaxis()->SetTitle(Form("Events/(%1.1f#times%1.1f mm^{2})", hfacet[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet[i]->GetYaxis()->GetBinWidth(1)*10));
 
-       //Int_t numBinsX = h0->GetNbinsX();
-       //Int_t numBinsY = h0->GetNbinsY();
+       std::ostringstream fn_der;
+       fn_der.str("");
+       fn_der << "Plots/"<<FitObject<<"_facet_der_" << i;
+       hfacet_der[i] =  new TH2D( fn_der.str().c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );  
+       hfacet_der[i]->GetXaxis()->SetTitle("x (cm)");
+       hfacet_der[i]->GetYaxis()->SetTitle("y (cm)");
+       hfacet_der[i]->GetZaxis()->SetTitle(Form("d^{2}Events/(%1.1f#times%1.1f mm^{2})", hfacet_der[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_der[i]->GetYaxis()->GetBinWidth(1)*10));
+
+       std::ostringstream fn_Phi;
+       fn_Phi.str("");
+       fn_Phi << "Plots/"<<FitObject<<"_facet_Phi_" << i;
+       hfacet_Phi[i] =  new TH2D( fn_Phi.str().c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );  
+       hfacet_Phi[i]->GetXaxis()->SetTitle("x (cm)");
+       hfacet_Phi[i]->GetYaxis()->SetTitle("y (cm)");
+       hfacet_Phi[i]->GetZaxis()->SetTitle(Form("Rotate #phi: d^{2}Events/(%1.1f#times%1.1f mm^{2})", hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10));
+
     }
+    //Int_t numBinsX = h0->GetNbinsX();
+    //Int_t numBinsY = h0->GetNbinsY();
     for(int i = 0; i < 6; i++){
        for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
        {
          for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
          {
            Double_t binNum = h->GetBinContent( ix, iy );
+           if(binNum < 1.) continue;
            Double_t x = hfacet[i]->GetXaxis()->GetBinCenter( ix );
            Double_t y = hfacet[i]->GetYaxis()->GetBinCenter( iy );
 
@@ -928,8 +952,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            // select facet "i"
            Double_t phi_facetFar = Pi/12. + Pi/3.*(i-1);
            Double_t phi_facetNear = Pi/12. + Pi/3.*(i-1)-Pi/6.;
-           Double_t thikness_facetNear = 0.5/fabs(sin(phi_facetNear)); // in cm
-           Double_t thikness_facetFar = 0.5/fabs(sin(phi_facetFar)); // in cm
+           Double_t thikness_facetNear = 0.35/fabs(sin(phi_facetNear)); // in cm
+           Double_t thikness_facetFar = 0.35/fabs(sin(phi_facetFar)); // in cm
            Double_t R_facetNear = 2.8;
            Double_t R_facetFar = 3.2;
            Double_t x_facet[1];
@@ -941,7 +965,41 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            par_facetNear[2] = x0ref;
            par_facetNear[3] = y0ref;
            Double_t y_facet = funPixelLayer1(x_facet, par_facetNear);
-           if (fabs(yc - y_facet) < thikness_facetNear) hfacet[2*i]->Fill( x, y, binNum ); // seelect region near facet i
+
+           if (fabs(yc - y_facet) < thikness_facetNear){// seelect region near facet 2*i
+              hfacet[2*i]->Fill( x, y, binNum );
+              // calculate y Derivative in 2D, we use 2D histo without BG subtraction
+              // formula is correct if all bins has the same width. If it is not true then you have to introduce bin width in this formula!
+              if (ix>1 && Int_t(ix)<numBinsX && iy>1 && Int_t(iy)<numBinsY){
+                 Double_t u0 = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix, iy-1 ) + h->GetBinContent( ix+1, iy-1 );
+                 Double_t u2 = h->GetBinContent( ix-1, iy+1 ) + 2*h->GetBinContent( ix, iy+1 ) + h->GetBinContent( ix+1, iy+1 );
+                 Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
+                 // revert in negative y plain:
+                 //if (y < 0) fyDer2D = -fyDer2D;
+
+                 Double_t u0x = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix-1, iy ) + h->GetBinContent( ix-1, iy+1 );
+                 Double_t u2x = h->GetBinContent( ix+1, iy-1 ) + 2*h->GetBinContent( ix+1, iy ) + h->GetBinContent( ix+1, iy+1 );
+                 Double_t fxDer2D = u2x-u0x;// calculate derivative at iy (y1) point
+                 // revert in negative y plain:
+                 //if (x < 0) fxDer2D = -fxDer2D;
+                 //Double_t fxyDer2D = fabs(fyDer2D*fxDer2D)/binNum/binNum;
+                 Double_t fxyDer2D = fabs(fyDer2D*fxDer2D);
+                 //if(fxyDer2D < 20000./fabs(sin(phi_facetNear)/cos(phi_facetNear))) fxyDer2D = 0;
+                 //if(fxyDer2D < 20000./fabs(sin(phi_facetNear)) || fxyDer2D < 20000./fabs(cos(phi_facetNear))) fxyDer2D = 0;
+                 hfacet_der[2*i] -> Fill (x, y, fxyDer2D);
+              }
+              //Rotate in phi R system of facet
+              Double_t R_facet = R_facetNear;
+              Double_t phi_facet = phi_facetNear;
+              Double_t xf_0 = R_facet*cos(phi_facet);
+              Double_t yf_0 = R_facet*sin(phi_facet);
+              Double_t xf_prime = xc - xf_0;
+              Double_t yf_prime = yc - yf_0;
+              // in phi, R system:
+              Double_t xf = xf_prime*cos(phi_facet) + yf_prime*sin(phi_facet);
+              Double_t yf = -xf_prime*sin(phi_facet) + yf_prime*cos(phi_facet);
+              hfacet_Phi[2*i]->Fill( xf, yf, binNum );  
+           }
 
            Double_t par_facetFar[4];
            par_facetFar[0] = R_facetFar;
@@ -949,7 +1007,27 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            par_facetFar[2] = x0ref;
            par_facetFar[3] = y0ref;
            Double_t y_facetFar = funPixelLayer1(x_facet, par_facetFar);
-           if (fabs(yc - y_facetFar) < thikness_facetFar) hfacet[2*i+1]->Fill( x, y, binNum ); // seelect region near facet i
+           if (fabs(yc - y_facetFar) < thikness_facetFar){
+              hfacet[2*i+1]->Fill( x, y, binNum ); // seelect region near facet i
+              if (ix>1 && Int_t(ix)<numBinsX && iy>1 && Int_t(iy)<numBinsY){
+                 Double_t u0 = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix, iy-1 ) + h->GetBinContent( ix+1, iy-1 );
+                 Double_t u2 = h->GetBinContent( ix-1, iy+1 ) + 2*h->GetBinContent( ix, iy+1 ) + h->GetBinContent( ix+1, iy+1 );
+                 Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
+                 // revert in negative y plain:
+                 //if (y < 0) fyDer2D = -fyDer2D;
+
+                 Double_t u0x = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix-1, iy ) + h->GetBinContent( ix-1, iy+1 );
+                 Double_t u2x = h->GetBinContent( ix+1, iy-1 ) + 2*h->GetBinContent( ix+1, iy ) + h->GetBinContent( ix+1, iy+1 );
+                 Double_t fxDer2D = u2x-u0x;// calculate derivative at iy (y1) point
+                 // revert in negative y plain:
+                 //if (x < 0) fxDer2D = -fxDer2D;
+                 //Double_t fxyDer2D = fabs(fyDer2D*fxDer2D)/binNum/binNum;
+                 Double_t fxyDer2D = fabs(fyDer2D*fxDer2D);
+                 //if(fxyDer2D < 20000./fabs(sin(phi_facetFar)/cos(phi_facetFar))) fxyDer2D = 0;
+                 //if(fxyDer2D < 20000./fabs(sin(phi_facetFar)) || fxyDer2D < 20000./fabs(cos(phi_facetFar))) fxyDer2D = 0;
+                 hfacet_der[2*i+1] -> Fill (x, y, fxyDer2D);
+              }
+        }
 
         //Double_t pc = TMath::ATan2( yc, xc );
         //if(pc < 0) pc = pc + 2*TMath::Pi();
@@ -958,16 +1036,102 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     for(int i = 0; i < 12; i++){
 
+       hfacet_der[i]->Draw("COLZ");
+       cPlots->Update();
+       std::ostringstream fn_der;
+       fn_der.str("");
+       fn_der << "Plots/"<<FitObject<<"_facet_der_" << i <<".png";
+       cPlots->SaveAs(fn_der.str().c_str());
+
+       //Double_t phi_facetFar = Pi/12. + Pi/3.*(i-1);
+       //Double_t phi_facetNear = Pi/12. + Pi/3.*(i-1)-Pi/6.;
+       Double_t phi = Pi/12. + Pi/6.*(i-2)-Pi/6.;
+       Double_t Threshold = 20000.;
+       Double_t ThresholdX = Threshold/fabs(sin(phi));
+       Double_t ThresholdY = Threshold/fabs(cos(phi));
+       TLine *lineX = new TLine(-5,ThresholdX,5,ThresholdX);
+       lineX -> SetLineStyle(kDotted);
+       lineX -> SetLineColor(kRed);
+       TH1D * projhX = hfacet_der[i]->ProjectionX();
+       //TH1D * projhX = hfacet[i]->ProjectionX();
+      //Int_t numBinsX = h->GetNbinsX();
+      //Int_t numBinsY = h->GetNbinsY();
+       Double_t XprojMin = -100.;
+       Double_t XprojMax = -100.;
+       Double_t XprojCut = -100.;
+     
+       for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ ){
+           Double_t binNum = projhX->GetBinContent( ix );
+           if (binNum >= ThresholdX && XprojCut < ThresholdX) {
+               XprojMin = projhX->GetXaxis()->GetBinCenter(ix); 
+               XprojCut = ThresholdX;
+           }
+           if (binNum >= ThresholdX) XprojMax = projhX->GetXaxis()->GetBinCenter(ix); 
+       }
+       cout << "i = " << i << " XprojMin = " << XprojMin << " XprojMax = " << XprojMax << endl;
+       projhX->Draw("e");
+       lineX -> Draw("same");
+       cPlots->Update();
+       std::ostringstream fn_derX;
+       fn_derX.str("");
+       fn_derX << "Plots/"<<FitObject<<"_facet_der_projX_" << i <<".png";
+       cPlots->SaveAs(fn_derX.str().c_str());
+
+       TLine *lineY = new TLine(-5,ThresholdY,5,ThresholdY);
+       lineY -> SetLineStyle(kDotted);
+       lineY -> SetLineColor(kRed);
+       TH1D * projhY = hfacet_der[i]->ProjectionY();
+       //TH1D * projhY = hfacet[i]->ProjectionY();
+       Double_t YprojMin = -100.;
+       Double_t YprojMax = -100.;
+       Double_t YprojCut = -100.;
+
+       for ( UInt_t ix = 1; ix <= UInt_t(numBinsY); ix++ ){
+           Double_t binNum = projhY->GetBinContent( ix );
+           if (binNum >= ThresholdY && YprojCut < ThresholdY) {
+               YprojMin = projhY->GetXaxis()->GetBinCenter(ix);
+               YprojCut = ThresholdY;
+           }
+           if (binNum >= ThresholdY) YprojMax = projhY->GetXaxis()->GetBinCenter(ix);
+       }
+       cout << "i = " << i << " YprojMin = " << YprojMin << " YprojMax = " << YprojMax << endl;
+       projhY->Draw("e");
+       lineY -> Draw("same");
+       cPlots->Update();
+       std::ostringstream fn_derY;
+       fn_derY.str("");
+       fn_derY << "Plots/"<<FitObject<<"_facet_der_projY_" << i <<".png";
+       cPlots->SaveAs(fn_derY.str().c_str());
+
+
+       Double_t X1_facet, Y1_facet, X2_facet, Y2_facet;
+       if (sin(phi)*cos(phi) < 0) 
+          {X1_facet = XprojMin; Y1_facet = YprojMin; X2_facet = XprojMax; Y2_facet = YprojMax;}
+       else
+          {X1_facet = XprojMax; Y1_facet = YprojMin; X2_facet = XprojMin; Y2_facet = YprojMax;}
+   
+       TLine *lineFacet = new TLine(X1_facet,Y1_facet,X2_facet,Y2_facet);
+       //lineFacet -> SetLineStyle(kDotted);
+       lineFacet -> SetLineColor(kRed);
+       lineFacet -> SetLineWidth(3);
+
        hfacet[i]->Draw("COLZ");
+       lineFacet -> Draw("same");
        cPlots->Update();
        std::ostringstream fn;
        fn.str("");
-       fn << "Plots/"<<FitObject<<"_facet_" << i <<".png";
+       fn << "Plots/"<<FitObject<<"_facet_Plot_" << i <<".png";
        cPlots->SaveAs(fn.str().c_str());
+
+       hfacet_Phi[i]->Draw("COLZ");
+       //lineFacet -> Draw("same");
+       cPlots->Update();
+       std::ostringstream fn_Phi;
+       fn_Phi.str("");
+       fn_Phi << "Plots/"<<FitObject<<"_facet_PhiPlot_" << i <<".png";
+       cPlots->SaveAs(fn_Phi.str().c_str());
+
     }
-    // take df/(dxdy) derivaty
-    //for(int i = 0; i < 12; i++){
-    //}
 
     /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
 
@@ -3955,7 +4119,7 @@ Double_t funPixelLayer1(Double_t *x, Double_t *par)
 {
 //Double_t Long_facets = 0.88; // in cm \pm from (x_R, y_R)
 //Double_t Long_facets = 1.1; // in cm \pm from (x_R, y_R)
-Double_t Long_facets =2.5; // in cm \pm from (x_R, y_R)
+Double_t Long_facets =3.; // in cm \pm from (x_R, y_R)
 
 Double_t R_L1 = par[0];
 Double_t phi_L1 = par[1];
