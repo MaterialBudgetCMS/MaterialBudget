@@ -69,6 +69,8 @@ void funPixelShield2Ellipses( Int_t &, Double_t *, Double_t &, Double_t *, Int_t
 void funPixelShield2Arcs( Int_t &, Double_t *, Double_t &, Double_t *, Int_t);
 // create funciton to fit the pixel shield with an ellipse
 Double_t funPixelLayer1(Double_t *x, Double_t *par);
+// create funciton to fit the pixel shield with an ellipse
+void fun2Lines(Double_t *Line1, Double_t *Line2, Double_t *par);
 
 // create function to fit the plus semicircle of the pixel shield
 void funArcPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
@@ -569,12 +571,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield2Ellipses") h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield2Arcs") h_RhoPhi->Rebin2D(2,2);
-    //if(FitObject == "PixelShield2Arcs") h_RhoPhi->Rebin2D(4,4);
-    //if(FitObject == "PixelShield2Arcs"&& k != -6 ) h_RhoPhi->Rebin2D(5,5);
     if(FitObject == "PixelShieldEllipse")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShieldPlus")h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShieldMinus")h_RhoPhi->Rebin2D(2,2);
-    //if(FitObject == "BeamPipe")h_RhoPhi->Rebin2D(1,1);
     h_RhoPhi->SetStats(0);
     h_RhoPhi->GetXaxis()->SetTitle("#phi (rad)");
     h_RhoPhi->GetYaxis()->SetTitle("r (cm)");
@@ -633,8 +632,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     if(FitObject == "PixelSupportEllipse")h->Rebin2D(4,4);
     if(FitObject == "PixelShield") h->Rebin2D(5,5);
     if(FitObject == "PixelShield2Ellipses") h->Rebin2D(5,5);
-    if(FitObject == "PixelShield2Arcs" && k == -6) h->Rebin2D(5,5);
-    if(FitObject == "PixelShield2Arcs"&& k != -6 ) h->Rebin2D(5,5);
+    //if(FitObject == "PixelShield2Arcs" && k == -6) h->Rebin2D(5,5);
+    //if(FitObject == "PixelShield2Arcs"&& k != -6 ) h->Rebin2D(5,5);
     if(FitObject == "PixelShieldEllipse")h->Rebin2D(5,5);
     if(FitObject == "PixelShieldPlus") h->Rebin2D(5,5);
     if(FitObject == "PixelShieldMinus")h->Rebin2D(5,5);
@@ -890,9 +889,12 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_COLZ.png"));
 
     /// Creat histograms for each facet for Pixel Layer 1
+    //cPlots -> SetLogz(0);
+    cPlots -> SetLogz(1);
     TH2D* hfacet[12];
     TH2D* hfacet_Phi[12];
     TH2D* hfacet_der[12];
+    TH2D* hfacet_derPhi[12];
     for(int i = 0; i < 12; i++){
        //hfacet[i] -> Sumw2();
        //hfacet_der[i] -> Sumw2();
@@ -914,14 +916,29 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        hfacet_der[i]->GetYaxis()->SetTitle("y (cm)");
        hfacet_der[i]->GetZaxis()->SetTitle(Form("d^{2}Events/(%1.1f#times%1.1f mm^{2})", hfacet_der[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_der[i]->GetYaxis()->GetBinWidth(1)*10));
 
+       Double_t phi_facet = Pi/12. + Pi/6.*(i-2)-Pi/6.;
+       //Int_t NbinX_phi = Int_t(h->GetNbinsX()/2.); // valid if x bin width = y bin width
+       //Int_t NbinY_phi = Int_t(h->GetNbinsY()/2.); // valid if x bin width = y bin width
+       Int_t NbinX_phi = Int_t(h->GetNbinsX()/4.); // valid if x bin width = y bin width
+       Int_t NbinY_phi = Int_t(h->GetNbinsY()/4.); // valid if x bin width = y bin width
        std::ostringstream fn_Phi;
        fn_Phi.str("");
        fn_Phi << "Plots/"<<FitObject<<"_facet_Phi_" << i;
-       hfacet_Phi[i] =  new TH2D( fn_Phi.str().c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
-                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );  
+       hfacet_Phi[i] =  new TH2D( fn_Phi.str().c_str(), h->GetTitle(), NbinX_phi, h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
+                                                      NbinY_phi, h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );  
        hfacet_Phi[i]->GetXaxis()->SetTitle("x (cm)");
        hfacet_Phi[i]->GetYaxis()->SetTitle("y (cm)");
-       hfacet_Phi[i]->GetZaxis()->SetTitle(Form("Rotate #phi: d^{2}Events/(%1.1f#times%1.1f mm^{2})", hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10));
+       hfacet_Phi[i]->GetZaxis()->SetTitle(Form("Rotate in #phi facet: Events/(%1.1f#times%1.1f mm^{2})", hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10));
+
+       std::ostringstream fn_derPhi;
+       fn_derPhi.str("");
+       fn_derPhi << "Plots/"<<FitObject<<"_facet_derPhi_" << i;
+       hfacet_derPhi[i] =  new TH2D( fn_derPhi.str().c_str(), hfacet_Phi[i]->GetTitle(), hfacet_Phi[i]->GetNbinsX(), hfacet_Phi[i]->GetXaxis()->GetBinLowEdge(1), 
+                                                              hfacet_Phi[i]->GetXaxis()->GetBinUpEdge(hfacet_Phi[i]->GetNbinsX()),
+                                                              hfacet_Phi[i]->GetNbinsY(), hfacet_Phi[i]->GetYaxis()->GetBinLowEdge(1), hfacet_Phi[i]->GetYaxis()->GetBinUpEdge(hfacet_Phi[i]->GetNbinsY()) );
+       hfacet_derPhi[i]->GetXaxis()->SetTitle("x (cm)");
+       hfacet_derPhi[i]->GetYaxis()->SetTitle("y (cm)");
+       hfacet_derPhi[i]->GetZaxis()->SetTitle(Form("Rotate in #phi facet: d^{2}Events/(%1.1f#times%1.1f mm^{2})", hfacet_derPhi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_derPhi[i]->GetYaxis()->GetBinWidth(1)*10));
 
     }
     //Int_t numBinsX = h0->GetNbinsX();
@@ -932,7 +949,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
          for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
          {
            Double_t binNum = h->GetBinContent( ix, iy );
-           if(binNum < 1.) continue;
+           //if(binNum < 1.) continue;
            Double_t x = hfacet[i]->GetXaxis()->GetBinCenter( ix );
            Double_t y = hfacet[i]->GetYaxis()->GetBinCenter( iy );
 
@@ -953,7 +970,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            //Double_t phi_facetFar = Pi/12. + Pi/3.*(i-1);
            //Double_t phi_facetNear = Pi/12. + Pi/3.*(i-1)-Pi/6.;
            Double_t phi_facet = Pi/12. + Pi/6.*(i-2)-Pi/6.;
-           Double_t thikness_facet = 0.35/fabs(sin(phi_facet)); // in cm
+           //Double_t thikness_facet = 0.35/fabs(sin(phi_facet)); // in cm
+           Double_t thikness_facet = 0.35; // in cm in phi-R facet plane
            Double_t R_facetNear = 2.8;
            Double_t R_facetFar = 3.2;
            Double_t x_facet[1];
@@ -966,14 +984,25 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            }
            //cout << "Test i = " << i << " R_facet = " << R_facet << endl;
 
-           Double_t par_facet[4];
-           par_facet[0] = R_facet;
-           par_facet[1] = phi_facet;
-           par_facet[2] = x0ref;
-           par_facet[3] = y0ref;
-           Double_t y_facet = funPixelLayer1(x_facet, par_facet);
+           //Rotate in phi R system of facet
+           Double_t xf_0 = R_facet*cos(phi_facet);
+           Double_t yf_0 = R_facet*sin(phi_facet);
+           Double_t xf_prime = xc - xf_0;
+           Double_t yf_prime = yc - yf_0;
+           // in phi, R system:
+           Double_t xf = xf_prime*cos(phi_facet) + yf_prime*sin(phi_facet);
+           Double_t yf = -xf_prime*sin(phi_facet) + yf_prime*cos(phi_facet);
 
-           if (fabs(yc - y_facet) < thikness_facet){// seelect region near facet 2*i
+           //Double_t par_facet[4];
+           //par_facet[0] = R_facet;
+           //par_facet[1] = phi_facet;
+           //par_facet[2] = x0ref;
+           //par_facet[3] = y0ref;
+           //Double_t y_facet = funPixelLayer1(x_facet, par_facet);
+
+           //if (fabs(yc - y_facet) < thikness_facet){// seelect region near facet 2*i
+           if (fabs(xf) < thikness_facet && fabs(yf) < 2.){// seelect region near facet 2*i
+              hfacet_Phi[i]->Fill( xf, yf, binNum );  
               hfacet[i]->Fill( x, y, binNum );
               // calculate y Derivative in 2D, we use 2D histo without BG subtraction
               // formula is correct if all bins has the same width. If it is not true then you have to introduce bin width in this formula!
@@ -995,22 +1024,50 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
                  //if(fxyDer2D < 20000./fabs(sin(phi_facet)) || fxyDer2D < 20000./fabs(cos(phi_facet))) fxyDer2D = 0;
                  hfacet_der[i] -> Fill (x, y, fxyDer2D);
               }
-              //Rotate in phi R system of facet
-              Double_t xf_0 = R_facet*cos(phi_facet);
-              Double_t yf_0 = R_facet*sin(phi_facet);
-              Double_t xf_prime = xc - xf_0;
-              Double_t yf_prime = yc - yf_0;
-              // in phi, R system:
-              Double_t xf = xf_prime*cos(phi_facet) + yf_prime*sin(phi_facet);
-              Double_t yf = -xf_prime*sin(phi_facet) + yf_prime*cos(phi_facet);
-              hfacet_Phi[i]->Fill( xf, yf, binNum );  
            }
 
         //Double_t pc = TMath::ATan2( yc, xc );
         //if(pc < 0) pc = pc + 2*TMath::Pi();
 
-    }}} /// end hfacet
+       }}
 
+       Int_t numBinsPhiX = hfacet_Phi[i]->GetNbinsX();
+       Int_t numBinsPhiY = hfacet_Phi[i]->GetNbinsY();
+       for ( UInt_t ix = 1; ix <= UInt_t(numBinsPhiX); ix++ )
+       {
+         for ( UInt_t iy = 1; iy <= UInt_t(numBinsPhiY); iy++ )
+         {
+           Double_t x = hfacet_Phi[i]->GetXaxis()->GetBinCenter( ix );
+           Double_t y = hfacet_Phi[i]->GetYaxis()->GetBinCenter( iy );
+
+              // calculate y Derivative in 2D, we use 2D histo without BG subtraction
+              // formula is correct if all bins has the same width. If it is not true then you have to introduce bin width in this formula!
+              if (ix>1 && Int_t(ix)<numBinsX && iy>1 && Int_t(iy)<numBinsY){
+                 Double_t u0 = hfacet_Phi[i]->GetBinContent( ix-1, iy-1 ) + 2*hfacet_Phi[i]->GetBinContent( ix, iy-1 ) + hfacet_Phi[i]->GetBinContent( ix+1, iy-1 );
+                 Double_t u2 = hfacet_Phi[i]->GetBinContent( ix-1, iy+1 ) + 2*hfacet_Phi[i]->GetBinContent( ix, iy+1 ) + hfacet_Phi[i]->GetBinContent( ix+1, iy+1 );
+                 Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
+                 // revert in negative y plain, want to have start of the facet to be positive from both sides:
+                 if(y < 0) fyDer2D = -fyDer2D;
+                 //if(fyDer2D < 0) fyDer2D = 1.; // don't interest in negative parts, but still want to see of there is effect at x derivative that is why 1, but not 0
+
+                 Double_t u0x = hfacet_Phi[i]->GetBinContent( ix-1, iy-1 ) + 2*hfacet_Phi[i]->GetBinContent( ix-1, iy ) + hfacet_Phi[i]->GetBinContent( ix-1, iy+1 );
+                 Double_t u2x = hfacet_Phi[i]->GetBinContent( ix+1, iy-1 ) + 2*hfacet_Phi[i]->GetBinContent( ix+1, iy ) + hfacet_Phi[i]->GetBinContent( ix+1, iy+1 );
+                 Double_t fxDer2D = u2x-u0x;// calculate derivative at iy (y1) point
+                 // revert in negative y plain:
+                 //if(y < 0) fyDer2D = -fyDer2D;
+                 if(fxDer2D < 0) fxDer2D = 1.; // what to find point where structure is starting
+                 //if (x < 0) fxDer2D = -fxDer2D;
+                 //Double_t fxyDer2D = fabs(fyDer2D*fxDer2D)/binNum/binNum;
+                 Double_t fxyDer2D = fabs(fyDer2D*fxDer2D);
+                 //hfacet_derPhi[i] -> Fill (x, y, fxyDer2D);
+                 //hfacet_derPhi[i] -> Fill (x, y, fyDer2D);
+                 hfacet_derPhi[i] -> Fill (x, y, fxDer2D);
+    }}}
+
+} /// end hfacet
+
+
+    Double_t X1_facet[12], Y1_facet[12], X2_facet[12], Y2_facet[12];
     for(int i = 0; i < 12; i++){
 
        hfacet_der[i]->Draw("COLZ");
@@ -1020,54 +1077,51 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        fn_der << "Plots/"<<FitObject<<"_facet_der_" << i <<".png";
        cPlots->SaveAs(fn_der.str().c_str());
 
-       Double_t phi = Pi/12. + Pi/6.*(i-2)-Pi/6.;
-       Double_t Threshold = 20000.;
-       Double_t ThresholdX = Threshold/fabs(sin(phi));
-       Double_t ThresholdY = Threshold/fabs(cos(phi));
-       TLine *lineX = new TLine(-5,ThresholdX,5,ThresholdX);
-       lineX -> SetLineStyle(kDotted);
-       lineX -> SetLineColor(kRed);
-       TH1D * projhX = hfacet_der[i]->ProjectionX();
-       //TH1D * projhX = hfacet[i]->ProjectionX();
-      //Int_t numBinsX = h->GetNbinsX();
-      //Int_t numBinsY = h->GetNbinsY();
-       Double_t XprojMin = -100.;
-       Double_t XprojMax = -100.;
-       Double_t XprojCut = -100.;
-     
-       for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ ){
-           Double_t binNum = projhX->GetBinContent( ix );
-           if (binNum >= ThresholdX && XprojCut < ThresholdX) {
-               XprojMin = projhX->GetXaxis()->GetBinCenter(ix); 
-               XprojCut = ThresholdX;
-           }
-           if (binNum >= ThresholdX) XprojMax = projhX->GetXaxis()->GetBinCenter(ix); 
-       }
-       cout << "i = " << i << " XprojMin = " << XprojMin << " XprojMax = " << XprojMax << endl;
-       projhX->Draw("e");
-       lineX -> Draw("same");
+
+       hfacet_derPhi[i]->Draw("COLZ");
        cPlots->Update();
-       std::ostringstream fn_derX;
-       fn_derX.str("");
-       fn_derX << "Plots/"<<FitObject<<"_facet_der_projX_" << i <<".png";
-       cPlots->SaveAs(fn_derX.str().c_str());
+       std::ostringstream fn_derPhi;
+       fn_derPhi.str("");
+       fn_derPhi << "Plots/"<<FitObject<<"_facet_derPhi_" << i <<".png";
+       cPlots->SaveAs(fn_derPhi.str().c_str());
+
+
+       Double_t phi = Pi/12. + Pi/6.*(i-2)-Pi/6.;
+       //Double_t Threshold = 20000.;
+       Double_t Threshold = 1000.;
+       //Double_t ThresholdX = Threshold/fabs(sin(phi));
+       //Double_t ThresholdY = Threshold/fabs(cos(phi));
+       Double_t ThresholdX = 150000;
+       //Double_t ThresholdY = 7000.; //dxdy
+       Double_t ThresholdY = 400.; // dx only
+
 
        TLine *lineY = new TLine(-5,ThresholdY,5,ThresholdY);
        lineY -> SetLineStyle(kDotted);
        lineY -> SetLineColor(kRed);
-       TH1D * projhY = hfacet_der[i]->ProjectionY();
+       //TH1D * projhY = hfacet_der[i]->ProjectionY();
+       TH1D * projhY = hfacet_derPhi[i]->ProjectionY();
+       //TH1D * projhY = hfacet_Phi[i]->ProjectionY();
+       projhY->GetXaxis()->SetRangeUser(-1.9, 1.9);
        //TH1D * projhY = hfacet[i]->ProjectionY();
        Double_t YprojMin = -100.;
        Double_t YprojMax = -100.;
+       Int_t iYprojMin = -100;
+       Int_t iYprojMax = -100;
        Double_t YprojCut = -100.;
 
-       for ( UInt_t ix = 1; ix <= UInt_t(numBinsY); ix++ ){
+       Int_t numBinsYproj = projhY->GetNbinsX();
+       for ( UInt_t ix = 1; ix <= UInt_t(numBinsYproj); ix++ ){
            Double_t binNum = projhY->GetBinContent( ix );
+           Double_t binCenter = projhY->GetXaxis()->GetBinCenter(ix);
+           //cout << "Test: numBinsYproj = " << numBinsYproj << " binCenter = " << binCenter << " binNum = " << binNum << endl;
+           if(fabs(binCenter) > 1.5) continue; //reject tails where derivety is not correct in edges bins
            if (binNum >= ThresholdY && YprojCut < ThresholdY) {
-               YprojMin = projhY->GetXaxis()->GetBinCenter(ix);
-               YprojCut = ThresholdY;
+               YprojMin = binCenter;
+               iYprojMin = ix;
+               YprojCut = binNum;
            }
-           if (binNum >= ThresholdY) YprojMax = projhY->GetXaxis()->GetBinCenter(ix);
+           if (binNum >= ThresholdY) {YprojMax = binCenter; iYprojMax = ix;}
        }
        cout << "i = " << i << " YprojMin = " << YprojMin << " YprojMax = " << YprojMax << endl;
        projhY->Draw("e");
@@ -1078,28 +1132,101 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        fn_derY << "Plots/"<<FitObject<<"_facet_der_projY_" << i <<".png";
        cPlots->SaveAs(fn_derY.str().c_str());
 
-
-       Double_t X1_facet, Y1_facet, X2_facet, Y2_facet;
-       if (sin(phi)*cos(phi) < 0) 
-          {X1_facet = XprojMin; Y1_facet = YprojMin; X2_facet = XprojMax; Y2_facet = YprojMax;}
-       else
-          {X1_facet = XprojMax; Y1_facet = YprojMin; X2_facet = XprojMin; Y2_facet = YprojMax;}
-   
-       TLine *lineFacet = new TLine(X1_facet,Y1_facet,X2_facet,Y2_facet);
-       //lineFacet -> SetLineStyle(kDotted);
-       lineFacet -> SetLineColor(kRed);
-       lineFacet -> SetLineWidth(3);
-
-       hfacet[i]->Draw("COLZ");
-       lineFacet -> Draw("same");
+       // Make projection on X new YprojMin and YprojMax:
+       // find XprojMin
+       TLine *lineX = new TLine(-5,ThresholdX,5,ThresholdX);
+       lineX -> SetLineStyle(kDotted);
+       lineX -> SetLineColor(kRed);
+       //TH1D * projhX = hfacet_derPhi[i]->ProjectionX();
+       TH1D * projhX = hfacet_derPhi[i]->ProjectionX("",iYprojMin, iYprojMin+3); // 3 bins in y
+       //TH1D * projhX = hfacet_Phi[i]->ProjectionX();
+       projhX->GetXaxis()->SetRangeUser(-0.5, 0.5);
+       //TH1D * projhX = hfacet_der[i]->ProjectionX();
+       //TH1D * projhX = hfacet[i]->ProjectionX();
+      Int_t numBinsXproj = projhX->GetNbinsX();
+       Double_t XprojMin = -100.;
+       Double_t XprojCut = -100.;
+     
+       for ( UInt_t ix = 1; ix <= UInt_t(numBinsXproj); ix++ ){
+           Double_t binNum = projhX->GetBinContent( ix );
+           Double_t binCenter = projhX->GetXaxis()->GetBinCenter(ix);
+           if(fabs(binCenter) > 0.25) continue; //reject tails where derivety is not correct in edges bins
+           //if (binNum >= ThresholdX && XprojCut < ThresholdX) {
+           //    XprojMin = binCenter; 
+           //    XprojCut = binNum;
+           //}
+           //if (binNum >= ThresholdX) XprojMax = binCenter; 
+           if (binNum >= XprojCut) { // find a point with maximum value
+              XprojMin = binCenter;
+              XprojCut = binNum;
+           } 
+       }
+       //XprojMin = XprojMax;// the same
+       //cout << "i = " << i << " XprojMin = " << XprojMin << " XprojMax = " << XprojMax << endl;
+       projhX->Draw("e");
+       //lineX -> Draw("same");
        cPlots->Update();
-       std::ostringstream fn;
-       fn.str("");
-       fn << "Plots/"<<FitObject<<"_facet_Plot_" << i <<".png";
-       cPlots->SaveAs(fn.str().c_str());
+       std::ostringstream fn_derX;
+       fn_derX.str("");
+       fn_derX << "Plots/"<<FitObject<<"_facet_der_projX_" << i <<".png";
+       cPlots->SaveAs(fn_derX.str().c_str());
+       //
+       // find XprojMax
+       TH1D * projhXmax = hfacet_derPhi[i]->ProjectionX("",iYprojMax-3, iYprojMax); // 3 bins in y
+       projhXmax->GetXaxis()->SetRangeUser(-0.5, 0.5);
+       Double_t XprojMax = -100.;
+       XprojCut = -100.;
+
+       for ( UInt_t ix = 1; ix <= UInt_t(numBinsXproj); ix++ ){
+           Double_t binNum = projhXmax->GetBinContent( ix );
+           Double_t binCenter = projhXmax->GetXaxis()->GetBinCenter(ix);
+           if(fabs(binCenter) > 0.25) continue; //reject tails where derivety is not correct in edges bins
+           if (binNum >= XprojCut) { // find a point with maximum value
+              XprojMax = binCenter;
+              XprojCut = binNum;
+           }
+       }
+       cout << "i = " << i << " XprojMin = " << XprojMin << " XprojMax = " << XprojMax << endl;
+       projhXmax->Draw("e");
+       cPlots->Update();
+       std::ostringstream fn_derXmax;
+       fn_derXmax.str("");
+       fn_derXmax << "Plots/"<<FitObject<<"_facet_der_projX_yMax" << i <<".png";
+       cPlots->SaveAs(fn_derXmax.str().c_str());
+       //
+
+       // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
+       // positions of the two halves so that the background subtraction is cleaner.
+       Double_t x0ref = x0;
+       Double_t y0ref = y0;
+       if (i > 5) {x0ref = x0_Far; y0ref = y0_Far;} // for far side
+       Double_t R_facetNear = 2.8;
+       Double_t R_facetFar = 3.2;
+       Double_t phi_facet = Pi/12. + Pi/6.*(i-2)-Pi/6.;
+       //select Near facet (each even) and Far facet (odd):
+       Double_t R_facet = R_facetFar;
+       if (i == int(i/2)*2) R_facet = R_facetNear;
+       //Rotate in phi R system of facet
+       Double_t xf_0 = R_facet*cos(phi_facet);
+       Double_t yf_0 = R_facet*sin(phi_facet);
+
+       X1_facet[i] = XprojMin*cos(phi_facet) - YprojMin*sin(phi_facet) + x0ref + xf_0; 
+       Y1_facet[i] = XprojMin*sin(phi_facet) + YprojMin*cos(phi_facet) + y0ref + yf_0; 
+       X2_facet[i] = XprojMax*cos(phi_facet) - YprojMax*sin(phi_facet) + x0ref + xf_0; 
+       Y2_facet[i] = XprojMax*sin(phi_facet) + YprojMax*cos(phi_facet) + y0ref + yf_0; 
+       //if (sin(phi)*cos(phi) < 0) 
+       //   {X1_facet = XprojMin; Y1_facet = YprojMin; X2_facet = XprojMax; Y2_facet = YprojMax;}
+       //else
+       //   {X1_facet = XprojMax; Y1_facet = YprojMin; X2_facet = XprojMin; Y2_facet = YprojMax;}
+   
+
+       // Draw facet in phi
+       TLine *lineFacetPhi = new TLine(XprojMin,YprojMin,XprojMax,YprojMax);
+       lineFacetPhi -> SetLineColor(kRed);
+       lineFacetPhi -> SetLineWidth(3);
 
        hfacet_Phi[i]->Draw("COLZ");
-       //lineFacet -> Draw("same");
+       lineFacetPhi -> Draw("same");
        cPlots->Update();
        std::ostringstream fn_Phi;
        fn_Phi.str("");
@@ -1107,6 +1234,88 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        cPlots->SaveAs(fn_Phi.str().c_str());
 
     }
+    cPlots -> SetLogz();
+
+    //Double_t X1_facet[12], Y1_facet[12], X2_facet[12], Y2_facet[12];
+    Double_t X1[3],Y1[3],X2[3],Y2[3]; 
+    // Find vertex for Near pixel useing 1st layer
+    for ( UInt_t i = 0; i < 3; i++ ){ // for for new side far facets # 1, 3 and 5
+      X1[i] = X1_facet[2*i+1]; 
+      X2[i] = X2_facet[2*i+1]; 
+      Y1[i] = Y1_facet[2*i+1]; 
+      Y2[i] = Y2_facet[2*i+1]; 
+    } 
+    Double_t X_verNear[3], Y_verNear[3];
+    Int_t Ncount = 0;
+    for ( UInt_t i = 0; i < 3; i++ ){ // for for new side far facets # 1, 3 and 5
+        for ( UInt_t j = i+1; j < 3; j++ ){
+            if (i == j) continue; // reject the same points or repeated one 
+            Double_t par[2]; // x0, y0
+            Double_t Line1[4]; // x1,y1,x2,y2
+            Double_t Line2[4]; // x3,y3,x4,y4
+            Line1[0] = X1[i]; Line1[1] = Y1[i];
+            Line1[2] = X2[i]; Line1[3] = Y2[i];
+            Line2[0] = X1[j]; Line2[1] = Y1[j];
+            Line2[2] = X2[j]; Line2[3] = Y2[j];
+            fun2Lines(Line1, Line2, par);
+            X_verNear[Ncount] = par[0];
+            Y_verNear[Ncount] = par[1];
+            cout << "Vertex # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verNear = " << X_verNear[Ncount] << " Y_verNear = " << Y_verNear[Ncount] << endl;
+            cout << "x1 = " << Line1[0] << " y1 = " << Line1[1] << " x2 = " << Line1[2] << " y2 = " << Line1[3] << endl; 
+            cout << "x3 = " << Line2[0] << " y3 = " << Line2[1] << " x4 = " << Line2[2] << " y4 = " << Line2[3] << endl;
+            cout << endl; 
+            Ncount = Ncount + 1;
+    }}
+
+    for(int i = 0; i < 12; i++){
+
+       // Draw facet in (x,y)
+       TLine *lineFacet = new TLine(X1_facet[i],Y1_facet[i],X2_facet[i],Y2_facet[i]);
+       //lineFacet -> SetLineStyle(kDotted);
+       lineFacet -> SetLineColor(kRed);
+       lineFacet -> SetLineWidth(3);
+       Double_t x1 = (X1_facet[i]+X2_facet[i])/2.;
+       Double_t y1 = (Y1_facet[i]+Y2_facet[i])/2.;
+       Double_t x2 = 0.;
+       Double_t y2 = -100.;
+       if( fabs(Y1_facet[i]-Y2_facet[i]) > 0.00001 ) y2 = (Y1_facet[i]+Y2_facet[i])/2. + (X1_facet[i]*X1_facet[i]-X2_facet[i]*X2_facet[i])/2./(Y1_facet[i]-Y2_facet[i]);
+       TLine *lineFacetPerp = new TLine(x1,y1,x2,y2);
+       lineFacetPerp -> SetLineColor(kBlue);
+       lineFacetPerp -> SetLineWidth(3);
+       TGraph* gr_arc;
+       Double_t x_arc0[1], y_arc0[1];
+       x_arc0[0] = 0.;
+       y_arc0[0] = 0.;
+       gr_arc = new TGraph(1,x_arc0,y_arc0);
+      // put a cross at (0,0)
+       gr_arc->SetMarkerStyle(33);
+       gr_arc->SetMarkerSize(2.5);
+       //gr_arc->SetMarkerColor(kBlue);
+       gr_arc->SetMarkerColor(kBlack);
+       TGraph* gr_Ver = new TGraph(3,X_verNear,Y_verNear); 
+       gr_Ver->SetMarkerStyle(33);
+       gr_Ver->SetMarkerSize(2.5);
+       gr_Ver->SetMarkerColor(kBlue);
+
+       hfacet[i]->Draw("COLZ");
+       lineFacet -> Draw("same");
+       lineFacetPerp -> Draw("same");
+       gr_arc -> Draw("P");
+       gr_Ver -> Draw("P");
+       cPlots->Update();
+       std::ostringstream fn;
+       fn.str("");
+       fn << "Plots/"<<FitObject<<"_facet_Plot_" << i <<".png";
+       cPlots->SaveAs(fn.str().c_str());
+
+
+
+    } 
+    //////////////////////////////////
+    //////////////////////////////////
+    continue; // don't need code below
+    //////////////////////////////////
+    //////////////////////////////////
 
     /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
 
@@ -3636,160 +3845,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.png"));
     if(FitObject == "PixelSupportRails") cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
 
-
-
   }
-  cout << "======    Pass Fit and Plots" << endl;
-
-  /// Summary TGraph
-  cPlots = new TCanvas("results","");
-  cPlots->cd();
-  TGraphErrors* gRfit = new TGraphErrors( 10, resZ, resR, errZ, errR );
-  gRfit->GetXaxis()->SetTitle("z (cm)");
-  gRfit->GetYaxis()->SetTitle("R (cm)");
-  gRfit->SetTitle("fit results");
-  gRfit->SetMarkerStyle(20);
-  gRfit->SetMarkerSize(1.2);
-  gRfit->SetMarkerColor(kBlack);
-  gRfit->SetDrawOption("ap");
-  TF1* fRfit = new TF1("fRfit","[0]+[1]*x",-25,25);
-  fRfit->SetParNames("R_{s} (cm)","k_{R} (cm/cm)");
-  fRfit->SetLineColor(kBlack);
-  fRfit->SetMarkerColor(kBlack);
-  gRfit->Fit("fRfit","RWEMS");
-  gRfit->Draw("ap");
-  cPlots->Update();
-
-  TGraphErrors* gx0fit = new TGraphErrors( 10, resZ, resx0, errZ, errx0 );
-  gx0fit->GetXaxis()->SetTitle("z (cm)");
-  gx0fit->GetYaxis()->SetTitle("x_{0} (mm)");
-  gx0fit->SetTitle("fit results");
-  gx0fit->SetMarkerStyle(20);
-  gx0fit->SetMarkerSize(1.2);
-  gx0fit->SetMarkerColor(kRed);
-  gx0fit->SetLineColor(kRed);
-  gx0fit->SetDrawOption("ap");
-  TF1* fx0fit = new TF1("fx0fit","[0]+[1]*x",-25,25);
-  fx0fit->SetParNames("x_{0s} (mm)","k_{x0} (mm/cm)");
-  fx0fit->SetLineColor(kRed);
-  fx0fit->SetMarkerColor(kRed);
-  gx0fit->Fit("fx0fit","RWEMS");
-  gx0fit->Draw("ap");
-  cPlots->Update();
-
-  TGraphErrors* gy0fit = new TGraphErrors( 10, resZ, resy0, errZ, erry0 );
-  gy0fit->GetXaxis()->SetTitle("z (cm)");
-  gy0fit->GetYaxis()->SetTitle("y_{0} [mm]");
-  gy0fit->SetTitle("fit results");
-  gy0fit->SetMarkerStyle(20);
-  gy0fit->SetMarkerSize(1.2);
-  gy0fit->SetMarkerColor(kBlue);
-  gy0fit->SetLineColor(kBlue);
-  gy0fit->SetDrawOption("ap");
-  TF1* fy0fit = new TF1("fy0fit","[0]+[1]*x",-25,25);
-  fy0fit->SetParNames("y_{0s} (mm)","k_{y0} (mm/cm)");
-  fy0fit->SetLineColor(kBlue);
-  fy0fit->SetMarkerColor(kBlue);
-  gy0fit->Fit("fy0fit","RWEMS");
-  gy0fit->Draw("ap");
-  cPlots->Update();
-
-  cPlots->cd();
-
-  TPad* pad1 = new TPad("pad1", "", 0, 0.64, 1, 1.00, 0, 0, 0);
-  TPad* pad2 = new TPad("pad2", "", 0, 0.38, 1, 0.64, 0, 0, 0);
-  TPad* pad3 = new TPad("pad3", "", 0, 0.00, 1, 0.38, 0, 0, 0);
-
-  pad3->SetTopMargin(0.000);
-  pad3->SetBottomMargin(pad3->GetBottomMargin()*2.6);
-  pad2->SetBottomMargin(0.000);
-  pad2->SetTopMargin(0.000);
-  pad1->SetTopMargin(pad1->GetTopMargin()*2.6);
-  pad1->SetBottomMargin(0.000);
-
-  //gRfit->SetTitle("");
-
-  pad1->Draw();
-  pad2->Draw();
-  pad3->Draw();
-
-  double labelSizeFactor1 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad1->GetHNDC();
-  double labelSizeFactor2 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad2->GetHNDC();
-  double labelSizeFactor3 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad3->GetHNDC();
-
-  pad1->cd();
-  //gRfit->SetTitle("fit results");
-  //gRfit->GetYaxis()->SetTitle("a, b (cm)");
-  gRfit->GetYaxis()->SetRangeUser(RSmin, RSmax);
-  gRfit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
-  gRfit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
-  gRfit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor1);
-  gRfit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor1);
-  gRfit->GetYaxis()->SetTitleOffset(gRfit->GetYaxis()->GetTitleOffset()/labelSizeFactor1);
-  gRfit->Draw("ap");
-  pad1->Update();
-  TPaveStats *statsRfit = (TPaveStats*)gRfit->GetListOfFunctions()->FindObject("stats");
-  statsRfit->SetTextColor(kBlack);
-  statsRfit->SetLineColor(kBlack);
-  statsRfit->SetX1NDC(x1L);
-  statsRfit->SetX2NDC(x2L);
-  statsRfit->SetY1NDC(0.371);
-  statsRfit->SetY2NDC(0.665);
-  pad1->Update();
-  TPaveText *title = (TPaveText*)pad1->GetPrimitive("title");
-  cout << "======    Check Error 1" << endl;
-  //title->SetY1NDC( 0.78 );
-  //title->SetY2NDC( 0.94 );
-  cout << "======    Check Error 2" << endl;
-
-  //gbfit->Draw("p same");
-  //gbfit->GetListOfFunctions()->FindObject("stats")->Delete();
-
-  pad1->Modified();
-
-  pad2->cd();
-  gx0fit->SetTitle("");
-  gx0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
-  gx0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
-  gx0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
-  gx0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor2);
-  gx0fit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor2);
-  gx0fit->GetYaxis()->SetTitleOffset(gx0fit->GetYaxis()->GetTitleOffset()/labelSizeFactor2);
-  gx0fit->Draw("ap");
-  pad2->Update();
-  TPaveStats *statsx0fit = (TPaveStats*)gx0fit->GetListOfFunctions()->FindObject("stats");
-  statsx0fit->SetTextColor(kRed);
-  statsx0fit->SetLineColor(kRed);
-  statsx0fit->SetX1NDC(x1L);
-  statsx0fit->SetX2NDC(x2L);
-  statsx0fit->SetY1NDC(0.5);
-  statsx0fit->SetY2NDC(0.9);
-  pad2->Update();
-
-
-  pad3->cd();
-  gy0fit->SetTitle("");
-  gy0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
-  gy0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
-  gy0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
-  gy0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor3);
-  gy0fit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor3);
-  gy0fit->GetYaxis()->SetTitleOffset(gy0fit->GetYaxis()->GetTitleOffset()/labelSizeFactor3);
-  gy0fit->Draw("ap");
-  pad3->Update();
-  TPaveStats *statsy0fit = (TPaveStats*)gy0fit->GetListOfFunctions()->FindObject("stats");
-  statsy0fit->SetTextColor(kBlue);
-  statsy0fit->SetLineColor(kBlue);
-  statsy0fit->SetX1NDC(x1L);
-  statsy0fit->SetX2NDC(x2L);
-  statsy0fit->SetY1NDC(0.657);
-  statsy0fit->SetY2NDC(0.932);
-  //gphi21fit->Draw("p same");
-  //gphi21fit->GetListOfFunctions()->FindObject("stats")->Delete();
-
-  pad3->Update();
-  //cPlots->SaveAs("Plots/FitResults.pdf");
-  //cPlots->SaveAs("Plots/FitResults.png");
 
 }
 //End Main Program
@@ -4114,6 +4170,44 @@ else {y_L1 = y_corr + y0_L1;}
 
 return y_L1;
 }
+
+// describe Layer 1
+void fun2Lines(Double_t *Line1, Double_t *Line2, Double_t *par)
+{
+Double_t x1f = Line1[0];
+Double_t y1f = Line1[1];
+Double_t x2f = Line1[2];
+Double_t y2f = Line1[3];
+Double_t x3f = Line2[0];
+Double_t y3f = Line2[1];
+Double_t x4f = Line2[2];
+Double_t y4f = Line2[3];
+
+// perpendicular line to middle of facet
+Double_t x1 = (x1f+x2f)/2.;
+Double_t y1 = (y1f+y2f)/2.;
+Double_t x2 = 0.; 
+Double_t y2 = -100.;
+if( fabs(y1f-y2f) > 0.00001 ) y2 = (y1f+y2f)/2. + (x1f*x1f-x2f*x2f)/2./(y1f-y2f);
+Double_t x3 = (x3f+x4f)/2.;
+Double_t y3 = (y3f+y4f)/2.;
+Double_t x4 = 0.; 
+Double_t y4 = -100.;
+if( fabs(y3f-y4f) > 0.00001 ) y4 = (y3f+y4f)/2. + (x3f*x3f-x4f*x4f)/2./(y3f-y4f);
+
+Double_t xVer = -100;
+Double_t yVer = -100;
+
+Double_t Divide = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+if (fabs(Divide) > 0.000001){ // not a zero
+   xVer = ( (x1*y2-y1*x2)*(x3-x4) - (x1-x2)*(x3*y4 - y3*x4) )/Divide;
+   yVer = ( (x1*y2-y1*x2)*(y3-y4) - (y1-y2)*(x3*y4 - y3*x4) )/Divide;
+}
+
+par[0] = xVer;
+par[1] = yVer;
+}
+
 
 // create function to fit the plus semicircle of the pixel shield
 void funArcPlus( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
