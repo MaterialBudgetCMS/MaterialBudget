@@ -314,13 +314,13 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
   if(FitObject == "PixelShield2Arcs"){
      Rmin = 2.28, Rmax = 4.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6, RPlot = 4.0;
      RangeEstimatorQuality = 0.1;
-     x_Sys = 0.017; // size of systematics in cm
-     r_Sys = 0.017; // size of systematics in cm
+     x_Sys = 0.02; // size of systematics in cm
+     r_Sys = 0.02; // size of systematics in cm
      //**** for |z| < 25 cm
-     x0 = -0.; // in cm
-     y0 = -0.; // in cm
-     x0_Far = 0.1; // in cm
-     y0_Far = -0.1; // in cm
+     x0 = 0.10; // in cm
+     y0 = -0.07; // in cm
+     x0_Far = 0.09; // in cm
+     y0_Far = -0.14; // in cm
      r0 = 3.0; // in cm, the initial x radius
      //***** for z: -25 to -20 cm
      //x0 = -0.032; // in cm
@@ -765,9 +765,11 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     TGraph* gr_BS;
     Double_t x_BS[1], y_BS[1];
-    x_BS[0] = 0.077; // in cm for 2015
+    x_BS[0] = 0.097; // in cm for 2018
+    //x_BS[0] = 0.077; // in cm for 2015
     //x_BS[0] = 0.081; // in cm for 2017
-    y_BS[0] = 0.092; // in cm for 2015
+    y_BS[0] = -0.061; // in cm for 2018
+    //y_BS[0] = 0.092; // in cm for 2015
     //y_BS[0] = -0.035; // in cm for 2017
     gr_BS = new TGraph(1,x_BS,y_BS);
     gr_BS->SetMarkerStyle(20);
@@ -973,7 +975,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            //Double_t thikness_facet = 0.35/fabs(sin(phi_facet)); // in cm
            Double_t thikness_facet = 0.35; // in cm in phi-R facet plane
            Double_t R_facetNear = 2.8;
-           Double_t R_facetFar = 3.2;
+           Double_t R_facetFar = 3.1;
            Double_t x_facet[1];
            x_facet[0] = xc;
  
@@ -1150,7 +1152,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        for ( UInt_t ix = 1; ix <= UInt_t(numBinsXproj); ix++ ){
            Double_t binNum = projhX->GetBinContent( ix );
            Double_t binCenter = projhX->GetXaxis()->GetBinCenter(ix);
-           if(fabs(binCenter) > 0.25) continue; //reject tails where derivety is not correct in edges bins
+           if(fabs(binCenter) > 0.3) continue; //reject tails where derivety is not correct in edges bins
            //if (binNum >= ThresholdX && XprojCut < ThresholdX) {
            //    XprojMin = binCenter; 
            //    XprojCut = binNum;
@@ -1201,7 +1203,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        Double_t y0ref = y0;
        if (i > 5) {x0ref = x0_Far; y0ref = y0_Far;} // for far side
        Double_t R_facetNear = 2.8;
-       Double_t R_facetFar = 3.2;
+       Double_t R_facetFar = 3.1;
        Double_t phi_facet = Pi/12. + Pi/6.*(i-2)-Pi/6.;
        //select Near facet (each even) and Far facet (odd):
        Double_t R_facet = R_facetFar;
@@ -1236,20 +1238,24 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     }
     cPlots -> SetLogz();
 
+    //////////////////////////
+    //////////////////////////
     //Double_t X1_facet[12], Y1_facet[12], X2_facet[12], Y2_facet[12];
-    Double_t X1[3],Y1[3],X2[3],Y2[3]; 
+    Int_t N_Line = 3;
+    Int_t N_ver = N_Line*(N_Line-1)/2;
     // Find vertex for Near pixel useing 1st layer
-    for ( UInt_t i = 0; i < 3; i++ ){ // for for new side far facets # 1, 3 and 5
+    Double_t X1[N_Line],Y1[N_Line],X2[N_Line],Y2[N_Line]; 
+    for ( UInt_t i = 0; i < UInt_t(N_Line); i++ ){ // for for new side far facets # 1, 3 and 5
       X1[i] = X1_facet[2*i+1]; 
       X2[i] = X2_facet[2*i+1]; 
       Y1[i] = Y1_facet[2*i+1]; 
       Y2[i] = Y2_facet[2*i+1]; 
     } 
-    Double_t X_verNear[3], Y_verNear[3];
-    Int_t Ncount = 0;
-    for ( UInt_t i = 0; i < 3; i++ ){ // for for new side far facets # 1, 3 and 5
-        for ( UInt_t j = i+1; j < 3; j++ ){
-            if (i == j) continue; // reject the same points or repeated one 
+    Double_t X_verNear[N_ver], Y_verNear[N_ver];
+    Double_t X_VerNear = 0., Y_VerNear = 0.;
+    Int_t Ncount = 0; 
+    for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
+        for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
             Double_t par[2]; // x0, y0
             Double_t Line1[4]; // x1,y1,x2,y2
             Double_t Line2[4]; // x3,y3,x4,y4
@@ -1260,12 +1266,84 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
             fun2Lines(Line1, Line2, par);
             X_verNear[Ncount] = par[0];
             Y_verNear[Ncount] = par[1];
-            cout << "Vertex # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verNear = " << X_verNear[Ncount] << " Y_verNear = " << Y_verNear[Ncount] << endl;
-            cout << "x1 = " << Line1[0] << " y1 = " << Line1[1] << " x2 = " << Line1[2] << " y2 = " << Line1[3] << endl; 
-            cout << "x3 = " << Line2[0] << " y3 = " << Line2[1] << " x4 = " << Line2[2] << " y4 = " << Line2[3] << endl;
-            cout << endl; 
+            cout << "Vertex Near # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verNear = " << X_verNear[Ncount] << " Y_verNear = " << Y_verNear[Ncount] << endl;
+            X_VerNear = X_VerNear + X_verNear[Ncount];
+            Y_VerNear = Y_VerNear + Y_verNear[Ncount];
             Ncount = Ncount + 1;
     }}
+    if (Ncount != N_ver) cout << " Error: Ncount != N_ver " << endl;
+    X_VerNear = X_VerNear/Ncount;
+    Y_VerNear = Y_VerNear/Ncount;
+    Double_t dX_VerNear = 0., dY_VerNear = 0.;
+    Double_t dX_VerNearCon = 0., dY_VerNearCon = 0.;
+    for ( UInt_t i = 0; i < UInt_t(Ncount); i++ ){
+        dX_VerNear = dX_VerNear + (X_verNear[i]-X_VerNear)*(X_verNear[i]-X_VerNear); 
+        dY_VerNear = dY_VerNear + (Y_verNear[i]-Y_VerNear)*(Y_verNear[i]-Y_VerNear); 
+        //dX_VerNearCon = max(dX_VerNearCon, fabs(X_verNear[i]-X_VerNear)); 
+        //dY_VerNearCon = max(dY_VerNearCon, fabs(Y_verNear[i]-Y_VerNear)); 
+        dX_VerNearCon = dX_VerNearCon + fabs(X_verNear[i]-X_VerNear); 
+        dY_VerNearCon = dY_VerNearCon + fabs(Y_verNear[i]-Y_VerNear); 
+    }
+    dX_VerNear = sqrt(dX_VerNear)/Ncount;
+    dY_VerNear = sqrt(dY_VerNear)/Ncount;
+    dX_VerNearCon = dX_VerNearCon/Ncount;
+    dY_VerNearCon = dY_VerNearCon/Ncount;
+    cout << "X_VerNear      = " << X_VerNear     << " Y_VerNear     = " << Y_VerNear << endl; 
+    cout << "dX_VerNear     = " << dX_VerNear    << " dY_VerNear    = " << dY_VerNear << endl; 
+    cout << "dX_VerNearCon  = " << dX_VerNearCon << " dY_VerNearCon = " << dY_VerNearCon << endl; 
+    //////////////////////////
+    //////////////////////////
+    // Find vertex for Near pixel useing 1st layer
+    Double_t X1Far[N_Line],Y1Far[N_Line],X2Far[N_Line],Y2Far[N_Line];
+    for ( UInt_t i = 0; i < UInt_t(N_Line); i++ ){ // for for new side far facets # 1, 3 and 5
+      X1Far[i] = X1_facet[2*(i+3)+1];
+      X2Far[i] = X2_facet[2*(i+3)+1];
+      Y1Far[i] = Y1_facet[2*(i+3)+1];
+      Y2Far[i] = Y2_facet[2*(i+3)+1];
+    }
+    Double_t X_verFar[N_ver], Y_verFar[N_ver];
+    Double_t X_VerFar = 0., Y_VerFar = 0.;
+    Ncount = 0;
+    for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
+        for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
+            Double_t par[2]; // x0, y0
+            Double_t Line1[4]; // x1,y1,x2,y2
+            Double_t Line2[4]; // x3,y3,x4,y4
+            Line1[0] = X1Far[i]; Line1[1] = Y1Far[i];
+            Line1[2] = X2Far[i]; Line1[3] = Y2Far[i];
+            Line2[0] = X1Far[j]; Line2[1] = Y1Far[j];
+            Line2[2] = X2Far[j]; Line2[3] = Y2Far[j];
+            fun2Lines(Line1, Line2, par);
+            X_verFar[Ncount] = par[0];
+            Y_verFar[Ncount] = par[1];
+            cout << "Vertex Far # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verFar = " << X_verFar[Ncount] << " Y_verFar = " << Y_verFar[Ncount] << endl;
+            //cout << "x1 = " << Line1[0] << " y1 = " << Line1[1] << " x2 = " << Line1[2] << " y2 = " << Line1[3] << endl;
+            //cout << "x3 = " << Line2[0] << " y3 = " << Line2[1] << " x4 = " << Line2[2] << " y4 = " << Line2[3] << endl;
+            //cout << endl;
+            X_VerFar = X_VerFar + X_verFar[Ncount];
+            Y_VerFar = Y_VerFar + Y_verFar[Ncount];
+            Ncount = Ncount + 1;
+    }}
+    if (Ncount != N_ver) cout << " Error: Ncount != N_ver " << endl;
+    X_VerFar = X_VerFar/Ncount;
+    Y_VerFar = Y_VerFar/Ncount;
+    Double_t dX_VerFar = 0., dY_VerFar = 0.;
+    Double_t dX_VerFarCon = 0., dY_VerFarCon = 0.;
+    for ( UInt_t i = 0; i < UInt_t(Ncount); i++ ){
+        dX_VerFar = dX_VerFar + (X_verFar[i]-X_VerFar)*(X_verFar[i]-X_VerFar);
+        dY_VerFar = dY_VerFar + (Y_verFar[i]-Y_VerFar)*(Y_verFar[i]-Y_VerFar);
+        dX_VerFarCon = dX_VerFarCon + fabs(X_verFar[i]-X_VerFar);
+        dY_VerFarCon = dY_VerFarCon + fabs(Y_verFar[i]-Y_VerFar);
+    }
+    dX_VerFar = sqrt(dX_VerFar)/Ncount;
+    dY_VerFar = sqrt(dY_VerFar)/Ncount;
+    dX_VerFarCon = dX_VerFarCon/Ncount;
+    dY_VerFarCon = dY_VerFarCon/Ncount;
+    cout << "X_VerFar      = " << X_VerFar     << " Y_VerFar     = " << Y_VerFar << endl;
+    cout << "dX_VerFar     = " << dX_VerFar    << " dY_VerFar    = " << dY_VerFar << endl;
+    cout << "dX_VerFarCon  = " << dX_VerFarCon << " dY_VerFarCon = " << dY_VerFarCon << endl;
+    //////////////////////////
+    //////////////////////////
 
     for(int i = 0; i < 12; i++){
 
@@ -1292,16 +1370,21 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        gr_arc->SetMarkerSize(2.5);
        //gr_arc->SetMarkerColor(kBlue);
        gr_arc->SetMarkerColor(kBlack);
-       TGraph* gr_Ver = new TGraph(3,X_verNear,Y_verNear); 
-       gr_Ver->SetMarkerStyle(33);
-       gr_Ver->SetMarkerSize(2.5);
-       gr_Ver->SetMarkerColor(kBlue);
+       TGraph* gr_VerNear = new TGraph(3,X_verNear,Y_verNear); 
+       gr_VerNear->SetMarkerStyle(33);
+       gr_VerNear->SetMarkerSize(2.5);
+       gr_VerNear->SetMarkerColor(kRed);
+       TGraph* gr_VerFar = new TGraph(3,X_verFar,Y_verFar); 
+       gr_VerFar->SetMarkerStyle(33);
+       gr_VerFar->SetMarkerSize(2.5);
+       gr_VerFar->SetMarkerColor(kBlue);
 
        hfacet[i]->Draw("COLZ");
        lineFacet -> Draw("same");
        lineFacetPerp -> Draw("same");
        gr_arc -> Draw("P");
-       gr_Ver -> Draw("P");
+       gr_VerNear -> Draw("P");
+       gr_VerFar -> Draw("P");
        cPlots->Update();
        std::ostringstream fn;
        fn.str("");
