@@ -10,3 +10,6 @@ m.Loop()
 
 This creates a root file with all plots saved.
 
+Fit Code:
+
+root -l -b Resolution_Fit_NEW.C

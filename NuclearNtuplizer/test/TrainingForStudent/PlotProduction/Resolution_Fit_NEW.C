@@ -197,13 +197,16 @@ void Rounding(double sigma68_abs_err, double sigma68_rel_err, double sigma68, TS
   landau_sigma68_start += pm;
   landau_sigma68_start += landau_sigma68_err_char; 
   landau_sigma68_start += units; 
-  landau_sigma68_tstr = landau_sigma68_start; 
  }
   char landau_sigma68_rel_char[50];
   sprintf(landau_sigma68_rel_char, "%.1lf", sigma68_rel_err*100.0);
+  landau_sigma68_start += " (";
+  landau_sigma68_start += landau_sigma68_rel_char;
+  landau_sigma68_start += "%)";
   landau_rel_err+=landau_sigma68_rel_char;
   string per = "%";
   landau_rel_err+=per;
+  landau_sigma68_tstr = landau_sigma68_start; 
   landau_rel_err_tstr = landau_rel_err;
 }
 
@@ -421,6 +424,14 @@ double sigma68errcalc(const TF1* fit,TH1D* hist,double sigma68,double Perpendicu
  return sigma68_rel_err;
 }
  
+double stat_error_calc(TH1* hist)
+{
+ double eff = 0.68;
+ double N = hist->GetEntries();
+ return sqrt((eff*(1.0-eff))/N);
+ //return sqrt(N);
+}
+
 void ResolutionCalc(TH1* hist, double& sigma, double& sigmay, double& sigma_err)
 {
  double entries68 = 0.68*hist->GetEntries();
@@ -475,13 +486,13 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
 
  TF1* landau_fit = new TF1("func_landau","landau");
  landau_fit->SetLineColor(kBlue);
-
- double MPV_upper=3.0*hist->GetMean();
- double MPV_lower=-3.0*hist->GetMean();
- double sigma_upper=3.0*hist->GetRMS();
+ //landau_fit->SetNpx(10000000); 
+ double limit_factor = 1.3;
+ double MPV_upper=limit_factor*hist->GetMean();
+ double MPV_lower=-limit_factor*hist->GetMean();
+ double sigma_upper=limit_factor*hist->GetRMS();
  double sigma_lower=0.0;
  
- //landau_fit->SetNpx(10000000); 
  if(Option == 'A')
  {
   filename+="A"; 
@@ -500,14 +511,21 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
  }
  else
  {
+  //default
+  /*
   landau_fit->SetParameter(0,5.0*hist->GetEntries());
   landau_fit->SetParameter(1,0.0);
-  landau_fit->SetParameter(2,0.1*hist->GetRMS());
+  landau_fit->SetParameter(2,0.1*hist->GetRMS()); 
+  */
+  
+  landau_fit->SetParameter(0,5.0*hist->GetEntries());
+  landau_fit->SetParameter(1,0.0);
+  landau_fit->SetParameter(2,0.1*hist->GetRMS()); 
   
   landau_fit->SetParLimits(1,MPV_lower,MPV_upper);
   landau_fit->SetParLimits(2,sigma_lower,sigma_upper);
   
-  hist->Fit(landau_fit,"QEMR","SAMES",0.0,hist->GetXaxis()->GetXmax());
+  hist->Fit(landau_fit,"EMR","SAMES",0.0,hist->GetXaxis()->GetXmax());
  }
 
  TString status = gMinuit->fCstatu;
@@ -562,8 +580,10 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
  
  double sigma = 0.0;
  double sigmay = 0.0;
- double sigma_err = 0.0;
- ResolutionCalc(hist,sigma,sigmay,sigma_err);
+ double sigma_err_rel = 0.0;
+ ResolutionCalc(hist,sigma,sigmay,sigma_err_rel);
+ sigma_err_rel = stat_error_calc(hist);
+ double sigma_err_abs = sigma_err_rel*sigma;
  TLine* sigma_line = new TLine(sigma,0.0,sigma,sigmay);
  sigma_line->SetLineColor(kRed);
  sigma_line->SetLineStyle(7);
@@ -573,14 +593,20 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
 
  char sigma_char[50];
  sprintf(sigma_char,"%.0lf",10000.0*sigma);
- char sigma_err_char[50];
- sprintf(sigma_err_char,"%.0lf",10000.0*sigma_err);
+ char sigma_err_abs_char[50];
+ sprintf(sigma_err_abs_char,"%.0lf",10000.0*sigma_err_abs);
+ char sigma_err_rel_char[50];
+ sprintf(sigma_err_rel_char,"%.0lf",100.0*sigma_err_rel);
  string sigma_str = "Resolution (No Fit) = ";
  sigma_str += sigma_char;
  sigma_str += " ";
  sigma_str += "#pm ";
- sigma_str += sigma_err_char;
+ sigma_str += sigma_err_abs_char;
  sigma_str += " #mum";
+ sigma_str += " (";
+ sigma_str += sigma_err_rel_char;
+ sigma_str += "%)";
+
  TString sigma_tstr = sigma_str;
 
  pad->Update();
@@ -589,7 +615,6 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
  leg_landau->SetTextColor(kBlue);
  leg_landau->AddEntry((TObject*)0, status_landau_leg, "");
  leg_landau->AddEntry((TObject*)0, landau_sigma68_tstr, "");
- leg_landau->AddEntry((TObject*)0, landau_rel_err_tstr, "");
  leg_landau->AddEntry((TObject*)0, landau_limit_tstr1, "");
  leg_landau->AddEntry((TObject*)0, landau_limit_tstr2, "");
  leg_landau->AddEntry((TObject*)0, sigma_tstr, "");
@@ -655,7 +680,14 @@ vector<TH1*> list_histos(const char *fname)
  std::vector<TH1*> vect_hist;
  TKey *key;
  TFile *f = TFile::Open(fname,"READ");
- string skip = "Inner_EndCap";
+ string skip = "Inner_EndCap"; //default skip
+ string skip_new1 = "Parallel_Inner_Barrel";
+ string skip_new2 = "Perpendicular_Inner_Barrel";
+ string skip_new3 = "Parallel_Outer_Barrel";
+ string skip_new4 = "Perpendicular_Outer_Barrel";
+ string skip_new5 = "Parallel_Outer_EndCap";
+ string skip_new6 = "Perpendicular_Outer_EndCap";
+ bool pass = false;
  if(!f || f->IsZombie())
  {
   cout << "Unable to open " << fname << " for reading..." << endl;
@@ -669,9 +701,20 @@ vector<TH1*> list_histos(const char *fname)
   {
    TH1 *h = (TH1*)key->ReadObj();
    string name = h->GetName();
-   if(name.find(skip) != std::string::npos) continue;
-   vect_hist.push_back(h);
-  }
+   //if(name.find(skip) != std::string::npos) continue;
+   if(name.find(skip_new1) != std::string::npos) {pass = true;}
+   else if(name.find(skip_new2) != std::string::npos) {pass = true;}
+   else if(name.find(skip_new3) != std::string::npos) {pass = true;}
+   else if(name.find(skip_new4) != std::string::npos) {pass = true;}
+   else if(name.find(skip_new5) != std::string::npos) {pass = true;}
+   else if(name.find(skip_new6) != std::string::npos) {pass = true;}
+   if(pass)
+   {
+    vect_hist.push_back(h);
+    pass = false;
+   }
+    pass = false;
+   }
  }
  return vect_hist;
 }
@@ -801,7 +844,7 @@ gStyle->SetPalette(1);
 gStyle->SetOptTitle(0);
 string fname;
 
-for(int k = 0; k < 3; k++)
+for(int k = 0; k < 4; k++)
 {
  if(k==0)
  {
@@ -815,8 +858,10 @@ for(int k = 0; k < 3; k++)
  {
   fname = "ResolutionPlots_100GeV_2018.root";
  }
-
-//const char *fname1 = "ResolutionPlots_2015.root";
+ if(k==3)
+ {
+  fname = "ResolutionPlots_2015_REPRO.root";
+ }
 
 // open file:
 std::vector<TH1*> vect_hist = list_histos(fname.c_str());
@@ -838,7 +883,10 @@ for (int i = 0; i < vect_hist_size; i++)
  { 
   dir += "100GeV_2018_Results/";
  }
- //string dir = "2015_Results";
+ if(k == 3)
+ {
+  dir += "2015_Results/";
+ }
  string filename = vect_hist[i]->GetName();
  dir += filename;
  vect_filename.push_back(dir);
@@ -849,7 +897,7 @@ for (int i = 0; i < vect_hist_size; i++)
  vect_hist[i]->GetXaxis()->SetTitle("DeltaR [cm]");
  vect_hist[i]->GetYaxis()->SetTitle("Number Of Events");
  vect_hist[i]->SetLineColor(kBlack);
- cout << endl << "Fitting " << vect_hist[i]->GetName() << "   (" << i+1 << "/" << vect_hist.size() << ")" << endl;
+ cout << endl << "Fitting " << vect_hist[i]->GetName() << "   (" << (i+1) << "/" << vect_hist.size() << ")" << endl;
  string histname = vect_hist[i]->GetName();
  string perp = "Perpendicular";
  double PerpendicularFactor;
@@ -876,17 +924,9 @@ for (int i = 0; i < vect_hist_size; i++)
  char FitOptionA = 'A';
  char FitOptionB = 'B';
 
- TString status_landau;
-
- if(i == 1)
- {
-  status_landau = LandauDrawing(vect_hist_clone,PerpendicularFactor,vect_filename[i],FitOptionA);
- }
- else
- { 
-  status_landau = LandauDrawing(vect_hist_clone,PerpendicularFactor,vect_filename[i],FitOption);
- }
-  vect_status_landau.push_back(status_landau);
+ TString status_landau = LandauDrawing(vect_hist_clone,PerpendicularFactor,vect_filename[i],FitOption);
+ vect_status_landau.push_back(status_landau);
+ 
  /*
  cout << "Redoing Fit with Option A" << endl; 
  TString optionA = LandauDrawing(vect_hist_cloneA,PerpendicularFactor,vect_filename[i],FitOptionA);
