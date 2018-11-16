@@ -208,6 +208,7 @@ void PlotProduction::Loop()
 //    TH2D* hPFDV_RhoPhi_Map_BPix_AbsZ25;
     TH2D* hPFDV_XY_Map_Pipe_AbsZ25;
     TH2D* hPFDV_RhoPhi_Map_Pipe_AbsZ25;
+    TH2D* hPFDV_XY_Pixel_AbsZ25;
 //
 //    TH2D* hPFDV_XY_Map_Corr_AbsZ25;
 //    TH2D* hPFDV_RhoPhi_Map_Corr_AbsZ25;
@@ -657,8 +658,10 @@ void PlotProduction::Loop()
 //
   hPFDV_XY_Map_Pipe_AbsZ25 = new TH2D( "hPFDV_XY_Map_Pipe_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 1000, -5, 5, 1000, -5, 5 );
   hPFDV_RhoPhi_Map_Pipe_AbsZ25 = new TH2D( "hPFDV_RhoPhi_Map_Pipe_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
-  hPFDV_XY_Map_Pipe_AbsZ25->Sumw2();
   hPFDV_RhoPhi_Map_Pipe_AbsZ25->Sumw2();
+
+  hPFDV_XY_Pixel_AbsZ25 = new TH2D( "hPFDV_XY_Pixel_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
+  hPFDV_XY_Pixel_AbsZ25->Sumw2();
 //
 //  hPFDV_XY_Map_Corr_AbsZ25 = new TH2D( "hPFDV_XY_Map_Corr_AbsZ25", "N.I. in Tracker, BS Corr, |z| < 25 cm", 1000, -100, 100, 1000, -100, 100 );
 //  hPFDV_RhoPhi_Map_Corr_AbsZ25 = new TH2D( "hPFDV_RhoPhi_Map_Corr_AbsZ25", "N.I. in Tracker, BS Corr, |z| < 25 cm", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 100 );
@@ -1454,6 +1457,7 @@ void PlotProduction::Loop()
        // hPFDV_RhoPhi_Map_BPix_AbsZ25->Fill( ni_phi, ni_rho );
 
         hPFDV_XY_Map_Pipe_AbsZ25->Fill( ni_x, ni_y );
+        hPFDV_XY_Pixel_AbsZ25->Fill( ni_x, ni_y );
         hPFDV_RhoPhi_Map_Pipe_AbsZ25->Fill( ni_phi, ni_rho );
 
        // m_hPFDV_XY_Map.find( ni_z_i )->second->Fill( ni_x, ni_y );
