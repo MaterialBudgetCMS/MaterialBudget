@@ -50,8 +50,13 @@
 using namespace std;
 
 TH2D* h;
+TH1D* hProj;
 TH2D* h_Extra;
 Double_t Rmin, Rmax, RBGmin, RBGmax, RSmin, RSmax, RPlot;
+Double_t Sigma_facet = 0.04;//bin width of histo in cm
+Double_t Lenth_facet = 2.2;//cm
+
+Double_t fit_facet(Double_t* ,Double_t*);
 
 // create function to fit the plus side of the pixel support
 void funPixelSupportPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
@@ -83,6 +88,7 @@ void funArcMinus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 // 21.68; -0.07; -0.28
 //create function to fit objects in 2D with circle (Arc)
 void chiSquareFunc( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
+void chiSquareFitFacet( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
 
 //create Fit function for background
 Double_t func_fitBg(Double_t*, Double_t* );
@@ -315,7 +321,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
      PlotObject = "hPFDV_XY_Pixel";
      //PlotObject = "hPFDV_XY_PixelSupport";
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport";
-     Rmin = 2.28, Rmax = 4.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6;
+     Rmin = 2.28, Rmax = 8.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6;
      RPlot = 8.0;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.02; // size of systematics in cm
@@ -899,9 +905,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     Double_t R_facetNear = 2.781;//2.8 // Technical design
     Double_t R_facetFar = 3.1;//3.014; // Technical design
     Double_t R_facetNear_L2 = 6.616; // Technical design
-    Double_t R_facetFar_L2  = 6.898; // Technical design 
+    Double_t R_facetFar_L2  = 7.0;//6.898; // Technical design 
     Double_t R_PixelCut = 8.0; // incluse volue from 1st and 2nd layer only.
-    Double_t thikness_facet = 0.35; // in cm in phi-R facet plane
+    //Double_t thikness_facet = 0.35; // in cm in phi-R facet plane
+    Double_t thikness_facet = 0.5; // in cm in phi-R facet plane
     // 12 facets at layer 1 (0-11) and 28 facets at layer 2 (11-39)
     Int_t NumberFacets = 40; // 12 at layer 1 and 28 at layer 2
     TH2D* hfacet[NumberFacets];
@@ -910,11 +917,14 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     TH2D* hfacet_derPhi[NumberFacets];
     Double_t phi_facet[NumberFacets];
     Double_t R_facet[NumberFacets];
+    Double_t L_facet[NumberFacets];
     for(int i = 0; i < NumberFacets; i++){
 
        // define phi_facet for facet #i
-       Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-2)-Pi/6.;
-       Double_t phi_facet_L2 = Pi/20. + Pi/2./7.*(i-12-2)-Pi/2./7.;
+       //Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-2)-Pi/6.;
+       //Double_t phi_facet_L2 = Pi/20. + Pi/2./7.*(i-12-2)-Pi/2./7.;
+       Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-3);
+       Double_t phi_facet_L2 = Pi/20. + Pi/14.*(i-12-7);
 
        phi_facet[i] = phi_facet_L1;
        if (i > 11) phi_facet[i] = phi_facet_L2;
@@ -947,14 +957,14 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
           else cout << "Error: dBin = " << dBin << endl;
        }
        if (XY_cut < R_PixelCut) R_PixelCut = XY_cut;    
-       cout << "XY_cut = " << XY_cut << " NbinX = " << NbinX << endl;
+       //cout << "XY_cut = " << XY_cut << " NbinX = " << NbinX << endl;
    
        //hfacet[i] =  new TH2D( fn.str().c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
        //                                               h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );  
        hfacet[i] =  new TH2D( fn.str().c_str(), h->GetTitle(), NbinX, -XY_cut, XY_cut, NbinX, -XY_cut, XY_cut);
        hfacet[i]->GetXaxis()->SetTitle("x (cm)");
        hfacet[i]->GetYaxis()->SetTitle("y (cm)");
-       hfacet[i]->GetZaxis()->SetTitle(Form("Events/(%1.1f#times%1.1f mm^{2})", hfacet[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet[i]->GetYaxis()->GetBinWidth(1)*10));
+       hfacet[i]->GetZaxis()->SetTitle(Form("facet %2i: Events/(%1.1f#times%1.1f mm^{2})", i, hfacet[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet[i]->GetYaxis()->GetBinWidth(1)*10));
        hfacet[i]->SetStats(0);
        std::ostringstream fn_der;
        fn_der.str("");
@@ -968,13 +978,14 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        hfacet_der[i]->SetStats(0);
 
        Int_t NbinX_phi = Int_t(NbinX/4.); // valid if x bin width = y bin width
+       //if(i > 11) NbinX_phi = Int_t(NbinX/8.); // valid if x bin width = y bin width
        std::ostringstream fn_Phi;
        fn_Phi.str("");
        fn_Phi << "Plots/"<<FitObject<<"_facet_Phi_" << i;
        hfacet_Phi[i] =  new TH2D( fn_Phi.str().c_str(), h->GetTitle(), NbinX_phi,  -XY_cut, XY_cut, NbinX_phi, -XY_cut, XY_cut);
        hfacet_Phi[i]->GetXaxis()->SetTitle("x (cm)");
        hfacet_Phi[i]->GetYaxis()->SetTitle("y (cm)");
-       hfacet_Phi[i]->GetZaxis()->SetTitle(Form("Rotate in #phi facet: Events/(%1.1f#times%1.1f mm^{2})", hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10));
+       hfacet_Phi[i]->GetZaxis()->SetTitle(Form("Rotate in #phi facet %2i: Events/(%1.1f#times%1.1f mm^{2})", i, hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10));
        hfacet_Phi[i]->SetStats(0);
 
        std::ostringstream fn_derPhi;
@@ -983,7 +994,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        hfacet_derPhi[i] =  new TH2D( fn_derPhi.str().c_str(), h->GetTitle(), NbinX_phi,  -XY_cut, XY_cut, NbinX_phi, -XY_cut, XY_cut);
        hfacet_derPhi[i]->GetXaxis()->SetTitle("x (cm)");
        hfacet_derPhi[i]->GetYaxis()->SetTitle("y (cm)");
-       hfacet_derPhi[i]->GetZaxis()->SetTitle(Form("Rotate in #phi facet: d^{2}Events/(%1.1f#times%1.1f mm^{2})", hfacet_derPhi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_derPhi[i]->GetYaxis()->GetBinWidth(1)*10));
+       hfacet_derPhi[i]->GetZaxis()->SetTitle(Form("Rotate in #phi facet %2i: d^{2}Events/(%1.1f#times%1.1f mm^{2})", i, hfacet_derPhi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_derPhi[i]->GetYaxis()->GetBinWidth(1)*10));
        hfacet_derPhi[i]->SetStats(0);
     }
     numBinsX = h->GetNbinsX();
@@ -1012,8 +1023,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            if ( rc < Rmin || rc > Rmax ) continue;
 
            // select facet "i"
-           Double_t x_facet[1];
-           x_facet[0] = xc;
+           //Double_t x_facet[1];
+          // x_facet[0] = xc;
  
            //Rotate in phi R system of facet
            Double_t xf_0 = R_facet[i]*cos(phi_facet[i]);
@@ -1032,6 +1043,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            //Double_t y_facet = funPixelLayer1(x_facet, par_facet);
 
            //if (fabs(yc - y_facet) < thikness_facet){// seelect region near facet 2*i
+           //if (i == 13) cout << "i = " << i << " phi_facet = " << phi_facet[i] << " R_facet = " << R_facet[i] << " xf = " << xf << " yf = " << yf << endl; 
            if (fabs(xf) < thikness_facet && fabs(yf) < 2.){// seelect region near facet 2*i
               hfacet_Phi[i]->Fill( xf, yf, binNum );  
               hfacet[i]->Fill( x, y, binNum );
@@ -1042,7 +1054,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
                  Double_t u2 = h->GetBinContent( ix-1, iy+1 ) + 2*h->GetBinContent( ix, iy+1 ) + h->GetBinContent( ix+1, iy+1 );
                  Double_t fyDer2D = u2-u0;// calculate derivative at iy (y1) point
                  // revert in negative y plain:
-                 //if (y < 0) fyDer2D = -fyDer2D;
+                 //if (y < 0) fyDer2D = -fyDer2D; // to observe start and end
+                 //if(fyDer2D < 0) fyDer2D = 1.;// reset if negative
 
                  Double_t u0x = h->GetBinContent( ix-1, iy-1 ) + 2*h->GetBinContent( ix-1, iy ) + h->GetBinContent( ix-1, iy+1 );
                  Double_t u2x = h->GetBinContent( ix+1, iy-1 ) + 2*h->GetBinContent( ix+1, iy ) + h->GetBinContent( ix+1, iy+1 );
@@ -1091,7 +1104,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
                  Double_t fxyDer2D = fabs(fyDer2D*fxDer2D);
                  //hfacet_derPhi[i] -> Fill (x, y, fxyDer2D);
                  //hfacet_derPhi[i] -> Fill (x, y, fyDer2D);
-                 hfacet_derPhi[i] -> Fill (x, y, fxDer2D);
+                 if (fabs(x) < 0.4*thikness_facet)hfacet_derPhi[i] -> Fill (x, y, fxDer2D); // +- 2 mm don't fill close to edge of end of histo (will be spike)
+                 //if (fabs(x) < 0.4*thikness_facet)hfacet_derPhi[i] -> Fill (x, y, fxyDer2D); // +- 2 mm don't fill close to edge of end of histo (will be spike)
+                 //if (fabs(x) < 0.4*thikness_facet)hfacet_derPhi[i] -> Fill (x, y, fyDer2D); // +- 2 mm don't fill close to edge of end of histo (will be spike)
     }}}
 
 } /// end hfacet
@@ -1100,25 +1115,30 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     Double_t X1_facet[NumberFacets], Y1_facet[NumberFacets], X2_facet[NumberFacets], Y2_facet[NumberFacets];
     for(int i = 0; i < NumberFacets; i++){
 
-       hfacet_der[i]->Draw("COLZ");
-       cPlots->Update();
-       std::ostringstream fn_der;
-       fn_der.str("");
-       fn_der << "Plots/"<<FitObject<<"_facet_der_" << i <<".png";
-       cPlots->SaveAs(fn_der.str().c_str());
+       //hfacet_der[i]->Draw("COLZ");
+       //cPlots->Update();
+       //std::ostringstream fn_der;
+       //fn_der.str("");
+       //fn_der << "Plots/"<<FitObject<<"_facet_der_" << i <<".png";
+       //cPlots->SaveAs(fn_der.str().c_str());
 
 
-       //Double_t phi = Pi/12. + Pi/6.*(i-2)-Pi/6.;
-       Double_t ThresholdY = 400.; // dx only
-       //Double_t ThresholdY = 600.; // dx only
+       // for x der only
+       Double_t ThresholdY = 150.; // dx only
+       if (i > 11) ThresholdY = 250;
+       // for xy der 
+       //Double_t ThresholdY = 5000.; // dx only
+       //if (i > 11) ThresholdY = 10000;
 
 
        TLine *lineY = new TLine(-5,ThresholdY,5,ThresholdY);
        lineY -> SetLineStyle(kDotted);
        lineY -> SetLineColor(kRed);
        //TH1D * projhY = hfacet_der[i]->ProjectionY();
-       TH1D * projhY = hfacet_derPhi[i]->ProjectionY();
        //TH1D * projhY = hfacet_Phi[i]->ProjectionY();
+       TH1D * projhY = hfacet_derPhi[i]->ProjectionY("",0, -1,"e");
+       hProj = hfacet_derPhi[i]->ProjectionY("",0, -1,"e");
+
        projhY->GetXaxis()->SetRangeUser(-1.9, 1.9);
        //TH1D * projhY = hfacet[i]->ProjectionY();
        Double_t YprojMin = -100.;
@@ -1127,25 +1147,70 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        Int_t iYprojMax = -100;
        Double_t YprojCut = -100.;
 
+
+       // Create the Draw fitter
+       TVirtualFitter* fitterDraw;
+       // Set the function that the fitter will use and set the parameters
+       fitterDraw = TVirtualFitter::Fitter( 0, 3 );
+       fitterDraw->SetFCN( chiSquareFitFacet );
+       //fitterDraw->SetParameter( 0,  "y1",  -1.02, 0.01, -1.6, -0.8 ); // in cm
+       fitterDraw->SetParameter( 0,  "y1",  -1.02, 0.01, 0., 0.); // in cm
+       //fitterDraw->SetParameter( 0,  "y1",  -1.5, 0.2, -1.6, -0.8 ); // in cm
+       fitterDraw->SetParameter( 1, "A1",   50, 1., 0., 150. ); // in cm
+       fitterDraw->SetParameter( 2, "A2",   350, 1., 250., 500. ); // in cm
+       //fitterDraw->FixParameter(1);
+       //fitterDraw->FixParameter(2);
+       Double_t arglist[10] = {0.};
+       // Execute the fit
+       arglist[0] = 5000; // number of function calls
+       arglist[1] = 0.01; // tolerance
+       //fitterDraw->ExecuteCommand( "MIGRAD", arglist, 0 );
+       fitterDraw->ExecuteCommand( "MIGRAD", arglist, 2 );
+       //fitterDraw->ExecuteCommand( "HESSE", arglist, 0 );
+       Double_t YprojMinFit = fitterDraw->GetParameter(0)-Sigma_facet;
+       Double_t YprojMaxFit = YprojMinFit+Lenth_facet;
+       cout << "YprojMinFit = " << YprojMinFit << " YprojMaxFit = " << YprojMaxFit << endl;
+
+       TF1* func_facet = new TF1("func_facet", fit_facet, -1.9,  1.9,  4);
+       // set value for fit parametes par[0] and par[2]
+       func_facet->SetParameters(fitterDraw->GetParameter(0), fitterDraw->GetParameter(1), fitterDraw->GetParameter(2));
+       //func_facet->SetParameter(1, 1.14);
+       //func_facet->SetParLimits(1, 1., 1.3);
+       //// set name to par[1]
+       //func_facet->SetParName(0,"Y1");
+       //func_facet->SetParName(1,"Y1");
+       //projhY->Fit(func_facet, "M", "", -1.5, 1.5);
+
+       YprojMin = YprojMinFit;
+       YprojMax = YprojMaxFit;
+
        Int_t numBinsYproj = projhY->GetNbinsX();
        Int_t numPhiTestY = hfacet_derPhi[i] -> GetNbinsX();
        if (numBinsYproj != numPhiTestY)cout << "Error: different binning for projection (check that there is no SetRangeUser for original histo) for i = " << i << " numBinsYproj = " << numBinsYproj << " numPhiTestY = " << numPhiTestY << endl;
        for ( UInt_t ix = 1; ix <= UInt_t(numBinsYproj); ix++ ){
            Double_t binNum = projhY->GetBinContent( ix );
            Double_t binCenter = projhY->GetXaxis()->GetBinCenter(ix);
-           //cout << "Test: numBinsYproj = " << numBinsYproj << " binCenter = " << binCenter << " binNum = " << binNum << endl;
-           if(fabs(binCenter) > 1.5) continue; //reject tails where derivety is not correct in edges bins
-           if (binNum >= ThresholdY && YprojCut < ThresholdY) {
-               YprojMin = binCenter;
-               iYprojMin = ix;
-               YprojCut = binNum;
-           }
-           if (binNum >= ThresholdY) {YprojMax = binCenter; iYprojMax = ix;}
+           if(fabs(binCenter) > 1.9) continue; //reject tails where derivety is not correct in edges bins
+           //if (binNum >= ThresholdY && YprojCut < ThresholdY) {
+           //    YprojMin = binCenter;
+           //    iYprojMin = ix;
+           //    YprojCut = binNum;
+           //}
+           //if (binNum >= ThresholdY) {YprojMax = binCenter; iYprojMax = ix;}
+           Double_t yLow = projhY->GetXaxis()->GetBinLowEdge(ix);
+           Double_t yUp = projhY->GetXaxis()->GetBinUpEdge(ix);
+           if (YprojMin >= yLow && YprojMin < yUp) iYprojMin = ix;
+           if (YprojMax >= yLow && YprojMax < yUp) iYprojMax = ix;
        }
        cout << "i = " << i << " YprojMin = " << YprojMin << " YprojMax = " << YprojMax << endl;
        cout << "i = " << i << " iYprojMin = " << iYprojMin << " iYprojMax = " << iYprojMax << endl;
+
+
        projhY->Draw("e");
        lineY -> Draw("same");
+       func_facet -> SetLineWidth(3);
+       func_facet ->SetNpx(1000); 
+       func_facet -> Draw("same");
        cPlots->Update();
        std::ostringstream fn_derY;
        fn_derY.str("");
@@ -1157,14 +1222,14 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        //TH1D * projhX = hfacet_derPhi[i]->ProjectionX();
        // find X  starting after 2 mm from YprojMin and scan 2mm
        // find int # of bins for 2 mm
-       Int_t iBin = 1; 
        Double_t dBin = hfacet_derPhi[i]->GetXaxis()->GetBinWidth(1); // bin with in cm 
        Int_t numBinsX_derPhi = hfacet_derPhi[i]->GetNbinsX();
+       Int_t iBin = 1; 
        if (dBin < 0) {cout << "Error: bin width = " << dBin << endl;}
        iBin = Int_t(0.2/dBin); // count bins in 2 mm
        iBin = max(iBin,1);
        cout << "iBin = " << iBin << endl;
-       TH1D * projhX = hfacet_derPhi[i]->ProjectionX("",iYprojMin+iBin, iYprojMin+2*iBin); // start from 2 mm from edge and scan for 2mm
+       TH1D * projhX = hfacet_derPhi[i]->ProjectionX("",iYprojMin+iBin, iYprojMin+2*iBin,"e"); // start from 2 mm from edge and scan for 2mm
        //TH1D * projhX = hfacet_Phi[i]->ProjectionX();
        projhX->GetXaxis()->SetRangeUser(-0.5, 0.5);
        //TH1D * projhX = hfacet_der[i]->ProjectionX();
@@ -1173,7 +1238,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        //cout << "i = " << i << " numBinsXproj = " << numBinsXproj << endl;
        Double_t XprojMin = -100.;
        Double_t XprojCut = -100.;
-     
        for ( UInt_t ix = 1; ix <= UInt_t(numBinsXproj); ix++ ){
            Double_t binNum = projhX->GetBinContent( ix );
            Double_t binCenter = projhX->GetXaxis()->GetBinCenter(ix);
@@ -1183,10 +1247,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            //    XprojCut = binNum;
            //}
            //if (binNum >= ThresholdX) XprojMax = binCenter; 
-           if (binNum >= XprojCut) { // find a point with maximum value
+           if (binNum >= 0.8*XprojCut) { // find a point with maximum value <= here the laterst strong signal (at lease 80% then before)
               XprojMin = binCenter;
               XprojCut = binNum;
-              if(i == 5) cout << "binCenter = " << binCenter << " binNum = " << binNum << endl;
+              //if(i == 5) cout << "binCenter = " << binCenter << " binNum = " << binNum << endl;
            } 
        }
        //XprojMin = XprojMax;// the same
@@ -1199,7 +1263,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        cPlots->SaveAs(fn_derX.str().c_str());
        //
        // find XprojMax
-       TH1D * projhXmax = hfacet_derPhi[i]->ProjectionX("",iYprojMax-2*iBin, iYprojMax-iBin); //start from 2 mm from edge and scan for 2mm
+       TH1D * projhXmax = hfacet_derPhi[i]->ProjectionX("",iYprojMax-2*iBin, iYprojMax-iBin,"e"); //start from 2 mm from edge and scan for 2mm
        projhXmax->GetXaxis()->SetRangeUser(-0.5, 0.5);
        Double_t XprojMax = -100.;
        XprojCut = -100.;
@@ -1208,7 +1272,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            Double_t binNum = projhXmax->GetBinContent( ix );
            Double_t binCenter = projhXmax->GetXaxis()->GetBinCenter(ix);
            if(fabs(binCenter) > 0.2) continue; //reject tails where derivety is not correct in edges bins
-           if (binNum >= XprojCut) { // find a point with maximum value
+           if (binNum >= 0.8*XprojCut) { // find a point with maximum value <= here the laterst strong signal (at lease 80% then before)
               XprojMax = binCenter;
               XprojCut = binNum;
            }
@@ -1246,6 +1310,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        Y1_facet[i] = XprojMin*sin(phi_facet[i]) + YprojMin*cos(phi_facet[i]) + y0ref + yf_0; 
        X2_facet[i] = XprojMax*cos(phi_facet[i]) - YprojMax*sin(phi_facet[i]) + x0ref + xf_0; 
        Y2_facet[i] = XprojMax*sin(phi_facet[i]) + YprojMax*cos(phi_facet[i]) + y0ref + yf_0; 
+       L_facet[i] = (X2_facet[i] - X1_facet[i])*(X2_facet[i] - X1_facet[i]) + (Y2_facet[i] - Y1_facet[i])*(Y2_facet[i] - Y1_facet[i]);
+       L_facet[i] = sqrt(L_facet[i]);
+       cout << "i = " << i << " L_facet = " << L_facet[i] << endl;
        //if (sin(phi)*cos(phi) < 0) 
        //   {X1_facet = XprojMin; Y1_facet = YprojMin; X2_facet = XprojMax; Y2_facet = YprojMax;}
        //else
@@ -1269,26 +1336,37 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     }
     cPlots -> SetLogz();
-
+    for(int i = 0; i < NumberFacets; i++){
+      if (Int_t(i/2.)*2 != i )cout << "i = " << i << " L_facet = " << L_facet[i] << endl;
+    }
     //////////////////////////
     //////////////////////////
     //Double_t X1_facet[12], Y1_facet[12], X2_facet[12], Y2_facet[12];
-    Int_t N_Line = 3;
-    //Int_t N_Line = Int_t(NumberFacets/4);
+    //Int_t N_Line = 3;
+    Int_t N_Line = Int_t(NumberFacets/4);
     Int_t N_ver = N_Line*(N_Line-1)/2;
     // Find vertex for Near pixel useing 1st layer
     Double_t X1[N_Line],Y1[N_Line],X2[N_Line],Y2[N_Line]; 
-    for ( UInt_t i = 0; i < UInt_t(N_Line); i++ ){ // for for new side far facets # 1, 3 and 5
-      X1[i] = X1_facet[2*i+1]; 
-      X2[i] = X2_facet[2*i+1]; 
-      Y1[i] = Y1_facet[2*i+1]; 
-      Y2[i] = Y2_facet[2*i+1]; 
+    Int_t N_LineNear = 0;
+    //for ( UInt_t i = 0; i < UInt_t(NumberFacets/2.); i++ ){ // for for new side far facets # 1, 3 and 5
+    for ( UInt_t i = 0; i < 3; i++ ){ // for for new side far facets # 1, 3 and 5
+      if (i < 3 || (i > 5 && i < 13) ){ // list only Near Side
+         X1[N_LineNear] = X1_facet[2*i+1]; 
+         X2[N_LineNear] = X2_facet[2*i+1]; 
+         Y1[N_LineNear] = Y1_facet[2*i+1]; 
+         Y2[N_LineNear] = Y2_facet[2*i+1];
+         N_LineNear = N_LineNear+1; 
+      }
     } 
+    if (N_LineNear != N_Line) cout << "ERROR not equal: N_LineNear = " << N_LineNear << " N_Line = " << N_Line << endl;
+
     Double_t X_verNear[N_ver], Y_verNear[N_ver];
     Double_t X_VerNear = 0., Y_VerNear = 0.;
     Int_t Ncount = 0; 
-    for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
-        for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
+    //for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
+    //    for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
+    for ( UInt_t i = 0; i < UInt_t(N_LineNear-1); i++ ){ // for for new side far facets # 1, 3 and 5
+        for ( UInt_t j = i+1; j < UInt_t(N_LineNear); j++ ){
             Double_t par[2]; // x0, y0
             Double_t Line1[4]; // x1,y1,x2,y2
             Double_t Line2[4]; // x3,y3,x4,y4
@@ -1328,17 +1406,25 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     //////////////////////////
     // Find vertex for Near pixel useing 1st layer
     Double_t X1Far[N_Line],Y1Far[N_Line],X2Far[N_Line],Y2Far[N_Line];
-    for ( UInt_t i = 0; i < UInt_t(N_Line); i++ ){ // for for new side far facets # 1, 3 and 5
-      X1Far[i] = X1_facet[2*(i+3)+1];
-      X2Far[i] = X2_facet[2*(i+3)+1];
-      Y1Far[i] = Y1_facet[2*(i+3)+1];
-      Y2Far[i] = Y2_facet[2*(i+3)+1];
+    Int_t N_LineFar = 0;
+    //for ( UInt_t i = 0; i < UInt_t(NumberFacets/2.); i++ ){ // for for new side far facets # 1, 3 and 5
+    for ( UInt_t i = 0; i < 6; i++ ){ // for for new side far facets # 1, 3 and 5
+      if( (i>=3 && i < 6) || i > 12){
+         X1Far[N_LineFar] = X1_facet[2*i+1];
+         X2Far[N_LineFar] = X2_facet[2*i+1];
+         Y1Far[N_LineFar] = Y1_facet[2*i+1];
+         Y2Far[N_LineFar] = Y2_facet[2*i+1];
+         N_LineFar = N_LineFar+1;
+      }
     }
+    if (N_LineFar != N_Line) cout << "ERROR not equal: N_LineFar = " << N_LineFar << " N_Line = " << N_Line << endl;
     Double_t X_verFar[N_ver], Y_verFar[N_ver];
     Double_t X_VerFar = 0., Y_VerFar = 0.;
     Ncount = 0;
-    for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
-        for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
+    //for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
+    //    for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
+    for ( UInt_t i = 0; i < UInt_t(N_LineFar-1); i++ ){ // for for new side far facets # 1, 3 and 5
+        for ( UInt_t j = i+1; j < UInt_t(N_LineFar); j++ ){
             Double_t par[2]; // x0, y0
             Double_t Line1[4]; // x1,y1,x2,y2
             Double_t Line2[4]; // x3,y3,x4,y4
@@ -1442,6 +1528,64 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
 // Function Definition:
 
+Double_t fit_facet(Double_t *x ,Double_t *par)
+{
+ Double_t value= par[2];
+ //Double_t Sigma_facet = 0.04;//bin width of histo in cm
+ //Double_t Lenth_facet = 2.2;//cm
+ Double_t lenth = Lenth_facet-2*Sigma_facet;//cm
+
+if (x[0] < par[0]){
+  Double_t temp = (x[0]-par[0]) * (x[0]-par[0]) /Sigma_facet/Sigma_facet ;
+  value = par[1] + (par[2]-par[1]) * exp( -0.5 * temp );
+}
+if (x[0] > par[0]+lenth){
+  Double_t temp = (x[0]-par[0]-lenth) * (x[0]-par[0]-lenth) /Sigma_facet/Sigma_facet ;
+  value = par[1] + (par[2] - par[1])* exp( -0.5 * temp );
+
+}
+ return value;
+}
+
+//create function to fit beam pipe in 2D (circle)
+//void chiSquareFitFacet( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
+void chiSquareFitFacet( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+  Double_t resoNI = 0.01;
+  //Double_t halfWidthPipe = 0.025;
+  Int_t numBinsX = hProj->GetNbinsX();
+  Double_t chiSquare = 0.0;
+  Double_t diff = 0.0;
+  Int_t Npoints = 0;
+  for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+  {
+      Double_t binNum = hProj->GetBinContent( ix);
+
+      Double_t x[1];
+      x[0] = hProj->GetXaxis()->GetBinCenter( ix );
+      if (fabs(x[0]) > 1.9) continue; // reject entries about 1.9
+      if (binNum < 1) continue; // reject 0 bin
+      Npoints = Npoints +1;
+
+      Double_t value= 100.;
+      value = fit_facet(x, par);
+
+
+      Double_t PhaseSpaceFactor = 100.;
+      //if (x < par[0] || x > par[1]) PhaseSpaceFactor = 1.;
+      //else PhaseSpaceFactor = 100.;
+      diff = fabs(binNum - value);
+      //if (x > par[0] && x < par[1]) diff = min(diff, fabs(diff-50.)); // for high plot ignor errors withing 50.
+      chiSquare += diff*diff/PhaseSpaceFactor;
+      //cout << " x = " << x[0] << " binNum = " << binNum << " value = " << value << " diff = " << diff << endl;
+  }
+ 
+  //if (Npoints > 3) f = chiSquare/(Npoints-3); // 3 parameters
+  //else f = 1000.;
+  f = chiSquare;
+  //cout << " y1 = " << par[0] << " A1 = " << par[1] << " A2 = " << par[2] << " f = " << f  << " Npoints = " << Npoints << endl;
+
+}
 
 //create Fit function for background
 Double_t func_fitBg(Double_t *x ,Double_t *par)
