@@ -76,6 +76,7 @@ void funPixelShield2Arcs( Int_t &, Double_t *, Double_t &, Double_t *, Int_t);
 Double_t funPixelLayer1(Double_t *x, Double_t *par);
 // create funciton to fit the pixel shield with an ellipse
 void fun2Lines(Double_t *Line1, Double_t *Line2, Double_t *par);
+Double_t fun2LinesAngle(Double_t *Line1, Double_t *Line2);
 
 // create function to fit the plus semicircle of the pixel shield
 void funArcPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
@@ -327,10 +328,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
      x_Sys = 0.02; // size of systematics in cm
      r_Sys = 0.02; // size of systematics in cm
      //**** for |z| < 25 cm
-     x0 = 0.10;//0.10; // in cm
-     y0 = -0.11;//-0.08; // in cm
-     x0_Far = 0.04;//0.10; // in cm
-     y0_Far = -0.18;//-0.08; // in cm
+     x0 = 0.09;//0.10; // in cm
+     y0 = -0.08;//-0.11; // in cm
+     x0_Far = 0.08;//0.04; // in cm
+     y0_Far = -0.12;//-0.18; // in cm
      r0 = 3.0; // in cm, the initial x radius
      //***** for z: -25 to -20 cm
      //x0 = -0.032; // in cm
@@ -916,6 +917,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     TH2D* hfacet_der[NumberFacets];
     TH2D* hfacet_derPhi[NumberFacets];
     Double_t phi_facet[NumberFacets];
+    Double_t dphi_facetPixelSystem[NumberFacets];
     Double_t R_facet[NumberFacets];
     Double_t L_facet[NumberFacets];
     for(int i = 0; i < NumberFacets; i++){
@@ -923,8 +925,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        // define phi_facet for facet #i
        //Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-2)-Pi/6.;
        //Double_t phi_facet_L2 = Pi/20. + Pi/2./7.*(i-12-2)-Pi/2./7.;
-       Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-3);
-       Double_t phi_facet_L2 = Pi/20. + Pi/14.*(i-12-7);
+       Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-3) + 0.015; // last value from fit to calculate phi facet more precise
+       Double_t phi_facet_L2 = Pi/20. + Pi/14.*(i-12-7) - 0.025; // last value from fit to calculate phi facet more precise 
 
        phi_facet[i] = phi_facet_L1;
        if (i > 11) phi_facet[i] = phi_facet_L2;
@@ -1296,6 +1298,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        cPlots->SaveAs(fn_derPhi.str().c_str());
 
 
+       dphi_facetPixelSystem[i] = -100.;
+       if (fabs(YprojMin-YprojMax) > 0.0001){
+          dphi_facetPixelSystem[i] = TMath::ATan2((XprojMax - XprojMin),(YprojMax-YprojMin)); // y, x coordinate, for us it is inverse (x, y)
+       }
 
        // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
        // positions of the two halves so that the background subtraction is cleaner.
@@ -1312,7 +1318,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        Y2_facet[i] = XprojMax*sin(phi_facet[i]) + YprojMax*cos(phi_facet[i]) + y0ref + yf_0; 
        L_facet[i] = (X2_facet[i] - X1_facet[i])*(X2_facet[i] - X1_facet[i]) + (Y2_facet[i] - Y1_facet[i])*(Y2_facet[i] - Y1_facet[i]);
        L_facet[i] = sqrt(L_facet[i]);
-       cout << "i = " << i << " L_facet = " << L_facet[i] << endl;
+       cout << "i = " << i << " L_facet = " << L_facet[i] << " dphi_facetPixelSystem = " << dphi_facetPixelSystem[i] << endl;
        //if (sin(phi)*cos(phi) < 0) 
        //   {X1_facet = XprojMin; Y1_facet = YprojMin; X2_facet = XprojMax; Y2_facet = YprojMax;}
        //else
@@ -1336,9 +1342,20 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     }
     cPlots -> SetLogz();
+    Double_t dphi_facetL1 = 0.;
+    Double_t dphi_facetL2 = 0.;
+    Int_t Ndphi_facetL1 = 0;
+    Int_t Ndphi_facetL2 = 0;
     for(int i = 0; i < NumberFacets; i++){
-      if (Int_t(i/2.)*2 != i )cout << "i = " << i << " L_facet = " << L_facet[i] << endl;
+      if (Int_t(i/2.)*2 != i ){
+        cout << "i = " << i << " L_facet = " << L_facet[i] << " dphi_facetPixelSystem = " << dphi_facetPixelSystem[i] << endl;
+        if (i < 12) {dphi_facetL1 += dphi_facetPixelSystem[i]; Ndphi_facetL1 += 1;}
+        if (i > 11 && i < 40) {dphi_facetL2 += dphi_facetPixelSystem[i]; Ndphi_facetL2 += 1;}
+      } 
     }
+    if( Ndphi_facetL1 > 0) dphi_facetL1 = dphi_facetL1/Ndphi_facetL1;
+    if( Ndphi_facetL2 > 0) dphi_facetL2 = dphi_facetL2/Ndphi_facetL2;
+    cout << "Average dphi_facetL1 = " << dphi_facetL1 << " dphi_facetL2 = " << dphi_facetL2 << endl;
     //////////////////////////
     //////////////////////////
     //Double_t X1_facet[12], Y1_facet[12], X2_facet[12], Y2_facet[12];
@@ -1348,8 +1365,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     // Find vertex for Near pixel useing 1st layer
     Double_t X1[N_Line],Y1[N_Line],X2[N_Line],Y2[N_Line]; 
     Int_t N_LineNear = 0;
-    //for ( UInt_t i = 0; i < UInt_t(NumberFacets/2.); i++ ){ // for for new side far facets # 1, 3 and 5
-    for ( UInt_t i = 0; i < 3; i++ ){ // for for new side far facets # 1, 3 and 5
+    for ( UInt_t i = 0; i < UInt_t(NumberFacets/2.); i++ ){ // for for new side far facets # 1, 3 and 5
+    //for ( UInt_t i = 0; i < 3; i++ ){ // for for new side far facets # 1, 3 and 5
       if (i < 3 || (i > 5 && i < 13) ){ // list only Near Side
          X1[N_LineNear] = X1_facet[2*i+1]; 
          X2[N_LineNear] = X2_facet[2*i+1]; 
@@ -1363,8 +1380,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     Double_t X_verNear[N_ver], Y_verNear[N_ver];
     Double_t X_VerNear = 0., Y_VerNear = 0.;
     Int_t Ncount = 0; 
-    //for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
-    //    for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
+    cout << "Near pixel: reject buggy lines with current statistics Line = 6, 7 and 9, see code" <<endl;
     for ( UInt_t i = 0; i < UInt_t(N_LineNear-1); i++ ){ // for for new side far facets # 1, 3 and 5
         for ( UInt_t j = i+1; j < UInt_t(N_LineNear); j++ ){
             Double_t par[2]; // x0, y0
@@ -1374,15 +1390,20 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
             Line1[2] = X2[i]; Line1[3] = Y2[i];
             Line2[0] = X1[j]; Line2[1] = Y1[j];
             Line2[2] = X2[j]; Line2[3] = Y2[j];
+            // reject buggy lines with current statistics:
+            if(i == 6 || i == 7 || i == 9 || j == 6 || j == 7 || j == 9) continue;
             fun2Lines(Line1, Line2, par);
             X_verNear[Ncount] = par[0];
             Y_verNear[Ncount] = par[1];
-            cout << "Vertex Near # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verNear = " << X_verNear[Ncount] << " Y_verNear = " << Y_verNear[Ncount] << endl;
+            Double_t Phi_lines = 0.; // reject if lines parallel
+            Phi_lines = fun2LinesAngle(Line1, Line2); // find Angel between 2 lines
+            if (Phi_lines < 0.8) continue; // reject if lines with angle less then ~45 degree (0.78)
+            cout << "Vertex Near # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verNear = " << fixed << setprecision(3) << X_verNear[Ncount] << " Y_verNear = " << Y_verNear[Ncount] << " Phi_lines = " << Phi_lines << endl;
             X_VerNear = X_VerNear + X_verNear[Ncount];
             Y_VerNear = Y_VerNear + Y_verNear[Ncount];
             Ncount = Ncount + 1;
     }}
-    if (Ncount != N_ver) cout << " Error: Ncount != N_ver " << endl;
+    //if (Ncount != N_ver) cout << " Error: Ncount != N_ver " << endl;
     X_VerNear = X_VerNear/Ncount;
     Y_VerNear = Y_VerNear/Ncount;
     Double_t dX_VerNear = 0., dY_VerNear = 0.;
@@ -1399,16 +1420,16 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     dY_VerNear = sqrt(dY_VerNear)/Ncount;
     dX_VerNearCon = dX_VerNearCon/Ncount;
     dY_VerNearCon = dY_VerNearCon/Ncount;
-    cout << "X_VerNear      = " << X_VerNear     << " Y_VerNear     = " << Y_VerNear << endl; 
-    cout << "dX_VerNear     = " << dX_VerNear    << " dY_VerNear    = " << dY_VerNear << endl; 
-    cout << "dX_VerNearCon  = " << dX_VerNearCon << " dY_VerNearCon = " << dY_VerNearCon << endl; 
+    cout << "X_VerNear      = " << fixed << setprecision(3) << X_VerNear     << " Y_VerNear     = " << Y_VerNear << endl; 
+    cout << "dX_VerNear     = " << fixed << setprecision(3) << dX_VerNear    << " dY_VerNear    = " << dY_VerNear << endl; 
+    cout << "dX_VerNearCon  = " << fixed << setprecision(3) << dX_VerNearCon << " dY_VerNearCon = " << dY_VerNearCon << endl; 
     //////////////////////////
     //////////////////////////
     // Find vertex for Near pixel useing 1st layer
     Double_t X1Far[N_Line],Y1Far[N_Line],X2Far[N_Line],Y2Far[N_Line];
     Int_t N_LineFar = 0;
-    //for ( UInt_t i = 0; i < UInt_t(NumberFacets/2.); i++ ){ // for for new side far facets # 1, 3 and 5
-    for ( UInt_t i = 0; i < 6; i++ ){ // for for new side far facets # 1, 3 and 5
+    for ( UInt_t i = 0; i < UInt_t(NumberFacets/2.); i++ ){ // for for new side far facets # 1, 3 and 5
+    //for ( UInt_t i = 0; i < 6; i++ ){ // for for new side far facets # 1, 3 and 5
       if( (i>=3 && i < 6) || i > 12){
          X1Far[N_LineFar] = X1_facet[2*i+1];
          X2Far[N_LineFar] = X2_facet[2*i+1];
@@ -1423,6 +1444,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     Ncount = 0;
     //for ( UInt_t i = 0; i < UInt_t(N_ver-1); i++ ){ // for for new side far facets # 1, 3 and 5
     //    for ( UInt_t j = i+1; j < UInt_t(N_ver); j++ ){
+    cout << "Far pixel: reject buggy lines with current statistics Line = 4, 5, 7 and 8, see code" <<endl;
     for ( UInt_t i = 0; i < UInt_t(N_LineFar-1); i++ ){ // for for new side far facets # 1, 3 and 5
         for ( UInt_t j = i+1; j < UInt_t(N_LineFar); j++ ){
             Double_t par[2]; // x0, y0
@@ -1432,18 +1454,20 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
             Line1[2] = X2Far[i]; Line1[3] = Y2Far[i];
             Line2[0] = X1Far[j]; Line2[1] = Y1Far[j];
             Line2[2] = X2Far[j]; Line2[3] = Y2Far[j];
+            // reject buggy lines with current statistics:
+            if(i == 4 || i == 5 || i == 7 || i == 8 || j == 4 || j == 5 || j == 7 || j == 8) continue;
             fun2Lines(Line1, Line2, par);
             X_verFar[Ncount] = par[0];
             Y_verFar[Ncount] = par[1];
-            cout << "Vertex Far # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verFar = " << X_verFar[Ncount] << " Y_verFar = " << Y_verFar[Ncount] << endl;
-            //cout << "x1 = " << Line1[0] << " y1 = " << Line1[1] << " x2 = " << Line1[2] << " y2 = " << Line1[3] << endl;
-            //cout << "x3 = " << Line2[0] << " y3 = " << Line2[1] << " x4 = " << Line2[2] << " y4 = " << Line2[3] << endl;
-            //cout << endl;
+            Double_t Phi_lines = 0.; // reject if lines parallel
+            Phi_lines = fun2LinesAngle(Line1, Line2); // find Angel between 2 lines
+            if (Phi_lines < 0.8) continue; // reject if lines with angle less then ~45 degree (0.78)
+            cout << "Vertex Far # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verFar = " << fixed << setprecision(3) << X_verFar[Ncount] << " Y_verFar = " << Y_verFar[Ncount] << " Phi_lines = " << Phi_lines << endl;
             X_VerFar = X_VerFar + X_verFar[Ncount];
             Y_VerFar = Y_VerFar + Y_verFar[Ncount];
             Ncount = Ncount + 1;
     }}
-    if (Ncount != N_ver) cout << " Error: Ncount != N_ver " << endl;
+    //if (Ncount != N_ver) cout << " Error: Ncount != N_ver " << endl;
     X_VerFar = X_VerFar/Ncount;
     Y_VerFar = Y_VerFar/Ncount;
     Double_t dX_VerFar = 0., dY_VerFar = 0.;
@@ -1458,9 +1482,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     dY_VerFar = sqrt(dY_VerFar)/Ncount;
     dX_VerFarCon = dX_VerFarCon/Ncount;
     dY_VerFarCon = dY_VerFarCon/Ncount;
-    cout << "X_VerFar      = " << X_VerFar     << " Y_VerFar     = " << Y_VerFar << endl;
-    cout << "dX_VerFar     = " << dX_VerFar    << " dY_VerFar    = " << dY_VerFar << endl;
-    cout << "dX_VerFarCon  = " << dX_VerFarCon << " dY_VerFarCon = " << dY_VerFarCon << endl;
+    cout << "X_VerFar      = " << fixed << setprecision(3) << X_VerFar     << " Y_VerFar     = " << Y_VerFar << endl;
+    cout << "dX_VerFar     = " << fixed << setprecision(3) << dX_VerFar    << " dY_VerFar    = " << dY_VerFar << endl;
+    cout << "dX_VerFarCon  = " << fixed << setprecision(3) << dX_VerFarCon << " dY_VerFarCon = " << dY_VerFarCon << endl;
     //////////////////////////
     //////////////////////////
 
@@ -1905,6 +1929,19 @@ else {y_L1 = y_corr + y0_L1;}
 return y_L1;
 }
 
+Double_t fun2LinesAngle(Double_t *Line1, Double_t *Line2)
+{
+  Double_t Phi_lines = 0.; // reject if lines paralle
+  Double_t L_Line1 = sqrt( (Line1[2]-Line1[0])*(Line1[2]-Line1[0]) + (Line1[3]-Line1[1])*(Line1[3]-Line1[1]) );
+  Double_t L_Line2 = sqrt( (Line2[2]-Line2[0])*(Line2[2]-Line2[0]) + (Line2[3]-Line2[1])*(Line2[3]-Line2[1]) );
+  if (L_Line1 > 0.0001 && L_Line2 > 0.0001){
+     Phi_lines = (Line1[2]-Line1[0])*(Line2[2]-Line2[0])+(Line1[3]-Line1[1])*(Line2[3]-Line2[1]);
+     Phi_lines = Phi_lines/L_Line1/L_Line2;
+     Phi_lines = TMath::ACos(Phi_lines);
+     Phi_lines = min(Phi_lines, (TMath::Pi()-Phi_lines));
+  }
+  return Phi_lines;
+}
 // describe Layer 1
 void fun2Lines(Double_t *Line1, Double_t *Line2, Double_t *par)
 {
