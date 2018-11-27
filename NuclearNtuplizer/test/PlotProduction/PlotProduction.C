@@ -27,7 +27,7 @@ void PlotProduction::Loop()
    Int_t  dR_Nbin = 100;
 
    TFile* outputFile;
-   outputFile = new TFile( "PlotProduced_2015.root", "RECREATE" );
+   outputFile = new TFile( "PlotProduced_2018.root", "RECREATE" );
    double Bins[12];
    Bins[0]=     1.8;
    Bins[1]=     2.5;

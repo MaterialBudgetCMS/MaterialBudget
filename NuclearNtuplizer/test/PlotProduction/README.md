@@ -1,4 +1,4 @@
-** To run (PlotProduction):
+* To run (PlotProduction):
 
      root -l
      .x PlotProduction.C++
@@ -6,7 +6,7 @@
      m.GetEntry(0)
      m.Loop()
 
-** To run (CutAnalyzer):
+* To run (CutAnalyzer):
 
      root -l
      .x CutAnalyzer.C++
@@ -14,7 +14,7 @@
      m.GetEntry(0)
      m.Loop()
 
-** Old version: It works only in CMSSW_7_3_0, in CMSSW_7_4_* generate error.
+* Old version: It works only in CMSSW_7_3_0, in CMSSW_7_4_* generate error.
 
 To run:
 
