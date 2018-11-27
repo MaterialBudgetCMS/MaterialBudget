@@ -40,11 +40,15 @@ Set enviroment:
 
 Sent crab job with python for 2018:
 
+    python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018B_SingleMu_RawToReco.py
     python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018C_SingleMu_RawToReco.py
     python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018D_SingleMu_RawToReco.py
     python crab_Run2018_2018D.py samples/sample_Run2018D_SingleMu_21Aug.py
     python crab_Run2018_2018D.py samples/sample_Run2018D_21Aug.py 
     python crab_Run2018_run315646.py samples/sample_ZeroBias_Run2018_run315646.py
+
+To resubmit wiht higher memory (deafault is 2000 Mb)
+    crab resubmit --maxmemory=2500 -d projects_Run2018_v2/crab_SingleMu_Run2018C_RawToReco/
 
 Send crab job with python for 2017:
 
