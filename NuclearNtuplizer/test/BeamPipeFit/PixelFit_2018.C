@@ -51,6 +51,10 @@ using namespace std;
 
 TH2D* h;
 TH1D* hProj;
+TH1D* h_xPixelNear;
+TH1D* h_yPixelNear;
+TH1D* h_xPixelFar;
+TH1D* h_yPixelFar;
 TH2D* h_Extra;
 Double_t Rmin, Rmax, RBGmin, RBGmax, RSmin, RSmax, RPlot;
 Double_t Sigma_facet = 0.04;//bin width of histo in cm
@@ -90,6 +94,7 @@ void funArcMinus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 //create function to fit objects in 2D with circle (Arc)
 void chiSquareFunc( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
 void chiSquareFitFacet( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
+void PixelVertexPlot(TH1D*,TString, TString, Double_t, Double_t);
 
 //create Fit function for background
 Double_t func_fitBg(Double_t*, Double_t* );
@@ -467,9 +472,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
   //gROOT->ForceStyle();
 
   // 2018 data file
-  //TFile* inputFile = TFile::Open("PlotProduced_2018.root");
   //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
-  TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
+  //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
+  TFile* inputFile = TFile::Open("PlotProduced_2018CD_RawToReco.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -923,8 +928,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     for(int i = 0; i < NumberFacets; i++){
 
        // define phi_facet for facet #i
-       //Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-2)-Pi/6.;
-       //Double_t phi_facet_L2 = Pi/20. + Pi/2./7.*(i-12-2)-Pi/2./7.;
        Double_t phi_facet_L1 = Pi/12. + Pi/6.*(i-3) + 0.015; // last value from fit to calculate phi facet more precise
        Double_t phi_facet_L2 = Pi/20. + Pi/14.*(i-12-7) - 0.025; // last value from fit to calculate phi facet more precise 
 
@@ -987,7 +990,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        hfacet_Phi[i] =  new TH2D( fn_Phi.str().c_str(), h->GetTitle(), NbinX_phi,  -XY_cut, XY_cut, NbinX_phi, -XY_cut, XY_cut);
        hfacet_Phi[i]->GetXaxis()->SetTitle("x (cm)");
        hfacet_Phi[i]->GetYaxis()->SetTitle("y (cm)");
-       hfacet_Phi[i]->GetZaxis()->SetTitle(Form("Rotate in #phi facet %2i: Events/(%1.1f#times%1.1f mm^{2})", i, hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10));
        hfacet_Phi[i]->SetStats(0);
 
        std::ostringstream fn_derPhi;
@@ -1125,17 +1127,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        //cPlots->SaveAs(fn_der.str().c_str());
 
 
-       // for x der only
-       Double_t ThresholdY = 150.; // dx only
-       if (i > 11) ThresholdY = 250;
-       // for xy der 
-       //Double_t ThresholdY = 5000.; // dx only
-       //if (i > 11) ThresholdY = 10000;
-
-
-       TLine *lineY = new TLine(-5,ThresholdY,5,ThresholdY);
-       lineY -> SetLineStyle(kDotted);
-       lineY -> SetLineColor(kRed);
        //TH1D * projhY = hfacet_der[i]->ProjectionY();
        //TH1D * projhY = hfacet_Phi[i]->ProjectionY();
        TH1D * projhY = hfacet_derPhi[i]->ProjectionY("",0, -1,"e");
@@ -1155,11 +1146,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        // Set the function that the fitter will use and set the parameters
        fitterDraw = TVirtualFitter::Fitter( 0, 3 );
        fitterDraw->SetFCN( chiSquareFitFacet );
-       //fitterDraw->SetParameter( 0,  "y1",  -1.02, 0.01, -1.6, -0.8 ); // in cm
        fitterDraw->SetParameter( 0,  "y1",  -1.02, 0.01, 0., 0.); // in cm
-       //fitterDraw->SetParameter( 0,  "y1",  -1.5, 0.2, -1.6, -0.8 ); // in cm
-       fitterDraw->SetParameter( 1, "A1",   50, 1., 0., 150. ); // in cm
-       fitterDraw->SetParameter( 2, "A2",   350, 1., 250., 500. ); // in cm
+       fitterDraw->SetParameter( 1, "A1",   100, 1., 0., 250. ); // in cm
+       fitterDraw->SetParameter( 2, "A2",   500, 1., 250., 800. ); // in cm
        //fitterDraw->FixParameter(1);
        //fitterDraw->FixParameter(2);
        Double_t arglist[10] = {0.};
@@ -1193,12 +1182,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            Double_t binNum = projhY->GetBinContent( ix );
            Double_t binCenter = projhY->GetXaxis()->GetBinCenter(ix);
            if(fabs(binCenter) > 1.9) continue; //reject tails where derivety is not correct in edges bins
-           //if (binNum >= ThresholdY && YprojCut < ThresholdY) {
-           //    YprojMin = binCenter;
-           //    iYprojMin = ix;
-           //    YprojCut = binNum;
-           //}
-           //if (binNum >= ThresholdY) {YprojMax = binCenter; iYprojMax = ix;}
            Double_t yLow = projhY->GetXaxis()->GetBinLowEdge(ix);
            Double_t yUp = projhY->GetXaxis()->GetBinUpEdge(ix);
            if (YprojMin >= yLow && YprojMin < yUp) iYprojMin = ix;
@@ -1208,8 +1191,19 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        cout << "i = " << i << " iYprojMin = " << iYprojMin << " iYprojMax = " << iYprojMax << endl;
 
 
+       TString FacetPixel = "Facet Near";
+       if ((i > 5 && i < 12) || (i > 25 && i < 40)) FacetPixel = "Facet Far";
+       Int_t iFacetVertex = Int_t((i-1)/2);
+       if(i > 5 && i < 12) iFacetVertex = Int_t((i-7)/2);
+       if(i > 11 && i < 26) iFacetVertex = Int_t((i-13)/2)+3;
+       if (i > 25 && i < 40) iFacetVertex = Int_t((i-27)/2)+3;
+
+       projhY->SetStats(0);
+       projhY->GetYaxis()->SetTitle(Form("%s %d (id %d): Events/%1.2f cm", FacetPixel.Data(), i, iFacetVertex, projhY->GetXaxis()->GetBinWidth(1)));
+       if (2*Int_t((i-1)/2) != (i-1) ) projhY->GetYaxis()->SetTitle(Form("%s %d: Events/%1.2f cm", FacetPixel.Data(), i, projhY->GetXaxis()->GetBinWidth(1)));
+       projhY->GetXaxis()->SetTitle("y (cm)");
+       projhY->GetYaxis()->SetTitleOffset(1.5);
        projhY->Draw("e");
-       lineY -> Draw("same");
        func_facet -> SetLineWidth(3);
        func_facet ->SetNpx(1000); 
        func_facet -> Draw("same");
@@ -1244,11 +1238,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            Double_t binNum = projhX->GetBinContent( ix );
            Double_t binCenter = projhX->GetXaxis()->GetBinCenter(ix);
            if(fabs(binCenter) > 0.2) continue; //reject tails where derivety is not correct in edges bins
-           //if (binNum >= ThresholdX && XprojCut < ThresholdX) {
-           //    XprojMin = binCenter; 
-           //    XprojCut = binNum;
-           //}
-           //if (binNum >= ThresholdX) XprojMax = binCenter; 
            if (binNum >= 0.8*XprojCut) { // find a point with maximum value <= here the laterst strong signal (at lease 80% then before)
               XprojMin = binCenter;
               XprojCut = binNum;
@@ -1257,6 +1246,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        }
        //XprojMin = XprojMax;// the same
        //cout << "i = " << i << " XprojMin = " << XprojMin << " XprojMax = " << XprojMax << endl;
+       projhX->GetYaxis()->SetTitle(Form("%s %d (id %d): Events/%1.2f cm", FacetPixel.Data(), i, iFacetVertex, projhX->GetXaxis()->GetBinWidth(1)));
+       if (2*Int_t((i-1)/2) != (i-1) ) projhX->GetYaxis()->SetTitle(Form("%s %d: Events/%1.2f cm", FacetPixel.Data(), i, projhX->GetXaxis()->GetBinWidth(1)));
+       projhX->GetXaxis()->SetTitle("x_{min} (cm)");
+       projhX->GetYaxis()->SetTitleOffset(1.5);
        projhX->Draw("e");
        cPlots->Update();
        std::ostringstream fn_derX;
@@ -1280,6 +1273,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
            }
        }
        cout << "i = " << i << " XprojMin = " << XprojMin << " XprojMax = " << XprojMax << endl;
+       projhXmax->GetYaxis()->SetTitle(Form("%s %d (id %d): Events/%1.2f cm", FacetPixel.Data(), i, iFacetVertex, projhXmax->GetXaxis()->GetBinWidth(1)));
+       if (2*Int_t((i-1)/2) != (i-1) ) projhXmax->GetYaxis()->SetTitle(Form("%s %d: Events/%1.2f cm", FacetPixel.Data(), i, projhXmax->GetXaxis()->GetBinWidth(1)));
+       projhXmax->GetXaxis()->SetTitle("x_{max} (cm)");
+       projhXmax->GetYaxis()->SetTitleOffset(1.5);
        projhXmax->Draw("e");
        cPlots->Update();
        std::ostringstream fn_derXmax;
@@ -1290,6 +1287,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        //SetRangeUser should be set only after projection, othewise bug in Root.
        hfacet_derPhi[i]->GetXaxis()->SetRangeUser(-R_PixelCut, R_PixelCut);
        hfacet_derPhi[i]->GetYaxis()->SetRangeUser(-R_PixelCut, R_PixelCut);
+       hfacet_derPhi[i]->GetZaxis()->SetTitle(Form("In #phi Der. %s %d (id %d): Events/(%1.1f#times%1.1f mm^{2})", FacetPixel.Data(), i, iFacetVertex, hfacet_derPhi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_derPhi[i]->GetYaxis()->GetBinWidth(1)*10));
+       if (2*Int_t((i-1)/2) != (i-1) )hfacet_derPhi[i]->GetZaxis()->SetTitle(Form("In #phi Der. %s %d: Events/(%1.1f#times%1.1f mm^{2})", FacetPixel.Data(), i, hfacet_derPhi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_derPhi[i]->GetYaxis()->GetBinWidth(1)*10));
+       hfacet_derPhi[i]->GetZaxis()->SetTitleOffset(1.2);
        hfacet_derPhi[i]->Draw("COLZ");
        cPlots->Update();
        std::ostringstream fn_derPhi;
@@ -1332,6 +1332,9 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
        hfacet_Phi[i]->GetXaxis()->SetRangeUser(-R_PixelCut, R_PixelCut);
        hfacet_Phi[i]->GetYaxis()->SetRangeUser(-R_PixelCut, R_PixelCut);
+       hfacet_Phi[i]->GetZaxis()->SetTitle(Form("In #phi %s %d (id %d): Events/(%1.1f#times%1.1f mm^{2})", FacetPixel.Data(), i, iFacetVertex, hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10));
+       if (2*Int_t((i-1)/2) != (i-1) )hfacet_Phi[i]->GetZaxis()->SetTitle(Form("In #phi %s %d: Events/(%1.1f#times%1.1f mm^{2})", FacetPixel.Data(), i, hfacet_Phi[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet_Phi[i]->GetYaxis()->GetBinWidth(1)*10)); 
+       hfacet_Phi[i]->GetZaxis()->SetTitleOffset(1.2);
        hfacet_Phi[i]->Draw("COLZ");
        lineFacetPhi -> Draw("same");
        cPlots->Update();
@@ -1380,6 +1383,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     Double_t X_verNear[N_ver], Y_verNear[N_ver];
     Double_t X_VerNear = 0., Y_VerNear = 0.;
     Int_t Ncount = 0; 
+    h_xPixelNear = new TH1D( "h_xPixelNear", "x_{0}^{Near} Pixel", 100, -5.,5. );
+    h_yPixelNear = new TH1D( "h_yPixelNear", "y_{0}^{Near} Pixel", 100, -5.,5. );
+    h_xPixelFar = new TH1D( "h_xPixelFar", "x_{0}^{Far} Pixel", 100, -5.,5. );
+    h_yPixelFar = new TH1D( "h_yPixelFar", "y_{0}^{Far} Pixel", 100, -5.,5. );
     cout << "Near pixel: reject buggy lines with current statistics Line = 6, 7 and 9, see code" <<endl;
     for ( UInt_t i = 0; i < UInt_t(N_LineNear-1); i++ ){ // for for new side far facets # 1, 3 and 5
         for ( UInt_t j = i+1; j < UInt_t(N_LineNear); j++ ){
@@ -1391,13 +1398,16 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
             Line2[0] = X1[j]; Line2[1] = Y1[j];
             Line2[2] = X2[j]; Line2[3] = Y2[j];
             // reject buggy lines with current statistics:
-            if(i == 6 || i == 7 || i == 9 || j == 6 || j == 7 || j == 9) continue;
+            //if(i == 6 || i == 7 || i == 9 || j == 6 || j == 7 || j == 9) continue;
+            //if( i == 6 || i == 3 || i == 7 || j == 3 || j == 6 || j == 7 ) continue;
             fun2Lines(Line1, Line2, par);
             X_verNear[Ncount] = par[0];
             Y_verNear[Ncount] = par[1];
             Double_t Phi_lines = 0.; // reject if lines parallel
             Phi_lines = fun2LinesAngle(Line1, Line2); // find Angel between 2 lines
             if (Phi_lines < 0.8) continue; // reject if lines with angle less then ~45 degree (0.78)
+            h_xPixelNear -> Fill(10.*X_verNear[Ncount]);//in mm
+            h_yPixelNear -> Fill(10.*Y_verNear[Ncount]);//in mm
             cout << "Vertex Near # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verNear = " << fixed << setprecision(3) << X_verNear[Ncount] << " Y_verNear = " << Y_verNear[Ncount] << " Phi_lines = " << Phi_lines << endl;
             X_VerNear = X_VerNear + X_verNear[Ncount];
             Y_VerNear = Y_VerNear + Y_verNear[Ncount];
@@ -1455,13 +1465,15 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
             Line2[0] = X1Far[j]; Line2[1] = Y1Far[j];
             Line2[2] = X2Far[j]; Line2[3] = Y2Far[j];
             // reject buggy lines with current statistics:
-            if(i == 4 || i == 5 || i == 7 || i == 8 || j == 4 || j == 5 || j == 7 || j == 8) continue;
+            //if(i == 4 || i == 5 || i == 7 || i == 8 || j == 4 || j == 5 || j == 7 || j == 8) continue;
             fun2Lines(Line1, Line2, par);
             X_verFar[Ncount] = par[0];
             Y_verFar[Ncount] = par[1];
             Double_t Phi_lines = 0.; // reject if lines parallel
             Phi_lines = fun2LinesAngle(Line1, Line2); // find Angel between 2 lines
             if (Phi_lines < 0.8) continue; // reject if lines with angle less then ~45 degree (0.78)
+            h_xPixelFar -> Fill(10.*X_verFar[Ncount]);// in mm
+            h_yPixelFar -> Fill(10.*Y_verFar[Ncount]);//in mm
             cout << "Vertex Far # = " << Ncount <<  " for (i,j) = (" << i << "," << j<< ") X_verFar = " << fixed << setprecision(3) << X_verFar[Ncount] << " Y_verFar = " << Y_verFar[Ncount] << " Phi_lines = " << Phi_lines << endl;
             X_VerFar = X_VerFar + X_verFar[Ncount];
             Y_VerFar = Y_VerFar + Y_verFar[Ncount];
@@ -1487,6 +1499,13 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     cout << "dX_VerFarCon  = " << fixed << setprecision(3) << dX_VerFarCon << " dY_VerFarCon = " << dY_VerFarCon << endl;
     //////////////////////////
     //////////////////////////
+
+   // Draw (X,Y) pixel position for near and far sides
+    PixelVertexPlot(h_xPixelNear,"x_{0}^{Near} (mm)", "Plots/PixelShield2Arcs_x0PixelNear.png",X_VerNear, dX_VerNearCon);
+    PixelVertexPlot(h_yPixelNear,"y_{0}^{Near} (mm)", "Plots/PixelShield2Arcs_y0PixelNear.png",Y_VerNear, dY_VerNearCon);
+    PixelVertexPlot(h_xPixelFar,"x_{0}^{Far} (mm)", "Plots/PixelShield2Arcs_x0PixelFar.png",X_VerFar, dX_VerFarCon);
+    PixelVertexPlot(h_yPixelFar,"y_{0}^{Far} (mm)", "Plots/PixelShield2Arcs_y0PixelFar.png",Y_VerFar, dY_VerFarCon);
+
 
     for(int i = 0; i < NumberFacets; i++){
 
@@ -1522,10 +1541,19 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        gr_VerFar->SetMarkerSize(2.5);
        gr_VerFar->SetMarkerColor(kBlue);
 
+       TString FacetPixel = "Facet Near";
+       if ((i > 5 && i < 12) || (i > 25 && i < 40)) FacetPixel = "Facet Far";
+       Int_t iFacetVertex = Int_t((i-1)/2);
+       if(i > 5 && i < 12) iFacetVertex = Int_t((i-7)/2);
+       if(i > 11 && i < 26) iFacetVertex = Int_t((i-13)/2)+3;
+       if (i > 25 && i < 40) iFacetVertex = Int_t((i-27)/2)+3;
        //hfacet[i]->GetXaxis()->SetRangeUser(-5., 5.);
        //hfacet[i]->GetYaxis()->SetRangeUser(-5., 5.);
        hfacet[i]->GetXaxis()->SetRangeUser(-R_PixelCut, R_PixelCut);
        hfacet[i]->GetYaxis()->SetRangeUser(-R_PixelCut, R_PixelCut);
+       hfacet[i]->GetZaxis()->SetTitle(Form("%s %d (id %d): Events/(%1.1f#times%1.1f mm^{2})", FacetPixel.Data(), i, iFacetVertex, hfacet[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet[i]->GetYaxis()->GetBinWidth(1)*10));
+       if (2*Int_t((i-1)/2) != (i-1) )hfacet[i]->GetZaxis()->SetTitle(Form("%s %d: Events/(%1.1f#times%1.1f mm^{2})", FacetPixel.Data(), i, hfacet[i]->GetXaxis()->GetBinWidth(1)*10,  hfacet[i]->GetYaxis()->GetBinWidth(1)*10)); 
+       hfacet[i]->GetZaxis()->SetTitleOffset(1.2);
        hfacet[i]->Draw("COLZ");
        lineFacet -> Draw("same");
        lineFacetPerp -> Draw("same");
@@ -1569,6 +1597,30 @@ if (x[0] > par[0]+lenth){
 
 }
  return value;
+}
+
+// Draw (X,Y) pixel position for near and far sides
+void PixelVertexPlot(TH1D*hPlot,TString Xaxis, TString PngTitle, Double_t VertexPos, Double_t dVertexPos){
+    TCanvas* cVer = new TCanvas("cVer","");
+    cVer->cd();
+
+    hPlot->SetStats(0);
+    hPlot->GetXaxis()->SetTitle(Xaxis);
+    hPlot->GetYaxis()->SetTitle(Form("Events/%1.1f mm", hPlot->GetXaxis()->GetBinWidth(1)));
+    hPlot->GetXaxis()->SetTitleOffset(1.2);
+    hPlot-> SetLineWidth(3);
+    Double_t MaxY = hPlot->GetMaximum();
+    MaxY = MaxY + 1.1*sqrt(MaxY);
+    //hPlot->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+    //hPlot->GetYaxis()->SetRangeUser(-RPlot, RPlot);
+    TLine *lineX0PixelFar = new TLine(10.*VertexPos,0,10.*VertexPos,MaxY); // in mm
+    lineX0PixelFar -> SetLineColor(kRed);
+    lineX0PixelFar -> SetLineWidth(3);
+    hPlot->Draw("e");
+    lineX0PixelFar->Draw("same");
+    //cVer->Update();
+    cVer->SaveAs(PngTitle);
+    cVer->Close();
 }
 
 //create function to fit beam pipe in 2D (circle)
