@@ -486,8 +486,8 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
 
  TF1* landau_fit = new TF1("func_landau","landau");
  landau_fit->SetLineColor(kBlue);
- //landau_fit->SetNpx(10000000); 
- double limit_factor = 1.3;
+ landau_fit->SetNpx(10000000); 
+ double limit_factor = 2.0; //1.3
  double MPV_upper=limit_factor*hist->GetMean();
  double MPV_lower=-limit_factor*hist->GetMean();
  double sigma_upper=limit_factor*hist->GetRMS();
@@ -525,7 +525,7 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
   landau_fit->SetParLimits(1,MPV_lower,MPV_upper);
   landau_fit->SetParLimits(2,sigma_lower,sigma_upper);
   
-  hist->Fit(landau_fit,"EMR","SAMES",0.0,hist->GetXaxis()->GetXmax());
+  hist->Fit(landau_fit,"QEMR","SAMES",0.0,hist->GetXaxis()->GetXmax()); //add "W" to change "problems" to successful 
  }
 
  TString status = gMinuit->fCstatu;
@@ -829,7 +829,7 @@ cout << endl << endl << endl << endl;
 
 //ROOT::Math::MinimizerOptions::SetDefaultTolerance(1);
 //int numcalls = 10000;
-//ROOT::Math::MinimizerOptions::SetDefaultMaxFunctionCalls(numcalls);
+//ROOT::Math::MinimizerOptions::SetDefaultMaxFunctionCalls(numcalls); //change "call limit" to "failure"
 
 
 std::vector<TString> vect_status_landau;
@@ -844,7 +844,7 @@ gStyle->SetPalette(1);
 gStyle->SetOptTitle(0);
 string fname;
 
-for(int k = 0; k < 4; k++)
+for(int k = 0; k < 6; k++) //k < 6 to run over all files
 {
  if(k==0)
  {
@@ -862,7 +862,14 @@ for(int k = 0; k < 4; k++)
  {
   fname = "ResolutionPlots_2015_REPRO.root";
  }
-
+ if(k==4)
+ {
+  fname = "ResolutionPlots_10GeV_2015.root";
+ }
+ if(k==5)
+ {
+  fname = "ResolutionPlots_100GeV_2015.root";
+ }
 // open file:
 std::vector<TH1*> vect_hist = list_histos(fname.c_str());
 std::vector<string> vect_filename;
@@ -887,6 +894,14 @@ for (int i = 0; i < vect_hist_size; i++)
  {
   dir += "2015_Results/";
  }
+ if(k == 4)
+ {
+  dir += "10GeV_2015_Results/";
+ }
+ if(k == 5)
+ {
+  dir += "100GeV_2015_Results/";
+ }
  string filename = vect_hist[i]->GetName();
  dir += filename;
  vect_filename.push_back(dir);
@@ -910,8 +925,8 @@ for (int i = 0; i < vect_hist_size; i++)
   PerpendicularFactor=1.0;
  }
 
-//Landau
- cout << endl << "Fit Landau" << endl;
+ //Landau
+ //cout << endl << "Fit Landau" << endl;
  TH1D* vect_hist_clone = (TH1D*)(vect_hist[i]->Clone());
  TH1D* vect_hist_cloneA = (TH1D*)(vect_hist[i]->Clone());
  TH1D* vect_hist_cloneB = (TH1D*)(vect_hist[i]->Clone());

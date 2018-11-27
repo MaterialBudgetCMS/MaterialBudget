@@ -31,7 +31,7 @@ void Resolution::Loop()
   int count2 = 0;
 
   TFile* outputFile;
-  for(int IFile = 0; IFile < 1; IFile++)
+  for(int IFile = 0; IFile < 2; IFile++)
   {
    count1 = 0;
    count2 = 0;
@@ -39,15 +39,14 @@ void Resolution::Loop()
    //outputFile = new TFile("ResolutionPlots_50GeV_2018.root", "RECREATE");
    //outputFile = new TFile("ResolutionPlots_100GeV_2018.root", "RECREATE");
    //outputFile = new TFile("ResolutionPlots_2015.root", "RECREATE");
-   outputFile = new TFile("ResolutionPlots_2015_REPRO.root", "RECREATE"); //reprocessed with current cuts
-   /*
+   //outputFile = new TFile("ResolutionPlots_2015_REPRO.root", "RECREATE"); //reprocessed with current cuts
    if(IFile == 0) {
     outputFile = new TFile("ResolutionPlots_10GeV_2015.root", "RECREATE"); //10 GeV
    }
    if(IFile == 1) {
     outputFile = new TFile("ResolutionPlots_100GeV_2015.root", "RECREATE"); //100 GeV
    }
-   */
+
    //initialize histograms 
    TH1D* hMC_deltaR3d;
    TH1D* hMC_deltaR3d_Parallel;
@@ -76,8 +75,8 @@ void Resolution::Loop()
    TH1D* hMC_deltaR3d_Outer_Barrel;
    TH1D* hMC_deltaR3d_Parallel_Outer_Barrel;
    TH1D* hMC_deltaR3d_Perpendicular_Outer_Barrel;
-   TH1D* hMC_pt_cut_max;
-   TH1D* hMC_pt_cut_all;
+   //TH1D* hMC_pt_cut_low;
+   //TH1D* hMC_pt_cut_high;
 
    //create histograms
    hMC_deltaR3d = new TH1D("hMC_deltaR3d", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
@@ -134,10 +133,10 @@ void Resolution::Loop()
    hMC_deltaR3d_Parallel_Inner_Barrel->Sumw2();
    hMC_deltaR3d_Perpendicular_Inner_Barrel = new TH1D("hMC_deltaR3d_Perpendicular_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin*dR_binfactor, dR_xfactor*dR_xmax/10.0);
    hMC_deltaR3d_Perpendicular_Inner_Barrel->Sumw2();
-   hMC_pt_cut_max = new TH1D("hMC_pt_cut_max", "CMS work in Progress", 105, 0.0, 105.0);
-   //hMC_pt_cut_max->Sumw2();
-   hMC_pt_cut_all = new TH1D("hMC_pt_cut_all", "CMS work in Progress", 105, 0.0, 105.0);
-   //hMC_pt_cut_all->Sumw2();
+   //hMC_pt_cut_low = new TH1D("hMC_pt_cut_low", "CMS work in Progress", 50, 0.0, 15.0);
+   //hMC_pt_cut_low->Sumw2();
+   //hMC_pt_cut_high = new TH1D("hMC_pt_cut_high", "CMS work in Progress", 100, 15.0, 105.0);
+   //hMC_pt_cut_high->Sumw2();
 
    Long64_t nentries = fChain->GetEntriesFast();
 
@@ -175,13 +174,16 @@ void Resolution::Loop()
       //cout << "Initial = " << MC_TrkV_momentumInc_pt->at(0) << endl;
       for ( int j = 0; j < numberOfMC_TrkV; j++ )
       {
-       hMC_pt_cut_all->Fill(MC_TrkV_momentumInc_pt->at(j));
+       //if(MC_TrkV_momentumInc_pt->at(j) > 9.0 && MC_TrkV_momentumInc_pt->at(j) < 12.0)
+       //{
+       //cout << "Momentum " << " = " << MC_TrkV_momentumInc_pt->at(j) << endl;
+       //}
        if(momentumInc_pt_max < (MC_TrkV_momentumInc_pt->at(j)))
        {
 	momentumInc_pt_max = (MC_TrkV_momentumInc_pt->at(j));
+	//cout << "Max " << " = " << momentumInc_pt_max << endl;
        }	  
       }
-      hMC_pt_cut_max->Fill(momentumInc_pt_max);
       for ( int j = 0; j < numberOfMC_TrkV; j++ )
       {
          ni_MC_x = MC_TrkV_x->at(j);
@@ -196,8 +198,7 @@ void Resolution::Loop()
 	  //if (MC_TrkV_numberOfChargedParticles_0p2->at(j) < 3 ) continue;
           if (MC_TrkV_momentumOut_pt->at(j) < 0.5 ) continue;
           if (ni_MC_rho > 22) continue;
-          /*
-	  //pt cut
+          //pt cut
           if(IFile == 0)
 	  {
 	   count1++;
@@ -208,7 +209,6 @@ void Resolution::Loop()
 	   count2++;
            if(MC_TrkV_momentumInc_pt->at(j) <= 95.0 ) continue;
 	  }
-	  */
 	  momentumInc_pt_max = 0.0;
           //find the minimum deltaR
           if(DeltaR3d_Min_Val>(MC_TrkV_associationPFDV_deltaR3d->at(j)))
@@ -272,7 +272,6 @@ void Resolution::Loop()
  	  }
        }
    }
-   
    outputFile->Write();
    outputFile->Close();
    
