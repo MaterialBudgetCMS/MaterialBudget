@@ -486,7 +486,7 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
 
  TF1* landau_fit = new TF1("func_landau","landau");
  landau_fit->SetLineColor(kBlue);
- landau_fit->SetNpx(10000000); 
+ //landau_fit->SetNpx(10000000); 
  double limit_factor = 2.0; //1.3
  double MPV_upper=limit_factor*hist->GetMean();
  double MPV_lower=-limit_factor*hist->GetMean();
@@ -525,7 +525,7 @@ TString LandauDrawing(TH1D* hist, double PerpendicularFactor, string filename, c
   landau_fit->SetParLimits(1,MPV_lower,MPV_upper);
   landau_fit->SetParLimits(2,sigma_lower,sigma_upper);
   
-  hist->Fit(landau_fit,"QEMR","SAMES",0.0,hist->GetXaxis()->GetXmax()); //add "W" to change "problems" to successful 
+  hist->Fit(landau_fit,"QEMR","SAMES",0.0,hist->GetXaxis()->GetXmax()); //add "W" to change "problems" to "successful" 
  }
 
  TString status = gMinuit->fCstatu;
@@ -844,7 +844,7 @@ gStyle->SetPalette(1);
 gStyle->SetOptTitle(0);
 string fname;
 
-for(int k = 0; k < 6; k++) //k < 6 to run over all files
+for(int k = 0; k < 4; k++) //k < 6 to run over all files
 {
  if(k==0)
  {

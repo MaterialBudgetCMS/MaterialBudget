@@ -1,10 +1,3 @@
-//////////////////////////////////////////////////////////
-// This class has been automatically generated on
-// Mon Jul 17 15:53:26 2017 by ROOT version 5.34/36
-// from TTree NuclearInteractionsTree/NuclearInteractionsTree
-// found on file: Ntuple_MC_10and100GeVpions.root
-//////////////////////////////////////////////////////////
-
 #ifndef Resolution_h
 #define Resolution_h
 
@@ -14,10 +7,23 @@
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
+#include <TH2.h>
+#include <TStyle.h>
+#include <TCanvas.h>
+#include <memory>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <stdexcept>
 #include <vector>
-#include <vector>
-#include <vector>
-#include <vector>
+#include <TChain.h>
+#include <TTree.h>
+#include <TFile.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TMath.h>
+#include <TVector3.h>
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -234,27 +240,26 @@ public :
    TBranch        *b_PFDV_vTrack_closestDzPVIdx_dxy;   //!
    TBranch        *b_PFDV_vTrack_closestDzPVIdx_dz;   //!
 
-   Resolution(TTree *tree=0);
+   Resolution(TTree *tree=0, TString FileNameRoot="");
    virtual ~Resolution();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   virtual void     Loop(const char* filename, double dR_xfactor, double dR_binfactor);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };
-
 #endif
 
-#ifdef Resolution_cxx
-Resolution::Resolution(TTree *tree) : fChain(0) 
+#define Resolution_cxx
+inline Resolution::Resolution(TTree *tree, TString FileNameRoot) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
 
    // MC Pion gun
-   TString FileNameRoot = "/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_Ntuple/MC_Pi10GeV_1016.root"; 
+   //TString FileNameRoot = "/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/PionGun2018/CMSSW_10_1_6_Pion10GeV_Ntuple/MC_Pi10GeV_1016.root"; 
    //TString FileNameRoot = "../../../../../../../../../Ntuple_Pi50GeV_1016.root";
    //TString FileNameRoot = "../../../../../../../../../Ntuple_Pi100GeV_1016.root";
    //TString FileNameRoot = "../../Ntuple_MC_10and100GeVpions.root";
@@ -276,19 +281,20 @@ Resolution::Resolution(TTree *tree) : fChain(0)
    Init(tree);
 }
 
-Resolution::~Resolution()
+inline Resolution::~Resolution()
 {
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
 
-Int_t Resolution::GetEntry(Long64_t entry)
+inline Int_t Resolution::GetEntry(Long64_t entry)
 {
 // Read contents of entry.
    if (!fChain) return 0;
    return fChain->GetEntry(entry);
 }
-Long64_t Resolution::LoadTree(Long64_t entry)
+
+inline Long64_t Resolution::LoadTree(Long64_t entry)
 {
 // Set the environment to read one entry
    if (!fChain) return -5;
@@ -301,7 +307,7 @@ Long64_t Resolution::LoadTree(Long64_t entry)
    return centry;
 }
 
-void Resolution::Init(TTree *tree)
+inline void Resolution::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -507,7 +513,7 @@ void Resolution::Init(TTree *tree)
    Notify();
 }
 
-Bool_t Resolution::Notify()
+inline Bool_t Resolution::Notify()
 {
    // The Notify() function is called when a new file is opened. This
    // can be either for a new TTree in a TChain or when when a new TTree
@@ -518,18 +524,225 @@ Bool_t Resolution::Notify()
    return kTRUE;
 }
 
-void Resolution::Show(Long64_t entry)
+inline void Resolution::Show(Long64_t entry)
 {
 // Print contents of entry.
 // If entry is not specified, print current entry
    if (!fChain) return;
    fChain->Show(entry);
 }
-Int_t Resolution::Cut(Long64_t entry)
+inline Int_t Resolution::Cut(Long64_t entry)
 {
 // This function may be called from Loop.
 // returns  1 if entry is accepted.
 // returns -1 otherwise.
    return 1;
 }
-#endif // #ifdef Resolution_cxx
+
+inline void Resolution::Loop(const char* filename, double dR_xfactor, double dR_binfactor)
+{
+  if (fChain == 0) return;
+  Float_t dR_xmin = 0.;
+  Float_t dR_xmax = 1.0;
+  Int_t  dR_Nbin = 128;
+  //Float_t dR_xfactor = 0.15; //default: 0.15
+  //Float_t dR_binfactor = 1.0;
+
+   TFile* outputFile = new TFile(filename, "RECREATE");
+   //initialize histograms 
+   TH1D* hMC_deltaR3d;
+   TH1D* hMC_deltaR3d_Parallel;
+   TH1D* hMC_deltaR3d_Perpendicular;
+   TH1D* hMC_deltaR3d_EndCap;
+   TH1D* hMC_deltaR3d_Parallel_EndCap;
+   TH1D* hMC_deltaR3d_Perpendicular_EndCap;
+   TH1D* hMC_deltaR3d_Barrel;
+   TH1D* hMC_deltaR3d_Parallel_Barrel;
+   TH1D* hMC_deltaR3d_Perpendicular_Barrel;
+   TH1D* hMC_deltaR3d_Inner;
+   TH1D* hMC_deltaR3d_Parallel_Inner;
+   TH1D* hMC_deltaR3d_Perpendicular_Inner;
+   TH1D* hMC_deltaR3d_Inner_EndCap;
+   TH1D* hMC_deltaR3d_Parallel_Inner_EndCap;
+   TH1D* hMC_deltaR3d_Perpendicular_Inner_EndCap;
+   TH1D* hMC_deltaR3d_Inner_Barrel;
+   TH1D* hMC_deltaR3d_Parallel_Inner_Barrel;
+   TH1D* hMC_deltaR3d_Perpendicular_Inner_Barrel;
+   TH1D* hMC_deltaR3d_Outer;
+   TH1D* hMC_deltaR3d_Parallel_Outer;
+   TH1D* hMC_deltaR3d_Perpendicular_Outer;
+   TH1D* hMC_deltaR3d_Outer_EndCap;
+   TH1D* hMC_deltaR3d_Parallel_Outer_EndCap;
+   TH1D* hMC_deltaR3d_Perpendicular_Outer_EndCap;
+   TH1D* hMC_deltaR3d_Outer_Barrel;
+   TH1D* hMC_deltaR3d_Parallel_Outer_Barrel;
+   TH1D* hMC_deltaR3d_Perpendicular_Outer_Barrel;
+
+   //create histograms
+   hMC_deltaR3d = new TH1D("hMC_deltaR3d", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d->Sumw2();
+   hMC_deltaR3d_Parallel = new TH1D("hMC_deltaR3d_Parallel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel->Sumw2();
+   hMC_deltaR3d_Perpendicular = new TH1D("hMC_deltaR3d_Perpendicular", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular->Sumw2();
+   hMC_deltaR3d_EndCap = new TH1D("hMC_deltaR3d_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_EndCap->Sumw2();
+   hMC_deltaR3d_Parallel_EndCap = new TH1D("hMC_deltaR3d_Parallel_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_EndCap->Sumw2();
+   hMC_deltaR3d_Perpendicular_EndCap = new TH1D("hMC_deltaR3d_Perpendicular_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_EndCap->Sumw2();
+   hMC_deltaR3d_Barrel = new TH1D("hMC_deltaR3d_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Barrel->Sumw2();
+   hMC_deltaR3d_Parallel_Barrel = new TH1D("hMC_deltaR3d_Parallel_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_Barrel->Sumw2();
+   hMC_deltaR3d_Perpendicular_Barrel = new TH1D("hMC_deltaR3d_Perpendicular_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Barrel->Sumw2();
+   hMC_deltaR3d_Outer = new TH1D("hMC_deltaR3d_Outer", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Outer->Sumw2();
+   hMC_deltaR3d_Parallel_Outer = new TH1D("hMC_deltaR3d_Parallel_Outer", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_Outer->Sumw2();
+   hMC_deltaR3d_Perpendicular_Outer = new TH1D("hMC_deltaR3d_Perpendicular_Outer", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Outer->Sumw2();
+   hMC_deltaR3d_Outer_EndCap = new TH1D("hMC_deltaR3d_Outer_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Outer_EndCap->Sumw2();
+   hMC_deltaR3d_Parallel_Outer_EndCap = new TH1D("hMC_deltaR3d_Parallel_Outer_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_Outer_EndCap->Sumw2();
+   hMC_deltaR3d_Perpendicular_Outer_EndCap = new TH1D("hMC_deltaR3d_Perpendicular_Outer_EndCap", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Outer_EndCap->Sumw2();
+   hMC_deltaR3d_Outer_Barrel = new TH1D("hMC_deltaR3d_Outer_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Outer_Barrel->Sumw2();
+   hMC_deltaR3d_Parallel_Outer_Barrel = new TH1D("hMC_deltaR3d_Parallel_Outer_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_Outer_Barrel->Sumw2();
+   hMC_deltaR3d_Perpendicular_Outer_Barrel = new TH1D("hMC_deltaR3d_Perpendicular_Outer_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Outer_Barrel->Sumw2();
+   hMC_deltaR3d_Inner = new TH1D("hMC_deltaR3d_Inner", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xfactor*dR_xmax);
+   hMC_deltaR3d_Inner->Sumw2();
+   hMC_deltaR3d_Parallel_Inner = new TH1D("hMC_deltaR3d_Parallel_Inner", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xfactor*dR_xmax);
+   hMC_deltaR3d_Parallel_Inner->Sumw2();
+   hMC_deltaR3d_Perpendicular_Inner = new TH1D("hMC_deltaR3d_Perpendicular_Inner", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xfactor*dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Inner->Sumw2();
+   hMC_deltaR3d_Inner_EndCap = new TH1D("hMC_deltaR3d_Inner_EndCap", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Inner_EndCap->Sumw2();
+   hMC_deltaR3d_Parallel_Inner_EndCap = new TH1D("hMC_deltaR3d_Parallel_Inner_EndCap", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xmax);
+   hMC_deltaR3d_Parallel_Inner_EndCap->Sumw2();
+   hMC_deltaR3d_Perpendicular_Inner_EndCap = new TH1D("hMC_deltaR3d_Perpendicular_Inner_EndCap", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Inner_EndCap->Sumw2();
+   hMC_deltaR3d_Inner_Barrel = new TH1D("hMC_deltaR3d_Inner_Barrel", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xfactor*dR_xmax);
+   hMC_deltaR3d_Inner_Barrel->Sumw2();
+   hMC_deltaR3d_Parallel_Inner_Barrel = new TH1D("hMC_deltaR3d_Parallel_Inner_Barrel", "CMS work in Progress", dR_Nbin*dR_binfactor, dR_xmin, dR_xfactor*dR_xmax);
+   hMC_deltaR3d_Parallel_Inner_Barrel->Sumw2();
+   hMC_deltaR3d_Perpendicular_Inner_Barrel = new TH1D("hMC_deltaR3d_Perpendicular_Inner_Barrel", "CMS work in Progress", dR_Nbin, dR_xmin*dR_binfactor, dR_xfactor*dR_xmax/10.0);
+   hMC_deltaR3d_Perpendicular_Inner_Barrel->Sumw2();
+
+   Long64_t nentries = fChain->GetEntriesFast();
+
+   double ni_MC_x, ni_MC_y, ni_MC_z, ni_MC_rho;
+   Long64_t nbytes = 0, nb = 0;
+   for (Long64_t jentry=0; jentry<nentries;jentry++) {
+      Long64_t ientry = LoadTree(jentry);
+      if (ientry < 0) break;
+      nb = fChain->GetEntry(jentry);   nbytes += nb;
+       if (Cut(ientry) < 0) continue;
+      //Get Branch addresses for cuts
+      b_MC_TrkV_numberOfChargedParticles_0p2->GetEntry(ientry);
+      b_MC_TrkV_momentumOut_pt->GetEntry(ientry);
+      // print how many events are done:
+      if( jentry%100000 == 0 )
+           std::cout << "Loop over entry " << jentry << "/" << nentries << "." << std::endl;
+      int NumberNI=0;
+      for ( int i = 0; i < numberOfMC_TrkV; i++ )
+      {
+       //get values of x, y, and z of MC tracks
+       ni_MC_x = MC_TrkV_x->at(i);
+       ni_MC_y = MC_TrkV_y->at(i);
+       ni_MC_z = MC_TrkV_z->at(i);
+       ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+       //default cuts
+       //if (MC_TrkV_numberOfChargedParticles_0p2->at(i) < 3 ) continue;
+       if (MC_TrkV_momentumOut_pt->at(i) < 0.5 ) continue;
+       if (ni_MC_rho < 1.7) continue;
+       if (ni_MC_rho > 65) continue;
+       NumberNI++;
+      }
+         if ( (NumberNI != 1) || numberOfPFDV != 1) continue;
+      
+      for ( int j = 0; j < numberOfMC_TrkV; j++ )
+      {
+         ni_MC_x = MC_TrkV_x->at(j);
+         ni_MC_y = MC_TrkV_y->at(j);
+         ni_MC_z = MC_TrkV_z->at(j);
+         ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+         double DeltaR3d_Min_Val=1000.;
+         double DeltaR3dParallel_Min_Val=0.0;
+         double DeltaR3dPerpendicular_Min_Val=0.0;
+          //default cuts
+          if (ni_MC_rho < 1.7) continue;
+	  //if (MC_TrkV_numberOfChargedParticles_0p2->at(j) < 3 ) continue;
+          if (MC_TrkV_momentumOut_pt->at(j) < 0.5 ) continue;
+          if (ni_MC_rho > 22) continue;
+          //find the minimum deltaR
+          if(DeltaR3d_Min_Val>(MC_TrkV_associationPFDV_deltaR3d->at(j)))
+           {
+	    DeltaR3d_Min_Val=(MC_TrkV_associationPFDV_deltaR3d->at(j));
+            DeltaR3dParallel_Min_Val=(MC_TrkV_associationPFDV_deltaR3dParallel->at(j));
+            DeltaR3dPerpendicular_Min_Val=(MC_TrkV_associationPFDV_deltaR3dPerpendicular->at(j));
+            ni_MC_rho = TMath::Sqrt( ni_MC_x*ni_MC_x + ni_MC_y*ni_MC_y );
+           }
+   	  //fill histograms based on each region
+          hMC_deltaR3d->Fill(DeltaR3d_Min_Val);
+          hMC_deltaR3d_Parallel->Fill(DeltaR3dParallel_Min_Val);
+          hMC_deltaR3d_Perpendicular->Fill(DeltaR3dPerpendicular_Min_Val);
+          if(ni_MC_z > 25)
+          {
+           hMC_deltaR3d_EndCap->Fill(DeltaR3d_Min_Val);
+	   hMC_deltaR3d_Parallel_EndCap->Fill(DeltaR3dParallel_Min_Val);
+           hMC_deltaR3d_Perpendicular_EndCap->Fill(DeltaR3dPerpendicular_Min_Val);
+          }
+          if(ni_MC_z < 25)
+	  {
+	   hMC_deltaR3d_Barrel->Fill(DeltaR3d_Min_Val);
+ 	   hMC_deltaR3d_Parallel_Barrel->Fill(DeltaR3dParallel_Min_Val);
+	   hMC_deltaR3d_Perpendicular_Barrel->Fill(DeltaR3dPerpendicular_Min_Val);
+	  }
+	  if(ni_MC_rho > 19)
+  	  {
+	   hMC_deltaR3d_Outer->Fill(DeltaR3d_Min_Val);
+	   hMC_deltaR3d_Parallel_Outer->Fill(DeltaR3dParallel_Min_Val);
+	   hMC_deltaR3d_Perpendicular_Outer->Fill(DeltaR3dPerpendicular_Min_Val);
+	  }
+	  if(ni_MC_rho > 19 && ni_MC_z > 25)
+	  {
+	   hMC_deltaR3d_Outer_EndCap->Fill(DeltaR3d_Min_Val);
+	   hMC_deltaR3d_Parallel_Outer_EndCap->Fill(DeltaR3dParallel_Min_Val);
+	   hMC_deltaR3d_Perpendicular_Outer_EndCap->Fill(DeltaR3dPerpendicular_Min_Val);
+ 	  }
+	  if(ni_MC_rho > 19 && ni_MC_z < 25)
+	  {
+	   hMC_deltaR3d_Outer_Barrel->Fill(DeltaR3d_Min_Val);
+	   hMC_deltaR3d_Parallel_Outer_Barrel->Fill(DeltaR3dParallel_Min_Val);
+	   hMC_deltaR3d_Perpendicular_Outer_Barrel->Fill(DeltaR3dPerpendicular_Min_Val);
+	  }
+	  if(ni_MC_rho < 5)
+	  {
+	   hMC_deltaR3d_Inner->Fill(DeltaR3d_Min_Val);
+	   hMC_deltaR3d_Parallel_Inner->Fill(DeltaR3dParallel_Min_Val);
+	   hMC_deltaR3d_Perpendicular_Inner->Fill(DeltaR3dPerpendicular_Min_Val);
+	  }
+	  if(ni_MC_rho < 5 && ni_MC_z > 25)
+	  {
+	   hMC_deltaR3d_Inner_EndCap->Fill(DeltaR3d_Min_Val);
+	   hMC_deltaR3d_Parallel_Inner_EndCap->Fill(DeltaR3dParallel_Min_Val);
+	   hMC_deltaR3d_Perpendicular_Inner_EndCap->Fill(DeltaR3dPerpendicular_Min_Val);
+	  }
+	  if(ni_MC_rho < 5 && ni_MC_z < 25)
+	  {
+	   hMC_deltaR3d_Inner_Barrel->Fill(DeltaR3d_Min_Val);
+	   hMC_deltaR3d_Parallel_Inner_Barrel->Fill(DeltaR3dParallel_Min_Val);
+	   hMC_deltaR3d_Perpendicular_Inner_Barrel->Fill(DeltaR3dPerpendicular_Min_Val);
+ 	  }
+       }
+   }
+   
+   outputFile->Write();
+   outputFile->Close();
+}

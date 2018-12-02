@@ -24,7 +24,7 @@ void Resolution::Loop()
   Float_t dR_xmin = 0.;
   Float_t dR_xmax = 1.0;
   Float_t dR_xmax_Loose = 20.;
-  Int_t  dR_Nbin = 40;
+  Int_t  dR_Nbin = 50;
   Float_t dR_xfactor = 0.15; //default: 0.15
   Float_t dR_binfactor = 1.0;
   int count1 = 0; 
@@ -35,11 +35,11 @@ void Resolution::Loop()
   {
    count1 = 0;
    count2 = 0;
-   //outputFile = new TFile("ResolutionPlots_10GeV_2018.root", "RECREATE");
+   outputFile = new TFile("ResolutionPlots_10GeV_2018.root", "RECREATE");
    //outputFile = new TFile("ResolutionPlots_50GeV_2018.root", "RECREATE");
    //outputFile = new TFile("ResolutionPlots_100GeV_2018.root", "RECREATE");
    //outputFile = new TFile("ResolutionPlots_2015.root", "RECREATE");
-   outputFile = new TFile("ResolutionPlots_2015_REPRO.root", "RECREATE"); //reprocessed with current cuts
+   //outputFile = new TFile("ResolutionPlots_2015_REPRO.root", "RECREATE"); //reprocessed with current cuts
    /*
    if(IFile == 0) {
     outputFile = new TFile("ResolutionPlots_10GeV_2015.root", "RECREATE"); //10 GeV
