@@ -164,7 +164,8 @@ void revisionsInnerTrackerFit_2018()
   Double_t x0_PixelSupportPlus = -0.233;
   Double_t y0_PixelSupportPlus = -0.331;
   Double_t r0_PixelSupportPlus = 21.85;
-  
+
+  TString z25 = "|z| < 25 cm"; 
 ////Average over 3 adjacent sectors to smooth differences 
   Int_t AverageBG = 0; // 0 - Default, don't average BG; 1 - sytematics, average BG
   TString FitObject = "";
@@ -203,15 +204,16 @@ void revisionsInnerTrackerFit_2018()
   
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
-     Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
+     //Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
+     Rmin = 1.8, Rmax = 3.7, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2./*1.9*/, RSmax = 2.35/*2.4*/, RPlot = 4.;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.003; //size of systematics in cm
      r_Sys = 0.003; //size of systematics in cm
      //x0 = 0.; // from MC
      //y0 = 0.; // from MC
      x0 = 0.171; // from previous fits using this program that were based on 2018
-     y0 = -0.175; // from previous fits using this program that were based on 2018
-     r0 = 2.211; // from previous fits using this program that were based on 2015
+     y0 = -0.176; // from previous fits using this program that were based on 2018
+     r0 = 2.210; // from previous fits using this program that were based on 2015
      //Rmin = 1.8, Rmax = 3., RBGmin = 2.4, RBGmax = 3., RSmin = 2., RSmax = 2.4, RPlot = 3.5;
      //RangeEstimatorQuality = 0.1;  
      //x_Sys = 0.003; //size of systematics in cm
@@ -226,10 +228,12 @@ void revisionsInnerTrackerFit_2018()
      extraText  = "work in progress";
      Rmin = 1.8, Rmax = 3.0, RBGmin = 2.35/*2.4*/, RBGmax = 3., RSmin = 2.0, RSmax = 2.35/*2.4*/, RPlot = 3.5;
      RangeEstimatorQuality = 0.1;
-     x_Sys = 0.002; //size of systematics in cm
-     r_Sys = 0.002; //size of systematics in cm
-     x0 = 0.113; // from previous fits using this program that were based on 2017
-     y0 = -0.118; // from previous fits using this program that were based on 2017
+     x_Sys = 0.003; //size of systematics in cm
+     r_Sys = 0.003; //size of systematics in cm
+     //x0 = 0.113; // from previous fits using this program that were based on 2017
+     //y0 = -0.118; // from previous fits using this program that were based on 2017
+     x0 = 0.171; // from previous fits using this program that were based on 2018
+     y0 = -0.176; // from previous fits using this program that were based on 2018
      r0 = 2.211; // initial x radiu, from previous fits using this program that were based on 2015
      r0_y = 2.211; // in cm, initial y radius
   }
@@ -451,7 +455,8 @@ void revisionsInnerTrackerFit_2018()
   // 2018 data file
   //TFile* inputFile = TFile::Open("PlotProduced_2018.root");
   //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
-  TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
+  //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
+  TFile* inputFile = TFile::Open("PlotProduced_2018BCD_RawToReco.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -580,8 +585,8 @@ void revisionsInnerTrackerFit_2018()
     Double_t MaxZhRhoPhi = h_RhoPhi->GetMaximum();
     cout << "******** Maximum Z value for h_RhoPhi = " << MaxZhRhoPhi << endl;
     /// doesn't work for PixelShield2Arcs and PixelSupportEllipse (calculate in whole range), so don't apply to it:
-    if(FitObject == "PixelSupportEllipse")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, 48); //only for paper version, if scale will change, all change
-    if(FitObject == "BeamPipe"||FitObject == "PixelSupportRails")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, MaxZhRhoPhi);
+    if(FitObject == "PixelSupportEllipse")h_RhoPhi->GetZaxis()->SetRangeUser(1., 50); //only for paper version, if scale will change, all change
+    if(FitObject == "BeamPipe"||FitObject == "PixelSupportRails")h_RhoPhi->GetZaxis()->SetRangeUser(1., MaxZhRhoPhi);
 
     h_ZR = new TH2D();
     h_ZR = (TH2D*)inputFile->Get("hPFDV_ZR_Map" );
@@ -633,7 +638,8 @@ void revisionsInnerTrackerFit_2018()
     if(FitObject == "PixelShieldEllipse")h->Rebin2D(5,5);
     if(FitObject == "PixelShieldPlus") h->Rebin2D(5,5);
     if(FitObject == "PixelShieldMinus")h->Rebin2D(5,5);
-    if(FitObject == "BeamPipe")    h->Rebin2D(5,5);
+    //if(FitObject == "BeamPipe")    h->Rebin2D(5,5);
+    if(FitObject == "BeamPipe")    h->Rebin2D(2,2);
     if(FitObject == "BeamPipeEllipse")h->Rebin2D(5,5);
     if(FitObject == "PixelSupportRails")h->Rebin2D(2,2);
     if(FitObject == "PixelSupportRailsPositive")h->Rebin2D(2,2);
@@ -680,19 +686,20 @@ void revisionsInnerTrackerFit_2018()
     }
    // finish h_Draw
     h_Draw->SetStats(0);
-    h_Draw->GetXaxis()->SetTitle("x (cm)");
-    h_Draw->GetYaxis()->SetTitle("y (cm)");
+    hEmpty->GetXaxis()->SetTitle("x (cm)");
+    hEmpty->GetYaxis()->SetTitle("y (cm)");
     h_Draw->GetZaxis()->SetTitle(Form("Events/(%1.1f#times%1.1f mm^{2})    ", h_Draw->GetXaxis()->GetBinWidth(1)*10,  h_Draw->GetYaxis()->GetBinWidth(1)*10));
     h_Draw->GetZaxis()->SetTitleOffset(1.4);
     Double_t MaxZ = h_Draw->GetMaximum();     
     cout << "******** Maximum Z value = " << MaxZ << endl;
-    h_Draw->GetZaxis()->SetRangeUser(0.01, MaxZ);
-    h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
-    h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
+    h_Draw->GetZaxis()->SetRangeUser(1., MaxZ);
+    hEmpty->GetZaxis()->SetRangeUser(1., MaxZ);
+    hEmpty->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+    hEmpty->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
        hEmpty -> Draw();
-       //h_Draw->Draw("COLZsame");
-       h_Draw->Draw("COLZ");
+       h_Draw->Draw("COLZsame");
+       //h_Draw->Draw("COLZ");
     //}
     //else {
     //   h_Draw->Draw("COLZ");
@@ -711,9 +718,12 @@ void revisionsInnerTrackerFit_2018()
 
     TGraph* gr_BS;
     Double_t x_BS[1], y_BS[1];
-    x_BS[0] = 0.077; // in cm for 2015
+    x_BS[0] = 0.096; // in cm for 2018
+    y_BS[0] = -0.062; // in cm for 2018
+
+    //x_BS[0] = 0.077; // in cm for 2015
+    //y_BS[0] = 0.092; // in cm for 2015
     //x_BS[0] = 0.081; // in cm for 2017
-    y_BS[0] = 0.092; // in cm for 2015
     //y_BS[0] = -0.035; // in cm for 2017
     gr_BS = new TGraph(1,x_BS,y_BS);
     gr_BS->SetMarkerStyle(20);
@@ -725,9 +735,8 @@ void revisionsInnerTrackerFit_2018()
     //gr_BS->SetMarkerColor(kGreen+1);
     gr_BS->SetMarkerColor(kBlue);
 
-
-
-      TLegend* legBS = new TLegend(0.67, 0.74, 0.77, 0.81, "");
+      //TLegend* legBS = new TLegend(0.67, 0.74, 0.77, 0.81, "");
+      TLegend* legBS = new TLegend(0.67, 0.76, 0.77, 0.82, "");
       legBS->SetTextFont(42);
       legBS->SetTextSize(0.04*ScaleSize);
       legBS->SetFillColor(kWhite);
@@ -735,25 +744,29 @@ void revisionsInnerTrackerFit_2018()
       legBS->AddEntry(gr_arc,"(0,0)","P");
       legBS->AddEntry(gr_BS,"Beam spot","P");
 
-
-
-
-
-
     CMS_lumi( cPlots, iPeriod, 0 );
-    if (FitObject == "BeamPipe" )latex_circle.DrawLatex(-3., 3., "Data 2018");
-    if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(2.5, 3.5, "Data 2018");
-    if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 22., "Data 2018");
+    if (FitObject == "BeamPipe" ){
+       latex_circle.DrawLatex(-3.7, 3.6, "Data 2018");
+       latex_circle.DrawLatex(-3.7, 3.2, z25);
+    }
+    if (FitObject == "PixelShield2Arcs" ){
+       latex_circle.DrawLatex(3., 5.5, "Data 2018");
+       latex_circle.DrawLatex(3., 4.8, z25);
+    }
+    if (FitObject == "PixelSupportEllipse" ){
+       latex_circle.DrawLatex(15., 25., "Data 2018");
+       latex_circle.DrawLatex(15., 22., z25);
+    }
     if (FitObject == "BeamPipe"){
        gr_arc->Draw("P");
        gr_BS->Draw("P");
        legBS -> Draw("same");
     }
-    //cPlots->SetLogz();
+    cPlots->SetLogz();
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
-    cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     
     cPlots -> SetLogz();
     h_ZR->Draw("COLZ");
@@ -767,6 +780,7 @@ void revisionsInnerTrackerFit_2018()
     h_XY->Draw("COLZ");
     CMS_lumi( cPlots, iPeriod, 0 ); 
     latex_circle.DrawLatex(15., 22., "Data 2018");
+    latex_circle.DrawLatex(15., 19., "|z| < 25 cm");
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.png"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.pdf"));
     cPlots -> SetLogz(1);
@@ -1304,6 +1318,7 @@ void revisionsInnerTrackerFit_2018()
       if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hbgua0,"EXCLUDED from FIT","");
       //legBg->AddEntry(hbgua0,Form("Data 2018, #phi sector = %d", phiSect),"");
       legBg->AddEntry(hbgua0,Form("Data 2018, #phi sector = %d", phiSect),"l");
+      legBg->AddEntry(hbgua0,"|z| < 25 cm ","");
       legBg->AddEntry(hbgua2,"Signal fit region","f");
       legBg->AddEntry(hbgua1,"Sideband fit region","f");
       //legBg->AddEntry(fitBg,"sideband fit function","l");
@@ -1458,9 +1473,20 @@ void revisionsInnerTrackerFit_2018()
           //if (k == -3 && bgNum < 4.) bgNum = 4.;
           //if (k != -6 && bgNum < 2.) bgNum = 2.;
           //binNum -= bgNum; // subtrackt 1 BG only
-          binNum -= (bgNum+2*sqrt(bgNum)); //sbutrackt BG+2sigmaBF
+          //cout << "binNum = " << binNum  << " bgNum = " << bgNum << endl;
+          if( FitObject == "BeamPipe") {binNum -= 2*bgNum;}
+          else{binNum -= (bgNum+2*sqrt(bgNum));} //sbutrackt BG+2sigmaBF
+          //cout << "binNum after BG sub = " << binNum << endl;
           //binNum -= (2*bgNum); // subtrackt 2 BG
           if (binNum < 0) binNum = 0;
+
+          //TEST: reject bad phi sectors for beam pipe:
+          //Double_t pc = TMath::ATan2( y, x );
+          //if(pc < 0) pc = pc + 2*TMath::Pi();
+          //Int_t thisPhiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
+          //if ( thisPhiSect >= 8 && thisPhiSect <= 12 ) continue;
+          //if ( thisPhiSect >= 32 && thisPhiSect <= 37 ) continue;
+
           if (bgFitQuality[phiSect] == 1 || flag_ExcludeBadFitSector == 0) h1->Fill( x, y, binNum ); // fill only good phi sectors
 
            // calculate y Derivative in 2D, we use 2D histo without BG subtraction
@@ -1514,7 +1540,10 @@ void revisionsInnerTrackerFit_2018()
     // don't plot "0" at z axis
     Double_t MaxZh = h->GetMaximum();
     cout << "******** Maximum Z value for h = " << MaxZh << endl;
-    h->GetZaxis()->SetRangeUser(0.01, MaxZh);
+    //h->GetZaxis()->SetRangeUser(0.01, MaxZh);
+    h->GetZaxis()->SetRangeUser(1., MaxZh);
+    hEmpty->GetZaxis()->SetRangeUser(1., MaxZh);
+    cPlots->SetLogz();
 
 
     /// par[0] = R
@@ -1558,12 +1587,17 @@ void revisionsInnerTrackerFit_2018()
 
     //if small slice, then rebin histo for better view
     //if(k > -6 && k < 5) h->Rebin2D(5,5);
-    h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
-    h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
+    hEmpty->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+    hEmpty->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
        hEmpty -> Draw();
        h->Draw("COLZsame");
-       //h->Draw("COLZ");
+    if(FitObject == "BeamPipe"){
+       Double_t RP = 3.5; 
+       h->GetXaxis()->SetRangeUser(-RP, RP);
+       h->GetYaxis()->SetRangeUser(-RP, RP);
+    }
+      // h->Draw("COLZ");
     //}
     //else {
     //   h->Draw("col");
@@ -2233,8 +2267,8 @@ void revisionsInnerTrackerFit_2018()
       // Create the legend for all 2D XY map plots, include (0,0) point
       //TLegend* legArc = new TLegend(0.75, 0.75, 0.95, 0.9, "");
       TLegend* legData = new TLegend(0.42, 0.70, 0.52, 0.82, "");
-      TLegend* legArc = new TLegend(0.67, 0.69, 0.77, 0.81, "");
-      if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ) legArc = new TLegend(0.65, 0.70, 0.75, 0.83, "");
+      TLegend* legArc = new TLegend(0.67, 0.67, 0.77, 0.81, "");
+      //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ) legArc = new TLegend(0.65, 0.70, 0.75, 0.83, "");
       legArc->SetTextFont(42);
       legArc->SetTextSize(0.04*ScaleSize);
       legArc->SetFillColor(kWhite);
@@ -2246,7 +2280,7 @@ void revisionsInnerTrackerFit_2018()
 
       
       if(FitObject == "PixelShield2Arcs") {legData->AddEntry(arc,"Data 2018","");} 
-      else {legArc->AddEntry(arc,"Data 2018","");}
+      else {legArc->AddEntry(arc,"Data 2018","");legArc->AddEntry(arc,z25,"");}
 
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport") 
         {
@@ -2374,7 +2408,7 @@ void revisionsInnerTrackerFit_2018()
       bpAlt ->Draw("same");
       CMS_lumi( cPlots, iPeriod, 0 );
 
-      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.75, 0.82, 0.81, "");
+      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.72, 0.82, 0.81, "");
       legArc_RhoPhi->SetTextFont(42);
       legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
       legArc_RhoPhi->SetFillColor(kWhite);
@@ -2382,6 +2416,7 @@ void revisionsInnerTrackerFit_2018()
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport")
         {
         legArc_RhoPhi->AddEntry(arc,"Data 2018","");
+        legArc_RhoPhi->AddEntry(arc,"|z| < 25 cm","");
         legArc_RhoPhi->AddEntry(arc,"Circle fit","l");
         }
 
@@ -2408,12 +2443,13 @@ void revisionsInnerTrackerFit_2018()
       bpEllipseAlt ->Draw("same");
       CMS_lumi( cPlots, iPeriod, 0 );
 
-      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.75, 0.82, 0.81, "");
+      TLegend* legArc_RhoPhi = new TLegend(0.65, 0.72, 0.82, 0.81, "");
       legArc_RhoPhi->SetTextFont(42);
       legArc_RhoPhi->SetTextSize(0.04*ScaleSize);
       legArc_RhoPhi->SetFillColor(kWhite);
       legArc_RhoPhi->SetTextColor(kBlack);
       legArc_RhoPhi->AddEntry(arc,"Data 2018","");
+      legArc_RhoPhi->AddEntry(arc,"|z| < 25 cm","");
       legArc_RhoPhi->AddEntry(arc,"Ellipse fit","l");
 
       legArc_RhoPhi->Draw("same");
