@@ -183,7 +183,8 @@ std::cout << "*****  Pi = " << Pi << std::endl;
 
 Double_t x0_BeamPipe = 0.171; // from previous fits using this program that were based on 2018
 Double_t y0_BeamPipe = -0.175; // from previous fits using this program that were based on 2018
-  
+
+  TString z25 = "|z| < 25 cm";  
 ////Average over 3 adjacent sectors to smooth differences 
   Int_t AverageBG = 0; // 0 - Default, don't average BG; 1 - sytematics, average BG
   TString FitObject = "";
@@ -328,15 +329,22 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
      //PlotObject = "hPFDV_XY_PixelSupport";
      PlotObjectBg = "hPFDV_RhoPhi_PixelSupport";
      Rmin = 2.28, Rmax = 8.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6;
+     //Rmin = 1.8, Rmax = 8.0, RBGmin = 2.5, RBGmax = 2.55, RSmin = 2.55, RSmax = 2.6;
      RPlot = 8.0;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.02; // size of systematics in cm
      r_Sys = 0.02; // size of systematics in cm
      //**** for |z| < 25 cm
-     x0 = 0.09;//0.10; // in cm
-     y0 = -0.08;//-0.11; // in cm
-     x0_Far = 0.08;//0.04; // in cm
-     y0_Far = -0.12;//-0.18; // in cm
+     //Default values:
+     //x0 = 0.09; // in cm
+     //y0 = -0.08; // in cm
+     //x0_Far = 0.08; // in cm
+     //y0_Far = -0.12; // in cm
+     // From fit L1 and L2
+     x0 = 0.11; // in cm
+     y0 = -0.09; // in cm
+     x0_Far = 0.06; // in cm
+     y0_Far = -0.10; // in cm
      r0 = 3.0; // in cm, the initial x radius
      //***** for z: -25 to -20 cm
      //x0 = -0.032; // in cm
@@ -474,7 +482,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
   // 2018 data file
   //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
   //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
-  TFile* inputFile = TFile::Open("PlotProduced_2018CD_RawToReco.root");
+  //TFile* inputFile = TFile::Open("PlotProduced_2018CD_RawToReco.root");
+  TFile* inputFile = TFile::Open("PlotProduced_2018BCD_RawToReco.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -694,19 +703,23 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
         Double_t Radius_corr = TMath::Sqrt( (x-x0_BeamPipe)*(x-x0_BeamPipe) + (y-y0_BeamPipe)*(y-y0_BeamPipe) );
 
         if ( Radius_corr < Rmin || Radius > Rmax ) continue;
+        //if ( Radius < Rmin || Radius > Rmax ) continue;
 
             h_Draw->Fill( x, y, binNum );
       }
     }
    // finish h_Draw
+    //h_Draw->Rebin2D(4,4);
     h_Draw->SetStats(0);
     h_Draw->GetXaxis()->SetTitle("x (cm)");
     h_Draw->GetYaxis()->SetTitle("y (cm)");
     h_Draw->GetZaxis()->SetTitle(Form("Events/(%1.1f#times%1.1f mm^{2})    ", h_Draw->GetXaxis()->GetBinWidth(1)*10,  h_Draw->GetYaxis()->GetBinWidth(1)*10));
     h_Draw->GetZaxis()->SetTitleOffset(1.4);
     Double_t MaxZ = h_Draw->GetMaximum();     
+    //MaxZ = max(MaxZ,100.);
     cout << "******** Maximum Z value = " << MaxZ << endl;
-    h_Draw->GetZaxis()->SetRangeUser(0.01, MaxZ);
+    h_Draw->GetZaxis()->SetRangeUser(1., MaxZ);
+    //h_Draw->GetZaxis()->SetRangeUser(1., 10.);//if we change statistics we have to change upper level too
     h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
     h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
     //if ( FitObject == "PixelSupportEllipse" || FitObject == "PixelShield2Arcs" ){
@@ -780,10 +793,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     TGraph* gr_BS;
     Double_t x_BS[1], y_BS[1];
-    x_BS[0] = 0.097; // in cm for 2018
+    x_BS[0] = 0.096; // in cm for 2018
     //x_BS[0] = 0.077; // in cm for 2015
     //x_BS[0] = 0.081; // in cm for 2017
-    y_BS[0] = -0.061; // in cm for 2018
+    y_BS[0] = -0.062; // in cm for 2018
     //y_BS[0] = 0.092; // in cm for 2015
     //y_BS[0] = -0.035; // in cm for 2017
     gr_BS = new TGraph(1,x_BS,y_BS);
@@ -813,14 +826,18 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     CMS_lumi( cPlots, iPeriod, 0 );
     if (FitObject == "BeamPipe" )latex_circle.DrawLatex(-3., 3., "Data 2018");
-    if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(2.5, 3.5, "Data 2018");
+    //if (FitObject == "PixelShield2Arcs" )latex_circle.DrawLatex(2.5, 3.5, "Data 2018");
+    if (FitObject == "PixelShield2Arcs" ){
+       latex_circle.DrawLatex(5., 7.3, "Data 2018");
+       latex_circle.DrawLatex(5., 6.7, z25);
+    }
     if (FitObject == "PixelSupportEllipse" )latex_circle.DrawLatex(15., 22., "Data 2018");
     if (FitObject == "BeamPipe"){
        gr_arc->Draw("P");
        gr_BS->Draw("P");
        legBS -> Draw("same");
     }
-    //cPlots->SetLogz();
+    cPlots->SetLogz();
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Draw.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw.png"));
