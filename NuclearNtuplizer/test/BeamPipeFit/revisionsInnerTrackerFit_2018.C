@@ -185,10 +185,10 @@ void revisionsInnerTrackerFit_2018()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupportEllipse"; //work well
-  FitObject = "PixelSupportRails"; // work well
+  //FitObject = "PixelSupportRails"; // work well
 
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
@@ -453,6 +453,7 @@ void revisionsInnerTrackerFit_2018()
   //gROOT->ForceStyle();
 
   // 2018 data file
+  //TFile* inputFile = TFile::Open("Run2015DreReco.root");//for test only
   //TFile* inputFile = TFile::Open("PlotProduced_2018.root");
   //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
   //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
@@ -1486,6 +1487,16 @@ void revisionsInnerTrackerFit_2018()
           //Int_t thisPhiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
           //if ( thisPhiSect >= 8 && thisPhiSect <= 12 ) continue;
           //if ( thisPhiSect >= 32 && thisPhiSect <= 37 ) continue;
+       
+          // Systematic study:
+          Double_t pc = TMath::ATan2( y, x ); // from -Pi to Pi
+          Int_t FlagSys = 0;
+          if (pc > -3 && pc < -2) FlagSys = 1;
+          if (pc > 0 && pc < 1) FlagSys = 1;
+          //Study 1:
+          //if (FlagSys == 1) continue;       
+          //Study 2:
+          //if (FlagSys == 0) continue;       
 
           if (bgFitQuality[phiSect] == 1 || flag_ExcludeBadFitSector == 0) h1->Fill( x, y, binNum ); // fill only good phi sectors
 
@@ -2397,6 +2408,7 @@ void revisionsInnerTrackerFit_2018()
     // Create function that will be plotted on the Rho-Phi plots, but not on the plots for the minus side of the pixel shield,
     // the minus side of the pixel support, and the ellipse fit for the pixel support
     TF1 *bpAlt = new TF1("bpAlt",func_ArcRhoPhi,-3.15,6.3,3);
+    bpAlt->SetNpx(1000);
     if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShield2Arcs" && FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
       {
       // use parameters from the fitter
@@ -2405,6 +2417,7 @@ void revisionsInnerTrackerFit_2018()
       bpAlt->SetParameter(2, fitterDraw->GetParameter(2));
       bpAlt->SetLineColor(kRed);
       bpAlt->SetLineWidth(3);
+      //cout << "RhoPhi test parameters: " << fitterDraw->GetParameter(0) << "  " << fitterDraw->GetParameter(1) << "  " << fitterDraw->GetParameter(2) << endl;
       bpAlt ->Draw("same");
       CMS_lumi( cPlots, iPeriod, 0 );
 
@@ -2431,6 +2444,7 @@ void revisionsInnerTrackerFit_2018()
 
     // draw the ellipse in rhophi
     TF1 *bpEllipseAlt = new TF1("bpAlt",func_EllipseRhoPhi,-3.15,3.15,4);
+    bpEllipseAlt->SetNpx(1000);
     if(FitObject == "PixelSupportEllipse" || FitObject == "PixelShieldEllipse" || FitObject == "BeamPipeEllipse")
       {
       // use parameters from the fitter
@@ -3614,8 +3628,8 @@ void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
       ///              5 entries for 5 cm slices      
       //if ( !skip && binNum < 3 ) continue;
       
-      // skip (??) negative values after background subtracktion: 
-      if ( binNum < 0 ) continue;
+      // skip (??) negative or 0 values after background subtracktion: 
+      if ( binNum <= 0 ) continue;
       
       Double_t x = h->GetXaxis()->GetBinCenter( ix );// - 0.087;
       Double_t y = h->GetYaxis()->GetBinCenter( iy );// + 0.197;
