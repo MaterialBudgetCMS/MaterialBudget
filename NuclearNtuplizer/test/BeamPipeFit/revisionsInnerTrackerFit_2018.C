@@ -104,14 +104,14 @@ void revisionsInnerTrackerFit_2018()
 
   writeExtraText = true;       // if extra text
   //extraText  = "";  // default extra text is "Preliminary"
-  //extraText  = "Preliminary";  // default extra text is "Preliminary"
+  extraText  = "Preliminary";  // default extra text is "Preliminary"
   //extraText  = "Work in Progress";  // default extra text is "Preliminary"
-  extraText  = "work in progress";  // default extra text is "Preliminary"
+  //extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   // BELOW IS ONE FOR 2015
   //lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
-  lumi_13TeV  = " ";  // For MC 923 2017?
+  lumi_13TeV  = "5 fb^{-1}";  // For MC 923 2017?
   //lumi_sqrtS = "13 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
   int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 0=free form (uses lumi_sqrtS)
@@ -185,11 +185,11 @@ void revisionsInnerTrackerFit_2018()
 
   //*** to fit is uncomment line:
 
-  FitObject = "BeamPipe"; // working well
-  //FitObject = "PixelShield2Arcs"; // status failed
+  //FitObject = "BeamPipe"; // working well
   //FitObject = "PixelSupportEllipse"; //work well
-  //FitObject = "PixelSupportRails"; // work well
+  FitObject = "PixelSupportRails"; // work well
 
+  //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "BeamPipeEllipse"; //work well
   //FitObject = "PixelShield"; // work well
   //FitObject = "PixelShieldPlus"; // work well
