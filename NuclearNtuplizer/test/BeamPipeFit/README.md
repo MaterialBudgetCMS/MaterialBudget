@@ -13,6 +13,7 @@ For 2017 data:
 
 For paper last version (2015):
       root.exe -b revisionsInnerTrackerFit_paper.C++
+      root.exe -b revisionsInnerTrackerFit_paperScale2018.C++
 
 For paper v1 (2015):
       root.exe -b InnerTrackerFit.C++
