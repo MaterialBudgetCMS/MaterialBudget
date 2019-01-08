@@ -185,9 +185,9 @@ void revisionsInnerTrackerFit_2018()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
+  FitObject = "BeamPipe"; // working well
   //FitObject = "PixelSupportEllipse"; //work well
-  FitObject = "PixelSupportRails"; // work well
+  //FitObject = "PixelSupportRails"; // work well
 
   //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "BeamPipeEllipse"; //work well
@@ -207,8 +207,10 @@ void revisionsInnerTrackerFit_2018()
      //Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
      Rmin = 1.8, Rmax = 3.7, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2./*1.9*/, RSmax = 2.35/*2.4*/, RPlot = 4.;
      RangeEstimatorQuality = 0.1;
-     x_Sys = 0.003; //size of systematics in cm
-     r_Sys = 0.003; //size of systematics in cm
+     //x_Sys = 0.003; //size of systematics in cm
+     //r_Sys = 0.003; //size of systematics in cm
+     x_Sys = 0.02; //size of systematics in cm
+     r_Sys = 0.02; //size of systematics in cm
      //x0 = 0.; // from MC
      //y0 = 0.; // from MC
      x0 = 0.171; // from previous fits using this program that were based on 2018
