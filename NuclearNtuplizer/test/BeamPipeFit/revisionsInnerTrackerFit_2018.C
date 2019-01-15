@@ -460,6 +460,7 @@ void revisionsInnerTrackerFit_2018()
   //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
   //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
   TFile* inputFile = TFile::Open("PlotProduced_2018BCD_RawToReco.root");
+  //TFile* inputFile = TFile::Open("../PseudoBeamPipe/PseudoBeamPipe.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -502,7 +503,8 @@ void revisionsInnerTrackerFit_2018()
   Double_t x1L, x2L, y1L, y2L;
 
 
-  //  for ( int k = -7; k < 5; k++ )
+  //for ( int k = -7; k < 5; k++ )
+  //for ( int k = -5; k < 5; k++ ) // slices in 5 cm at |z| < 25 cm
   for ( int k = -6; k < -5; k++ ) // deafault: |z| < 25 cm 
   //for ( int k = 4; k < 5; k++ ) //for for list of histograms to fit
   //for ( int k = 0; k < 1; k++ ) //for for list of histograms to fit
@@ -776,7 +778,7 @@ void revisionsInnerTrackerFit_2018()
     CMS_lumi( cPlots, iPeriod, 0 ); 
     latex_circle.DrawLatex(-33., 66., "Data 2018");
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.png"));
-    cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.pdf"));
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Draw_ZR_COLZ.pdf"));
     cPlots -> SetLogz(1);
 
     cPlots -> SetLogz();
@@ -785,7 +787,7 @@ void revisionsInnerTrackerFit_2018()
     latex_circle.DrawLatex(15., 22., "Data 2018");
     latex_circle.DrawLatex(15., 19., "|z| < 25 cm");
     cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.png"));
-    cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.pdf"));
+    //cPlots->SaveAs(("Plots/"+FitObject+"_Draw_XY_COLZ.pdf"));
     cPlots -> SetLogz(1);
 
 
@@ -964,6 +966,7 @@ void revisionsInnerTrackerFit_2018()
       fitBg->SetParameter(0, 10);
       fitBg->SetParameter(1, 0.01);
       fitBg->FixParameter(1,0);
+      //fitBg->FixParameter(0,0); // for pseudo beam pipe only
       fitBg->SetParName(0, "N0");
       fitBg->SetParName(1, "k");
       //we  need set limits here to avoid negative values in fit (it will crash)
@@ -2293,7 +2296,11 @@ void revisionsInnerTrackerFit_2018()
 
       
       if(FitObject == "PixelShield2Arcs") {legData->AddEntry(arc,"Data 2018","");} 
-      else {legArc->AddEntry(arc,"Data 2018","");legArc->AddEntry(arc,z25,"");}
+      else {
+         legArc->AddEntry(arc,"Data 2018","");
+         if (k == -6 )legArc->AddEntry(arc,z25,"");
+         else if (k >= -5 && k < 5) legArc->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+1)*5),"");
+      }
 
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport") 
         {
@@ -2382,7 +2389,7 @@ void revisionsInnerTrackerFit_2018()
       }
     else {
         cPlots->SaveAs(("Plots/"+FitObject+"_Fit.png"));
-        cPlots->SaveAs(("Plots/"+FitObject+"_Fit.pdf"));
+        //cPlots->SaveAs(("Plots/"+FitObject+"_Fit.pdf"));
         cPlots->SaveAs(("Plots/"+FitObject+"_Fit.root"));
     }
     TFile* f = new TFile(("Plots/"+FitObject+"_Fit.root"), "UPDATE");
@@ -2431,7 +2438,8 @@ void revisionsInnerTrackerFit_2018()
       if( FitObject == "BeamPipe" || FitObject == "PixelShield" || FitObject == "PixelSupport")
         {
         legArc_RhoPhi->AddEntry(arc,"Data 2018","");
-        legArc_RhoPhi->AddEntry(arc,"|z| < 25 cm","");
+         if (k == -6 )legArc_RhoPhi->AddEntry(arc,z25,"");
+         else if (k >= -5 && k < 5) legArc_RhoPhi->AddEntry(arc,Form("%d<z<%d cm", k*5, (k+1)*5),"");
         legArc_RhoPhi->AddEntry(arc,"Circle fit","l");
         }
 
@@ -2440,8 +2448,16 @@ void revisionsInnerTrackerFit_2018()
 
 
       cPlots->Update();
-      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
-      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
+      if(k> -6 && k < 6){
+        if(k < 0)cPlots->SaveAs(Form("Plots/"+FitObject+"_Fit_RhoPhi_m%d.png", -k));
+        else cPlots->SaveAs(Form("Plots/"+FitObject+"_Fit_RhoPhi_p%d.png", k));
+      }
+    else {
+        cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
+        //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.root"));
+    }
+
+
       }
 
     // draw the ellipse in rhophi
@@ -2472,7 +2488,7 @@ void revisionsInnerTrackerFit_2018()
 
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
-      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
+      //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
     // Draw the ellipse in rhophi for the pixel shield plus
@@ -2509,7 +2525,7 @@ void revisionsInnerTrackerFit_2018()
 
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
-      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
+      //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
     // Draw the ellipse in rhophi for the pixel shield plus
@@ -2602,7 +2618,7 @@ void revisionsInnerTrackerFit_2018()
       // save
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
-      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
+      //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
     // create the plots in rhophi for the pixel support minus side fit
@@ -2638,7 +2654,7 @@ void revisionsInnerTrackerFit_2018()
       // save
       cPlots->Update();
       cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.png"));
-      cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
+      //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_RhoPhi.pdf"));
       }
 
    if (flag_Sys == 1)
@@ -3413,7 +3429,7 @@ void revisionsInnerTrackerFit_2018()
     cPlots->Update();
     //cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
     cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.png"));
-    if(FitObject == "PixelSupportRails") cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
+    //if(FitObject == "PixelSupportRails") cPlots->SaveAs(("Plots/"+FitObject+"_Fit_COLZ.pdf"));
 
 
 
