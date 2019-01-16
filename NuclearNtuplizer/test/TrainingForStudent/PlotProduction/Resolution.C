@@ -210,6 +210,7 @@ void Resolution::Loop()
 	  }
 	  */
 	  momentumInc_pt_max = 0.0;
+	  //use (MC_TrkV_numberOfChargedParticles_0p2) to cut on incoming tracks
           //find the minimum deltaR
           if(DeltaR3d_Min_Val>(MC_TrkV_associationPFDV_deltaR3d->at(j)))
            {

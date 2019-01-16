@@ -13,3 +13,7 @@ This creates a root file with all plots saved.
 Fit Code:
 
 root -l -b Resolution_Fit_NEW.C
+
+Both:
+
+root -l -b Run_Resolution.C Resolution_Fit_NEW.C
