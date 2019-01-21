@@ -104,9 +104,8 @@ void revisionsInnerTrackerFit_2018()
 
   writeExtraText = true;       // if extra text
   //extraText  = "";  // default extra text is "Preliminary"
-  extraText  = "Preliminary";  // default extra text is "Preliminary"
-  //extraText  = "Work in Progress";  // default extra text is "Preliminary"
-  //extraText  = "work in progress";  // default extra text is "Preliminary"
+  //extraText  = "Preliminary";  // default extra text is "Preliminary"
+  extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   // BELOW IS ONE FOR 2015
@@ -207,15 +206,21 @@ void revisionsInnerTrackerFit_2018()
      //Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
      Rmin = 1.8, Rmax = 3.7, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2./*1.9*/, RSmax = 2.35/*2.4*/, RPlot = 4.;
      RangeEstimatorQuality = 0.1;
-     //x_Sys = 0.003; //size of systematics in cm
-     //r_Sys = 0.003; //size of systematics in cm
-     x_Sys = 0.02; //size of systematics in cm
-     r_Sys = 0.02; //size of systematics in cm
+     x_Sys = 0.003; //size of systematics in cm
+     r_Sys = 0.003; //size of systematics in cm
+     //x_Sys = 0.02; //size of systematics in cm
+     //r_Sys = 0.02; //size of systematics in cm
      //x0 = 0.; // from MC
      //y0 = 0.; // from MC
      x0 = 0.171; // from previous fits using this program that were based on 2018
      y0 = -0.176; // from previous fits using this program that were based on 2018
-     r0 = 2.210; // from previous fits using this program that were based on 2015
+     r0 = 2.210; // from previous fits using this program that were based on 2018
+     //x0 = 0.124; // for pseudo 2015 CMS
+     //y0 = 0.027; // -||-
+     //r0 = 2.211; // -||- 
+     //x0 = 1.; // for extrim text
+     //y0 = -0.5; // -||- 
+     //r0 = 2.210; // -||-
      //Rmin = 1.8, Rmax = 3., RBGmin = 2.4, RBGmax = 3., RSmin = 2., RSmax = 2.4, RPlot = 3.5;
      //RangeEstimatorQuality = 0.1;  
      //x_Sys = 0.003; //size of systematics in cm
@@ -455,12 +460,17 @@ void revisionsInnerTrackerFit_2018()
   //gROOT->ForceStyle();
 
   // 2018 data file
-  //TFile* inputFile = TFile::Open("Run2015DreReco.root");//for test only
+  TString NameInputFile = "";
+  ///TFile* inputFile = TFile::Open("Run2015DreReco.root");//for test only
   //TFile* inputFile = TFile::Open("PlotProduced_2018.root");
   //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
   //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
   TFile* inputFile = TFile::Open("PlotProduced_2018BCD_RawToReco.root");
-  //TFile* inputFile = TFile::Open("../PseudoBeamPipe/PseudoBeamPipe.root");
+  // for pseudo MC only:
+  //TString NameInputFile = "../PseudoBeamPipe/PseudoBeamPipe";
+  //TFile* inputFile = TFile::Open(NameInputFile+".root");
+  //TFile* inputFile = TFile::Open(NameInputFile+"_2015CMS.root");
+  //TFile* inputFile = TFile::Open(NameInputFile+"_extrim.root");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -558,7 +568,7 @@ void revisionsInnerTrackerFit_2018()
     //printf("\n");
 
     cout << "Function used for X:Y   = " << plot << endl;
-    cout << "Function used for R:PHI = " << plot << endl;
+    cout << "Function used for R:PHI = " << plotBg << endl;
 
     h_RhoPhi = new TH2D();
     h_RhoPhi = (TH2D*)inputFile->Get( plotBg.c_str() );
@@ -594,7 +604,8 @@ void revisionsInnerTrackerFit_2018()
     if(FitObject == "BeamPipe"||FitObject == "PixelSupportRails")h_RhoPhi->GetZaxis()->SetRangeUser(1., MaxZhRhoPhi);
 
     h_ZR = new TH2D();
-    h_ZR = (TH2D*)inputFile->Get("hPFDV_ZR_Map" );
+    h_ZR = (TH2D*)inputFile->Get("hPFDV_XY_Map_Pipe_AbsZ25" ); // in pseodo we don't have this histo
+    if (NameInputFile != "../PseudoBeamPipe/PseudoBeamPipe")h_ZR = (TH2D*)inputFile->Get("hPFDV_ZR_Map" );
     h_ZR->Sumw2();
     //h_ZR->Rebin2D(1,1);
     h_ZR->SetStats(0);
@@ -606,7 +617,9 @@ void revisionsInnerTrackerFit_2018()
     h_ZR->GetXaxis()->SetLabelOffset(0.012);
 
     h_XY = new TH2D();
-    h_XY = (TH2D*)inputFile->Get("hPFDV_XY_PixelSupport_AbsZ25" );
+    h_XY = (TH2D*)inputFile->Get("hPFDV_XY_Map_Pipe_AbsZ25" ); // in pseodo we don't have this histo
+    if (NameInputFile != "../PseudoBeamPipe/PseudoBeamPipe")h_XY = (TH2D*)inputFile->Get("hPFDV_XY_PixelSupport_AbsZ25" );
+    cout << "we pass here" << endl;
     h_XY->Sumw2();
     //h_XY->Rebin2D(1,1);
     h_XY->SetStats(0);
@@ -966,14 +979,18 @@ void revisionsInnerTrackerFit_2018()
       fitBg->SetParameter(0, 10);
       fitBg->SetParameter(1, 0.01);
       fitBg->FixParameter(1,0);
-      //fitBg->FixParameter(0,0); // for pseudo beam pipe only
+      if (NameInputFile == "../PseudoBeamPipe/PseudoBeamPipe") {
+          fitBg->FixParameter(1,0);
+          fitBg->FixParameter(0,0); // for pseudo beam pipe only
+      }
+      cout << "*** We pass fit parameters settings **** " << endl;
       fitBg->SetParName(0, "N0");
       fitBg->SetParName(1, "k");
       //we  need set limits here to avoid negative values in fit (it will crash)
       //fitBg->SetParLimits(0, 0, 1E9);
       //fitBg->SetParLimits(1, -1E9, 0);
       fitBg->SetLineWidth(3);
-      hbgua1->Fit("fitBg","MR0");
+      if (NameInputFile != "../PseudoBeamPipe/PseudoBeamPipe") hbgua1->Fit("fitBg","MR0");
       fitBg->Draw("same");
 
       bgFit0[phiSect] = fitBg->GetParameter(0);
@@ -1586,6 +1603,10 @@ void revisionsInnerTrackerFit_2018()
       fitterDraw->SetParameter( 0,  "R",   r0, 0.01, RSmin, RSmax ); // in cm
       fitterDraw->SetParameter( 1, "x0",   x0, 0.01, -0.6, 0.6 ); // in cm
       fitterDraw->SetParameter( 2, "y0",   y0, 0.01, -0.6, 0.6 ); // in cm
+      if (NameInputFile == "../PseudoBeamPipe/PseudoBeamPipe") {
+        fitterDraw->SetParameter( 1, "x0",   x0, 0.01, -0.6, 1.2 ); // in cm
+        fitterDraw->SetParameter( 2, "y0",   y0, 0.01, -0.8, 0.6 ); // in cm
+      }
       //   fitterDraw->FixParameter(1); fitterDraw->FixParameter(2); 
 
 
@@ -2403,6 +2424,7 @@ void revisionsInnerTrackerFit_2018()
     if(FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse")
       {
       h_RhoPhi->GetYaxis()->SetRangeUser(Rmin, Rmax);
+      //if (NameInputFile == "../PseudoBeamPipe/PseudoBeamPipe")h_RhoPhi->GetYaxis()->SetRangeUser(1., Rmax); // only for extrim case
       }
     //if(FitObject == "PixelShield2Arcs") h_RhoPhi->GetYaxis()->SetRangeUser(3.4, Rmax);
     if(FitObject == "PixelSupportMinus" || FitObject == "PixelSupportEllipse")
@@ -3610,8 +3632,22 @@ Double_t fun2(Double_t *x ,Double_t *par)
 //create Circle/Arc function in phi,R plane:
 Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
 {
- // x[0] is phi here
- Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[0]*sin(x[0])+par[2])*(par[0]*sin(x[0])+par[2]) );
+ // x[0] is phi in CMS coordiante
+ Double_t Rf  = par[0]; // R
+ Double_t x0f = par[1]; // x0
+ Double_t y0f = par[2]; // y0
+ Double_t phiPrime = -1000.;// phi in (x0,y0) frame
+ Double_t phi = x[0];
+ // find phiPrime in x0, y0 coordiante
+ UInt_t Nbin = 1000;
+ for ( UInt_t i = 0; i <=Nbin; i++ ){
+     Double_t phiPrime_i = - TMath::Pi() + 2.*TMath::Pi()*Double_t(i)/Double_t(Nbin);
+     Double_t phi_i = atan2((Rf*sin(phiPrime_i) + y0f),(Rf*cos(phiPrime_i) + x0f));
+     if (fabs(phi_i-phi) <= 2.*TMath::Pi()/Double_t(Nbin)) phiPrime = phiPrime_i; 
+ } 
+ if (phiPrime < -100.) cout << "Error: phiPrime is not calculated" << endl;
+ Double_t value = sqrt( (Rf*cos(phiPrime)+x0f)*(Rf*cos(phiPrime)+x0f) + (Rf*sin(phiPrime)+y0f)*(Rf*sin(phiPrime)+y0f) );
+// Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[0]*sin(x[0])+par[2])*(par[0]*sin(x[0])+par[2]) ); // bugy version phi should be phiPrime
  //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
  return value;
 }
