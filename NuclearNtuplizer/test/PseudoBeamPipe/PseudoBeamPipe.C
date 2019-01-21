@@ -1,7 +1,9 @@
 
 // all units are in cm
 //void PseudoBeamPipe(double R0, double x0, double y0, double width, int Nmax){
-void PseudoBeamPipe(double R0 = 2.210, double x0 = 0.171, double y0 = -0.176, double width = 0.05, int Nmax = 150000){
+void PseudoBeamPipe(double R0 = 2.211, double x0 = 0.124, double y0 = 0.027, double width = 0.05, int Nmax = 150000){ // 2015 CMS
+//void PseudoBeamPipe(double R0 = 2.210, double x0 = 0.171, double y0 = -0.176, double width = 0.05, int Nmax = 150000){ // 2018 preliminary
+//void PseudoBeamPipe(double R0 = 2.210, double x0 = 1.000, double y0 = -0.5, double width = 0.05, int Nmax = 150000){ // super extrim
 
   TRandom3* rnd = new TRandom3(1000);
 
