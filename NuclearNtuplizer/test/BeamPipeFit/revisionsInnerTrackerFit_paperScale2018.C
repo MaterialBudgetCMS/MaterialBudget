@@ -188,8 +188,8 @@ void revisionsInnerTrackerFit_paperScale2018()
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
-  FitObject = "PixelShield2Arcs"; // status failed
+  FitObject = "BeamPipe"; // working well
+  //FitObject = "PixelShield2Arcs"; // status failed
   //FitObject = "PixelSupportEllipse"; //work well
   //FitObject = "PixelSupportRails"; // work well
 
@@ -1519,6 +1519,16 @@ void revisionsInnerTrackerFit_paperScale2018()
     //h1->SetStats(0);
     h1->SetStats(1);
     h = h1;
+    Double_t FitTotal = 0.;
+    for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+    {
+      for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+      {
+        Double_t binNum = h->GetBinContent( ix, iy );
+        FitTotal = FitTotal + binNum;
+
+    }}
+    cout << " Number of evetries for the signal/Fit regions = " <<  FitTotal << endl;
     // don't plot "0" at z axis
     Double_t MaxZh = h->GetMaximum();
     cout << "******** Maximum Z value for h = " << MaxZh << endl;
