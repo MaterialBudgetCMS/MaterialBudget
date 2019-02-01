@@ -104,8 +104,8 @@ void revisionsInnerTrackerFit_2018()
 
   writeExtraText = true;       // if extra text
   //extraText  = "";  // default extra text is "Preliminary"
-  //extraText  = "Preliminary";  // default extra text is "Preliminary"
-  extraText  = "work in progress";  // default extra text is "Preliminary"
+  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  //extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   // BELOW IS ONE FOR 2015
@@ -1570,6 +1570,16 @@ void revisionsInnerTrackerFit_2018()
     h1->SetStats(0);
     //h1->SetStats(1);
     h = h1;
+    Double_t FitTotal = 0.;
+    for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+    {
+      for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+      {
+        Double_t binNum = h->GetBinContent( ix, iy );
+        FitTotal = FitTotal + binNum;
+
+    }}
+    cout << " Number of evetries for the signal/Fit regions = " <<  FitTotal << endl;
     // don't plot "0" at z axis
     Double_t MaxZh = h->GetMaximum();
     cout << "******** Maximum Z value for h = " << MaxZh << endl;
@@ -2881,6 +2891,7 @@ void revisionsInnerTrackerFit_2018()
        // Create the functions for the systematic variation of y, but not for the minus side of the pixel shield 
        TF1 *bpAlt_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,-3.15,6.3,3);
        TF1 *bpAlt_ym = new TF1("bpAlt_ym",func_ArcRhoPhi,-3.15,6.3,3);
+        cout << "TEST 1" << endl;
        if(FitObject != "PixelShieldEllipse" && FitObject != "PixelShield2Ellipses" && FitObject != "PixelShield2Arcs"&& FitObject != "PixelShieldMinus" && FitObject != "PixelSupportMinus" && FitObject != "PixelSupportEllipse" && FitObject != "BeamPipeEllipse")
          {
          // set parameters for the positive deviation
@@ -2901,6 +2912,7 @@ void revisionsInnerTrackerFit_2018()
          bpAlt_ym ->Draw("same");
          }
 
+        cout << "TEST 2" << endl;
        // draw the y variation of the pixel support ellipse in the rhophi plos
        TF1 *bpAltEllipse_yp = new TF1("bpAlt_yp",func_EllipseRhoPhi,-3.15,3.15,4);
        TF1 *bpAltEllipse_ym = new TF1("bpAlt_ym",func_EllipseRhoPhi,-3.15,3.15,4);
@@ -2924,8 +2936,11 @@ void revisionsInnerTrackerFit_2018()
          bpAltEllipse_ym->SetLineWidth(3);
          bpAltEllipse_ym ->Draw("same");
 
+         cout << "TEST 3.0" << endl;
          bpEllipseAlt->Draw("same");
+         cout << "TEST 3" << endl;
          cPlots->Update();
+         cout << "TEST 4" << endl;
          }
 
        TF1 *bpAltShieldEllipsePlus_yp = new TF1("bpAlt_yp",func_EllipseRhoPhi,-1.575,1.575,4);
@@ -3017,6 +3032,7 @@ void revisionsInnerTrackerFit_2018()
          bpAltPlus->Draw("same");
          }
 
+        cout << "TEST Problem 2" << endl;
        // Create the functions for the y deviation of the minus and plus side of the pixel support (semicircles)
        TF1 *bpSupportAltMinus1_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,1.575,3.15,3);
        TF1 *bpSupportAltMinus2_yp = new TF1("bpAlt_yp",func_ArcRhoPhi,-3.15,-1.575,3);
@@ -3136,7 +3152,7 @@ void revisionsInnerTrackerFit_2018()
          bpAltEllipse_rm->Draw("same");
 
          // draw the central function, update the plot
-         bpEllipseAlt->Draw("same");
+         //bpEllipseAlt->Draw("same");
          cPlots->Update();
          }
 
@@ -3645,7 +3661,7 @@ Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
      Double_t phi_i = atan2((Rf*sin(phiPrime_i) + y0f),(Rf*cos(phiPrime_i) + x0f));
      if (fabs(phi_i-phi) <= 2.*TMath::Pi()/Double_t(Nbin)) phiPrime = phiPrime_i; 
  } 
- if (phiPrime < -100.) cout << "Error: phiPrime is not calculated" << endl;
+ if (phiPrime < -100.) cout << "Error: phiPrime is not calculated for Circle phi = " << phi << endl;
  Double_t value = sqrt( (Rf*cos(phiPrime)+x0f)*(Rf*cos(phiPrime)+x0f) + (Rf*sin(phiPrime)+y0f)*(Rf*sin(phiPrime)+y0f) );
 // Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[0]*sin(x[0])+par[2])*(par[0]*sin(x[0])+par[2]) ); // bugy version phi should be phiPrime
  //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
@@ -3655,7 +3671,23 @@ Double_t func_ArcRhoPhi(Double_t *x ,Double_t *par)
 Double_t func_EllipseRhoPhi(Double_t *x, Double_t *par)
 {
  // x[0] is phi here
- Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[3]*sin(x[0])+par[2])*(par[3]*sin(x[0])+par[2]) );
+ Double_t Rxf  = par[0]; // Rx
+ Double_t Ryf  = par[3]; // Ry
+ Double_t x0f = par[1]; // x0
+ Double_t y0f = par[2]; // y0
+ Double_t phiPrime = -1000.;// phi in (x0,y0) frame
+ Double_t phi = x[0];
+ // find phiPrime in x0, y0 coordiante
+ UInt_t Nbin = 1000;
+ for ( UInt_t i = 0; i <=Nbin; i++ ){
+     Double_t phiPrime_i = - TMath::Pi() + 2.*TMath::Pi()*Double_t(i)/Double_t(Nbin);
+     Double_t phi_i = atan2((Ryf*sin(phiPrime_i) + y0f),(Rxf*cos(phiPrime_i) + x0f));
+     if (fabs(phi_i-phi) <= 2.*TMath::Pi()/Double_t(Nbin) ||fabs(fabs(phi_i-phi)-2.*TMath::Pi()) <= 2.*TMath::Pi()/Double_t(Nbin) ) phiPrime = phiPrime_i;
+     //cout << "phi_i = " << phi_i << " phi = " << phi << endl;
+ }
+ if (phiPrime < -100.) cout << "Error: phiPrime is not calculated for Ellispse phi = " << phi << endl;
+ Double_t value = sqrt( (Rxf*cos(phiPrime)+x0f)*(Rxf*cos(phiPrime)+x0f) + (Ryf*sin(phiPrime)+y0f)*(Ryf*sin(phiPrime)+y0f) );
+ //Double_t value = sqrt( (par[0]*cos(x[0])+par[1])*(par[0]*cos(x[0])+par[1]) + (par[3]*sin(x[0])+par[2])*(par[3]*sin(x[0])+par[2]) );  // bugy version phi should be phiPrime
  return value;
 }
 
