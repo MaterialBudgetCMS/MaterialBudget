@@ -25,7 +25,7 @@ python pythonLumiJson.py > LumiJson_2018B.txt
 ```
  * Lumi POG recommendations: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM
 
- * To install bilcalc:
+ * To install brilcalc:
 
     * work with centrally installed virtual environment: `export PATH=$HOME/.local/bin:/afs/cern.ch/cms/lumi/brilconda-1.1.7/bin:$PATH #(bash, CERN only)`
     * install brilcalc at CERN:`pip install --install-option="--prefix=$HOME/.local" brilws`
