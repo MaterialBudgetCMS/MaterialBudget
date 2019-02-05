@@ -23,8 +23,18 @@ to produce json file:
 python pythonLumiJson.py > LumiJson_2018B.txt
 
 ```
-Brilcalc: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM
+ * Lumi POG recommendations: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM
 
+ * To install bilcalc:
+
+    * work with centrally installed virtual environment:
+```
+export PATH=$HOME/.local/bin:/afs/cern.ch/cms/lumi/brilconda-1.1.7/bin:$PATH #(bash, CERN only)
+```
+    * install brilcalc at CERN:
+```
+pip install --install-option="--prefix=$HOME/.local" brilws
+```
 ```
 brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -u /fb -i LumiJson_2018B.txt ### your jsont
 ```
