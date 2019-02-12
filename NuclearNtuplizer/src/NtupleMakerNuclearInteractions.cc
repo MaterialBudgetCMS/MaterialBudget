@@ -327,6 +327,7 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
   eventNumber = iEvent.id().event();
   runNumber = iEvent.run();
   lumiSection = iEvent.id().luminosityBlock();
+  //std::cout << "*** TEST: runNumber = " << runNumber  << " eventNumber = " << eventNumber << std::endl;
 
   /// Prepare Primary Vertices
   PV_x->clear();
@@ -991,7 +992,9 @@ void NtupleMakerNuclearInteractions::analyze( const edm::Event& iEvent, const ed
       vTrack_chi2.push_back( (*trackDisplacedVertex)->chi2() );
       vTrack_normalizedChi2.push_back( (*trackDisplacedVertex)->normalizedChi2() );
       //vTrack_isHighPurity.push_back( (*trackDisplacedVertex)->quality((*trackDisplacedVertex)->qualityByName("HighPurity") ) ); // high purity
-      vTrack_rho.push_back( (*trackDisplacedVertex)->innerPosition().Rho() );
+      // rho doesn't exit if you reconstruct PF Displaced vertex from AOD
+      //std::cout << "TEST: (*trackDisplacedVertex)->innerPosition().Rho() = " << (*trackDisplacedVertex)->innerPosition().Rho() << std::endl;
+      //vTrack_rho.push_back( (*trackDisplacedVertex)->innerPosition().Rho() );
       vTrack_numberOfValidHits.push_back( (*trackDisplacedVertex)->numberOfValidHits() );
       vTrack_numberOfExpectedOuterHits.push_back( 0 );//(*trackDisplacedVertex)->trackerExpectedHitsOuter().numberOfHits() );
  
