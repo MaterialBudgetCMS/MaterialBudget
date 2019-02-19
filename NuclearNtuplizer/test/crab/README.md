@@ -8,8 +8,9 @@ CRAB3
 ====
 
 For Data Run2015D use CMSSW_7_6_5 make if neccessary:
-
+```
      export SCRAM_ARCH=slc6_amd64_gcc493
+```
 
 
 See details here:
@@ -18,40 +19,50 @@ https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial#CRAB_config
 
 https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
 
-Check if you have writing permissions:
-
+Check if you have writing permissions for bash:
+```
     source /cvmfs/cms.cern.ch/crab3/crab.sh
+```
+or for others:
+```
     source /cvmfs/cms.cern.ch/crab3/crab.csh
 
     crab checkwrite --site=T2_CH_CERN
     crab checkwrite --site=T2_CH_CERN --lfn=/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/
+```
 
 Usual send the jobs:
 
+```
     crab submit -c crab_example1.py
     crab status
+```
 
 MultiCRAB
 ====
 
 Set enviroment:
-
+```
     cmsenv
+```
 
 Sent crab job with python for 2018:
-
-    python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018B_SingleMu_RawToReco.py
-    python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018C_SingleMu_RawToReco.py
-    python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018D_SingleMu_RawToReco.py
-    python crab_Run2018_2018D.py samples/sample_Run2018D_SingleMu_21Aug.py
-    python crab_Run2018_2018D.py samples/sample_Run2018D_21Aug.py 
-    python crab_Run2018_run315646.py samples/sample_ZeroBias_Run2018_run315646.py
-
+```
+python crab_Run2018_2018_AOD.py samples/sample_Run2018D_SingleMu_AOD.py 
+python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018B_SingleMu_RawToReco.py
+python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018C_SingleMu_RawToReco.py
+python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018D_SingleMu_RawToReco.py
+python crab_Run2018_2018D.py samples/sample_Run2018D_SingleMu_21Aug.py
+python crab_Run2018_2018D.py samples/sample_Run2018D_21Aug.py 
+python crab_Run2018_run315646.py samples/sample_ZeroBias_Run2018_run315646.py
+```
 To resubmit wiht higher memory (deafault is 2000 Mb)
+```
     crab resubmit --maxmemory=2500 -d projects_Run2018_v2/crab_SingleMu_Run2018C_RawToReco/
+```
 
 Send crab job with python for 2017:
-
+```
     python crab_Run2017E_9212.py samples/sample_SingleMu_Run2017E_PromptReco_v1.py  # dataset is not availble in crab, need to be checked
     python crab_Run2017E_9212.py samples/sample_ZeroBias_Run2017E_PromptReco_v1.py 
 
@@ -60,51 +71,73 @@ Send crab job with python for 2017:
     python crab_Run2017B_930.py samples/sample_SingleMu_Run2017B_PromptReco_v2.py
     python  crab_Run2017A_921.py samples/sample_Run2017A_921.py
     python  crab_Run2017B_923.py samples/sample_Run2017B_923.py
+```
 
 Send crab job with python for 2015:
-
+```
     python multicrab_Run2015D_25ns_RECO.py samples/samples_Run2015D_25ns_reRECO.py
+```
 
 
 Check crab status:
-
+```
     crab status -d folder_name
     crab status -d projects_Run2015/crab_Run2015D_16Dec2015_v1_25ns_SingleMuon/
+```
 
 Resubmit jobs which are failed:
-
+```
     crab resubmit --dir/-d <CRAB-project-directory>
     crab resubmit -d projects_Run2015/crab_Run2015D_16Dec2015_v1_25ns_SingleMuon/
-
-How to acess to /store via mounting
-===
-
-    cd /tmp/kropiv ### to have enough place
-    mkdir eos
-    eosmount eos eos ### mount eos 
-    cd eos/cms/store/group/phys_higgs/cmshww/kropiv
-you could make link to your current working directory
-    cd <WokingDirectory>
-    ln -s /tmp/<nice-login>/eos 
-
-Correct what you want and unmount it: 
-
-    eosumount eos eos ### do not forget unmount
-
+```
 
 How to merger all output root files in one
 ===
 
 After mounting eos, go to directory with root files and run:
-
+```
     hadd new.root *root
+```
 
 If hadd doesn't work, then you have to run cmsenv from any CMSSW and try again. hadd is part of the root commands. 
 
 All root-file will be merged to new.root. Move it to 
-
-    /store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/reReco2015D/
+```
+    /store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/XXXX/
+```
     
+Some fast draw in itterative phase to check ntuple quality:
+===
+
+```
+root -l file.root
+TTree *t2 = (TTree*)_file0->Get("MyNtupleMaking/NuclearInteractionsTree")
+t2 -> Draw("PFDV_x:PFDV_y")
+t2 -> Draw("PFDV_x:PFDV_y","fabs(PFDV_x) < 5 && fabs(PFDV_y) < 5 ")
+t2 -> Draw("PFDV_x:PFDV_y","fabs(PFDV_x) < 5 && fabs(PFDV_y) < 5 && fabs(PFDV_z) < 25")
+```
+
+How to acess to /store via mounting
+===
+
+```
+    cd /tmp/kropiv ### to have enough place
+    mkdir eos
+    eosmount eos eos ### mount eos 
+    cd eos/cms/store/group/phys_higgs/cmshww/kropiv
+```
+you could make link to your current working directory
+```
+    cd <WokingDirectory>
+    ln -s /tmp/<nice-login>/eos 
+```
+
+Correct what you want and unmount it: 
+```
+    eosumount eos eos ### do not forget unmount
+
+```
+
 
 How to calculate luminosity for Run2
 ===

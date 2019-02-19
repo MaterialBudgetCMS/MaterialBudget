@@ -1,7 +1,38 @@
 # -*- coding: utf-8 -*-
 import FWCore.ParameterSet.Config as cms
 
+## start init. variables
 
+# The line below always has to be included to make VarParsing work 
+from FWCore.ParameterSet.VarParsing import VarParsing
+# In teh line below 'analysis' is an instance of VarParsing object 
+options = VarParsing ('analysis')
+options.register ('globalTag',
+                  '101X_dataRun2_Prompt_v9', # for Run2017A CMSSW_9_2_1
+                   VarParsing.multiplicity.singleton,
+                   VarParsing.varType.string,
+                  'GlobalTag')
+
+#-------------------------------------------------------------------------------
+# defaults
+options.maxEvents = -1 #all events ---> already the default
+#options.maxEvents = 500 #all events ---> already the default
+options.outputFile = 'Run2018.root'
+print " options.maxEvents = ",options.maxEvents
+print " options.outputFile = ",options.outputFile
+#-------------------------------------------------------------------------------
+
+options.parseArguments()
+
+# load configurations
+#label = options.label
+#globalTag = options.globalTag + "::All"
+globalTag = options.globalTag
+print " globalTag = ",globalTag
+
+## end init. variables
+
+#process = cms.Process("MyNtupleMaker")
 process = cms.Process('niReRECO')
 
 # import of standard configurations
@@ -21,8 +52,8 @@ process.load('DQMOffline.Configuration.DQMOffline_cff')
 ### Import real conditions
 from Configuration.StandardSequences.FrontierConditions_GlobalTag_cff import *
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v6', '')
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, globalTag, '')
 
 #### Additional stuff
 ##process.load("RecoTracker.TrackProducer.TrackRefitters_cff")
@@ -31,19 +62,9 @@ process.load('RecoParticleFlow/PFTracking/particleFlowDisplacedVertexCandidate_c
 process.particleFlowDisplacedVertex.primaryVertexCut = cms.double(1.3)
 process.particleFlowDisplacedVertexCandidate.primaryVertexCut = cms.double(1.3)
 
-
 ### Define source
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring(
-  'file:/eos/cms/store/data/Run2018D/Tau/AOD/PromptReco-v2/000/324/841/00000/0183D8B9-207A-184E-9E3F-65515D58770B.root' # AOD input: whole run is good for golden json
-  #'file:00081240-F151-E811-B82D-0CC47A78A456.root' 
-  ),
-  secondaryFileNames = cms.untracked.vstring(
-  )
-)
-
-process.options = cms.untracked.PSet(
-
+  fileNames = cms.untracked.vstring()
 )
 
 # Output definition
@@ -60,34 +81,28 @@ process.AODoutput = cms.OutputModule("PoolOutputModule",
     outputCommands = process.FEVTEventContent.outputCommands
 )
 
-
 ### Define number of events to be processed (-1 means all)
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-
-#process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
 
 ### Define text output
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
-#process.MessageLogger = cms.Service("MessageLogger",
-#  destinations = cms.untracked.vstring('MyNtupleMaker.log'), ### Output filename
-#    default = cms.untracked.PSet( reportEvery = cms.untracked.int32(1000) ),
-#)
+
 
 ### Define Ntuplizer
 process.MyNtupleMaking = cms.EDAnalyzer("NtupleMakerNuclearInteractions",
-#   RealData  = cms.bool(False),
+   RealData  = cms.bool(False),
 )
 
-#### Root output
+### Root output
 process.TFileService = cms.Service("TFileService",
-  fileName = cms.string('Run2018_iteractive.root' )
+  fileName = cms.string(options.outputFile)
 )
 
-#process.out = cms.OutputModule("PoolOutputModule",
-#  outputCommands = cms.untracked.vstring ('keep *'),
-#  fileName = cms.untracked.string('myOutputFileMC.root')
-#)
+process.out = cms.OutputModule("PoolOutputModule",
+  outputCommands = cms.untracked.vstring ('keep *'),
+  fileName = cms.untracked.string('myOutputFileMC.root')
+)
 
 # Path and EndPath definitions
 process.niReReconstruction_step = cms.Path(process.particleFlowDisplacedVertexCandidate
