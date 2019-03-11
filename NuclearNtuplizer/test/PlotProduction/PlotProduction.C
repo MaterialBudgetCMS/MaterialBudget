@@ -759,7 +759,7 @@ void PlotProduction::Loop()
   }
 
    Long64_t nentries = fChain->GetEntriesFast();
-
+   Long64_t n_recoNI = 0;
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
@@ -1353,12 +1353,13 @@ void PlotProduction::Loop()
 
     if (numberOfPV <= 0) continue; // reject events with 0 reco primary vertices
     if (numberOfPFDV >= 1){
-    hPFDV_CountEventsWithNI->Fill(1.);
+       hPFDV_CountEventsWithNI->Fill(1.);
     }
 
     for ( unsigned int i = 0; i < numberOfPFDV; i++ )
     {
       
+      n_recoNI = n_recoNI+1;//count number of reco NI 
       ni_x = PFDV_x->at(i);
       ni_y = PFDV_y->at(i);
       ni_z = PFDV_z->at(i);
@@ -1569,6 +1570,7 @@ void PlotProduction::Loop()
 //      }  
       }
    }
+   std::cout << " Total number of NI: n_recoNI = " << n_recoNI <<std::endl;
    outputFile->Write();
    outputFile->Close();
    delete outputFile;

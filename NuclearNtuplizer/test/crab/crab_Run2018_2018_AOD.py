@@ -21,6 +21,7 @@ config.Data.inputDBS      = 'global'
 #config.Data.splitting     = 'FileBased'
 config.Data.splitting     = 'LumiBased'
 config.Data.unitsPerJob   = 50 # number of files, lumi sec. or events depending of "splitting"
+#config.Data.splitting = 'Automatic'
 #config.Data.totalUnits    = 50 # total number of files, lumi sec. or events depending of "splitting"
 # Tracker + DCS good files:
 #config.Data.lumiMask = 'json_Tracker_2018.05.02.txt'
