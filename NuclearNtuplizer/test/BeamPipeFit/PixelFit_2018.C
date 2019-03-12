@@ -120,14 +120,15 @@ std::cout << "*****  Pi = " << Pi << std::endl;
 
   writeExtraText = true;       // if extra text
   //extraText  = "";  // default extra text is "Preliminary"
-  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  //extraText  = "Preliminary";  // default extra text is "Preliminary"
   //extraText  = "Work in Progress";  // default extra text is "Preliminary"
-  //extraText  = "work in progress";  // default extra text is "Preliminary"
+  extraText  = "work in progress";  // default extra text is "Preliminary"
   //lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
   //lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
   // BELOW IS ONE FOR 2015
   //lumi_13TeV  = "2.5 fb^{-1}";  // default is "5.1 fb^{-1}"
-  lumi_13TeV  = "4.3 fb^{-1}";  // For MC 923 2017?
+  //lumi_13TeV  = "4.3 fb^{-1}";  // for preliminary results at CMS-DP-2019-001
+  lumi_13TeV  = "~50 fb^{-1}";  // for 88% of 2018D AOD
   //lumi_sqrtS = "13 TeV";       // used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
   int iPeriod = 4;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV, 0=free form (uses lumi_sqrtS)
@@ -204,125 +205,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
   //*** to fit is uncomment line:
 
-  //FitObject = "BeamPipe"; // working well
   FitObject = "PixelShield2Arcs"; // status failed
-  //FitObject = "PixelSupportEllipse"; //work well
-  //FitObject = "PixelSupportRails"; // work well
-
-  //FitObject = "BeamPipeEllipse"; //work well
-  //FitObject = "PixelShield"; // work well
-  //FitObject = "PixelShieldPlus"; // work well
-  //FitObject = "PixelShieldMinus"; // work well 
-  //FitObject = "PixelShieldEllipse"; //work well
-  //FitObject = "PixelShield2Ellipses"; // status failed
-  //FitObject = "PixelSupport"; // work well
-  //FitObject = "PixelSupportPlus"; // work well, don't use it
-  //FitObject = "PixelSupportMinus"; // work well, don't use it
-  //FitObject = "PixelSupportRailsPositive"; // work well
-  //FitObject = "PixelSupportRailsNegative"; // work wel
   
-  //*** set parameters for Beam Pipe fit
-  if(FitObject == "BeamPipe"){
-     Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
-     RangeEstimatorQuality = 0.1;
-     x_Sys = 0.003; //size of systematics in cm
-     r_Sys = 0.003; //size of systematics in cm
-     //x0 = 0.; // from MC
-     //y0 = 0.; // from MC
-     x0 = 0.171; // from previous fits using this program that were based on 2018
-     y0 = -0.175; // from previous fits using this program that were based on 2018
-     r0 = 2.211; // from previous fits using this program that were based on 2015
-     //Rmin = 1.8, Rmax = 3., RBGmin = 2.4, RBGmax = 3., RSmin = 2., RSmax = 2.4, RPlot = 3.5;
-     //RangeEstimatorQuality = 0.1;  
-     //x_Sys = 0.003; //size of systematics in cm
-     //r_Sys = 0.003; //size of systematics in cm
-     //x0 = 0.124; // from previous fits using this program that were based on 2015
-     //y0 = 0.026; // from previous fits using this program that were based on 2015
-     //r0 = 2.21; // from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Beam Pipe Ellipse fit
-  if(FitObject == "BeamPipeEllipse") {
-     extraText  = "work in progress";
-     Rmin = 1.8, Rmax = 3.0, RBGmin = 2.35/*2.4*/, RBGmax = 3., RSmin = 2.0, RSmax = 2.35/*2.4*/, RPlot = 3.5;
-     RangeEstimatorQuality = 0.1;
-     x_Sys = 0.002; //size of systematics in cm
-     r_Sys = 0.002; //size of systematics in cm
-     x0 = 0.113; // from previous fits using this program that were based on 2017
-     y0 = -0.118; // from previous fits using this program that were based on 2017
-     r0 = 2.211; // initial x radiu, from previous fits using this program that were based on 2015
-     r0_y = 2.211; // in cm, initial y radius
-  }
-  
-  //*** set parameters for Pixel Shield
-  if(FitObject == "PixelShield"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.5, RSmin = 3.5, RSmax = 3.9, RPlot = 5.0;
-     RangeEstimatorQuality = 0.1;  
-     x_Sys = 0.007; //size of systematics in cm
-     r_Sys = 0.007; //size of systematics in cm
-     // Values for fit with a circle
-     x0 = -0.029; // from previous fits using this program that were based on 2015
-     y0 = -0.079; // from previous fits using this program that were based on 2015
-     r0 = 3.72;  // from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Pixel Shield Plus
-  if(FitObject == "PixelShieldPlus"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
-     RangeEstimatorQuality = 0.1; 
-     x_Sys = 0.007; // size of systematics in cm
-     r_Sys = 0.007; // size of systematics in cm
-     x0 = -0.112;//-0.106; // in cm
-     y0 = -0.093;//-0.096; // in cm
-     r0 = 3.783;//3.783; // in cm
-  }
-  //*** with all phi sectors: 3.736, x0 = -0.02, y0 = -0.092
-  
-  //*** set parameters for Pixel Shield Minus
-  //*** to superimpose the fits for the Pxiel Shield Plus and Minus sides run this
-  if(FitObject == "PixelShieldMinus"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
-     RangeEstimatorQuality = 0.1; 
-     x_Sys = 0.007; // size of systematics in cm
-     r_Sys = 0.007; // size of systematics in cm
-     x0 = 0.052; // in cm
-     y0 = -0.095; // in cm
-     r0 = 3.777; // in cm
-  }
-  
-  //*** set parameters for Pixel Shield Ellipse
-  if(FitObject == "PixelShieldEllipse"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.6, RSmin = 3.6, RSmax = 4.0, RPlot = 5.0;
-     RangeEstimatorQuality = 0.1; 
-     x_Sys = 0.007; // size of systematics in cm
-     r_Sys = 0.007; // size of systematics in cm
-     x0 = -0.029; // in cm
-     y0 = -0.086; // in cm
-     r0 = 3.71; // in cm, initial x radius
-     r0_y = 3.75; // in cm, initial y radius
-  }
-  
-  //*** set parameters for Pixel Shield Ellipse with 2 semi-ellipses with the same Rx and Ry for both sides
-  if(FitObject == "PixelShield2Ellipses"){
-     Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4., RPlot = 5.0;
-     //Rmin = 3.0, Rmax = 5.0, RBGmin = 3.0, RBGmax = 3.55, RSmin = 3.55, RSmax = 4.1, RPlot = 5.0;
-     RangeEstimatorQuality = 0.1;
-     x_Sys = 0.007; // size of systematics in cm
-     r_Sys = 0.007; // size of systematics in cm
-     x0 = -0.099; // in cm
-     y0 = -0.090; // in cm
-     x0_Far = 0.048; // in cm
-     y0_Far = -0.104; // in cm
-     r0 = 3.780; // in cm, the initial x radius
-     r0_y = 3.776; // in cm, initial y radius
-     //x0 = -0.115; // in cm
-     //y0 = -0.092; // in cm
-     //x0_Far = 0.064; // in cm
-     //y0_Far = -0.098; // in cm
-     //r0 = 3.794; // in cm, the initial x radius
-     //r0_y = 3.777; // in cm, initial y radius
-  }
-
   //*** set parameters for Pixel Shield with 2 Arcs with the same radius
   if(FitObject == "PixelShield2Arcs"){
      PlotObject = "hPFDV_XY_Pixel";
@@ -346,129 +230,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
      x0_Far = 0.06; // in cm
      y0_Far = -0.10; // in cm
      r0 = 3.0; // in cm, the initial x radius
-     //***** for z: -25 to -20 cm
-     //x0 = -0.032; // in cm
-     //x0_Far = -0.096; // in cm
-     //r0 = 3.705; // in cm, the initial x radius
-     //***** for z: -25 to -20 cm
-     //x0 = 0.018; // in cm
-     //x0_Far = -0.016; // in cm
-     //r0 = 3.724; // in cm, the initial x radius
-     //***** for z: -20 to -10 cm
-     //x0 = -0.102; // in cm
-     //x0_Far = 0.075; // in cm
-     //r0 = 3.788; // in cm, the initial x radius
-     //***** for z: -10 to 0 cm
-     //x0 = -0.170; // in cm
-     //x0_Far = 0.112; // in cm
-     //r0 = 3.825; // in cm, the initial x radius
-     //***** for z: 0-10 cm
-     //x0 = -0.128; // in cm
-     //x0_Far = 0.063; // in cm
-     //r0 = 3.790; // in cm, the initial x radius
-     //***** for z: 10-20 cm
-     //x0 = -0.063; // in cm
-     //x0_Far = 0.003; // in cm
-     //r0 = 3.748; // in cm, the initial x radius
   }
   
-  //*** set parameters for Pixel Support
-  if(FitObject == "PixelSupport"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     //Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
-     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 23.; 
-     RangeEstimatorQuality = 0.5;  
-     x_Sys = 0.007; //size of systematics in cm
-     r_Sys = 0.007; //size of systematics in cm
-     x0 = -0.075;//-0.083;// from previous fits using this program that were based on 2015
-     y0 = -0.313;//-0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.734;//21.73;  // from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Pixel Support Plus
-  if(FitObject == "PixelSupportPlus"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
-     RangeEstimatorQuality = 0.5;  
-     x_Sys = 0.007; //size of systematics in cm
-     r_Sys = 0.05; //size of systematics in cm
-     x0 = -0.232; // from previous fits using this program that were based on 2015
-     y0 = -0.331; // from previous fits using this program that were based on 2015
-     r0 = 21.85;  // from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Pixel Support Minus
-  if(FitObject == "PixelSupportMinus"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     Rmin = 18.5, Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 20.5, RSmax = 22.5, RPlot = 24.5; 
-     RangeEstimatorQuality = 0.5;  
-     x_Sys = 0.007; //size of systematics in cm
-     r_Sys = 0.05; //size of systematics in cm
-     x0 = 0.023;// from previous fits using this program that were based on 2015
-     y0 = -0.317; // from previous fits using this program that were based on 2015
-     r0 = 21.81; // from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Pixel Support Ellipse
-  if(FitObject == "PixelSupportEllipse"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     //PlotObject = "hPFDV_XY_PixelSupport";
-     //PlotObjectBg = "hPFDV_RhoPhi_PixelSupport";
-     Rmin = 18., Rmax = 23., RBGmin = 19.6, RBGmax = 21.1, RSmin = 21.1, RSmax = 22.3, RPlot = 31.;
-     RangeEstimatorQuality = 0.5;
-     x_Sys = 0.007; //size of systematics in cm
-     r_Sys = 0.007; //size of systematics in cm
-     x0 = -0.075;//-0.082;// from previous fits using this program that were based on 2015
-     y0 = -0.315;//-0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.703;//21.701;  // initial x radius, from previous fits using this program that were based on 2015
-     r0_y = 21.803;//21.779; // initial y radius, from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Pixel Support Rails
-  if(FitObject == "PixelSupportRails"){
-     PlotObject = "hPFDV_XY_PixelSupport";
-     //PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     //Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 31.; 
-     RangeEstimatorQuality = 0.5; 
-     x_Sys = 0.02; //size of systematics in cm
-     r_Sys = 0.02; //size of systematics in cm
-     x0 = -0.083;// from previous fits using this program that were based on 2015
-     y0 = -0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.73;  // from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Pixel Support Rails Positive
-  if(FitObject == "PixelSupportRailsPositive"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 31.; 
-     RangeEstimatorQuality = 0.5; 
-     x_Sys = 0.02; //size of systematics in cm
-     r_Sys = 0.02; //size of systematics in cm
-     x0 = -0.083;// from previous fits using this program that were based on 2015
-     y0 = -0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.73;  // from previous fits using this program that were based on 2015
-  }
-  
-  //*** set parameters for Pixel Support Rails Negative
-  if(FitObject == "PixelSupportRailsNegative"){
-     PlotObject = "hPFDV_XY_PixelSupport_AbsZ25";
-     PlotObjectBg = "hPFDV_RhoPhi_PixelSupport_AbsZ25";
-     Rmin = 18., Rmax = 24.5, RBGmin = 22.5, RBGmax = 24.5, RSmin = 18., RSmax = 22.5, RPlot = 24.5; 
-     RangeEstimatorQuality = 0.5;
-     x_Sys = 0.02; //size of systematics in cm
-     r_Sys = 0.02; //size of systematics in cm
-     x0 = -0.083;// from previous fits using this program that were based on 2015
-     y0 = -0.324; // from previous fits using this program that were based on 2015
-     r0 = 21.73;  // from previous fits using this program that were based on 2015
-  }
- 
 
   TH2F *hEmpty = new TH2F("hEmpty","",40,-RPlot,RPlot,40,-RPlot,RPlot);
   hEmpty->GetXaxis()->SetTitle("x (cm)");
@@ -483,7 +246,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
   //TFile* inputFile = TFile::Open("PlotProduced_MC2018_Pi10GeV.root");
   //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
   //TFile* inputFile = TFile::Open("PlotProduced_2018CD_RawToReco.root");
-  TFile* inputFile = TFile::Open("PlotProduced_2018BCD_RawToReco.root");
+  //TFile* inputFile = TFile::Open("PlotProduced_2018BCD_RawToReco.root");
+  TFile* inputFile = TFile::Open("PlotProduced_2018D_AODpart.root ");
 
   /// Reset some Style
   ///gStyle.SetPalette(1)
@@ -554,9 +318,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
 
     /// k = -7 is the inclusive one
     /// k = -6 is only BPiz (|z| < 25 cm)
-    if ( FitObject == "PixelShield" || FitObject == "BeamPipe" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus" ||
-         FitObject == "BeamPipeEllipse" || FitObject == "PixelShieldEllipse" ||
-         FitObject == "PixelShield2Ellipses"|| FitObject == "PixelShield2Arcs" || FitObject == "PixelShieldEllipseMinus"  ) {
+    if (  FitObject == "PixelShield2Arcs"  ) {
        if ( k == -6 )
        {
          plotName << "_AbsZ25";
@@ -590,14 +352,7 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        h_RhoPhi_Extra->Sumw2();
        h_RhoPhi->Add(h_RhoPhi_Extra);
     }
-    if(FitObject == "PixelSupport")h_RhoPhi->Rebin2D(2,2);
-    if(FitObject == "PixelSupportEllipse")h_RhoPhi->Rebin2D(2,2);
-    if(FitObject == "PixelShield") h_RhoPhi->Rebin2D(2,2);
-    if(FitObject == "PixelShield2Ellipses") h_RhoPhi->Rebin2D(2,2);
     if(FitObject == "PixelShield2Arcs") h_RhoPhi->Rebin2D(2,2);
-    if(FitObject == "PixelShieldEllipse")h_RhoPhi->Rebin2D(2,2);
-    if(FitObject == "PixelShieldPlus")h_RhoPhi->Rebin2D(2,2);
-    if(FitObject == "PixelShieldMinus")h_RhoPhi->Rebin2D(2,2);
     h_RhoPhi->SetStats(0);
     h_RhoPhi->GetXaxis()->SetTitle("#phi (rad)");
     h_RhoPhi->GetYaxis()->SetTitle("r (cm)");
@@ -608,8 +363,8 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     Double_t MaxZhRhoPhi = h_RhoPhi->GetMaximum();
     cout << "******** Maximum Z value for h_RhoPhi = " << MaxZhRhoPhi << endl;
     /// doesn't work for PixelShield2Arcs and PixelSupportEllipse (calculate in whole range), so don't apply to it:
-    if(FitObject == "PixelSupportEllipse")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, 48); //only for paper version, if scale will change, all change
-    if(FitObject == "BeamPipe"||FitObject == "PixelSupportRails")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, MaxZhRhoPhi);
+    //if(FitObject == "PixelSupportEllipse")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, 48); //only for paper version, if scale will change, all change
+    //if(FitObject == "BeamPipe"||FitObject == "PixelSupportRails")h_RhoPhi->GetZaxis()->SetRangeUser(0.01, MaxZhRhoPhi);
 
     h_ZR = new TH2D();
     h_ZR = (TH2D*)inputFile->Get("hPFDV_ZR_Map" );
@@ -651,21 +406,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        h_Extra->Sumw2();
        h->Add(h_Extra);
     }
-    if(FitObject == "PixelSupport" || FitObject == "PixelSupportPlus" || FitObject == "PixelSupportMinus")h->Rebin2D(4,4);
-    //if(FitObject == "PixelSupportEllipse")h->Rebin2D(3,3);
-    if(FitObject == "PixelSupportEllipse")h->Rebin2D(4,4);
-    if(FitObject == "PixelShield") h->Rebin2D(5,5);
-    if(FitObject == "PixelShield2Ellipses") h->Rebin2D(5,5);
-    //if(FitObject == "PixelShield2Arcs" && k == -6) h->Rebin2D(5,5);
-    //if(FitObject == "PixelShield2Arcs"&& k != -6 ) h->Rebin2D(5,5);
-    if(FitObject == "PixelShieldEllipse")h->Rebin2D(5,5);
-    if(FitObject == "PixelShieldPlus") h->Rebin2D(5,5);
-    if(FitObject == "PixelShieldMinus")h->Rebin2D(5,5);
-    if(FitObject == "BeamPipe")    h->Rebin2D(5,5);
-    if(FitObject == "BeamPipeEllipse")h->Rebin2D(5,5);
-    if(FitObject == "PixelSupportRails")h->Rebin2D(2,2);
-    if(FitObject == "PixelSupportRailsPositive")h->Rebin2D(2,2);
-    if(FitObject == "PixelSupportRailsNegative")h->Rebin2D(2,2);
     h->SetStats(0);
     h->GetXaxis()->SetTitle("x (cm)");
     h->GetYaxis()->SetTitle("y (cm)");
@@ -802,10 +542,6 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
     gr_BS = new TGraph(1,x_BS,y_BS);
     gr_BS->SetMarkerStyle(20);
     gr_BS->SetMarkerSize(1.5);
-    if (FitObject == "PixelSupportEllipse")
-       {
-       gr_BS->SetMarkerSize(1);
-       }
     //gr_BS->SetMarkerColor(kGreen+1);
     gr_BS->SetMarkerColor(kBlue);
 
@@ -1164,8 +900,10 @@ Double_t y0_BeamPipe = -0.175; // from previous fits using this program that wer
        fitterDraw = TVirtualFitter::Fitter( 0, 3 );
        fitterDraw->SetFCN( chiSquareFitFacet );
        fitterDraw->SetParameter( 0,  "y1",  -1.02, 0.01, 0., 0.); // in cm
-       fitterDraw->SetParameter( 1, "A1",   100, 1., 0., 250. ); // in cm
-       fitterDraw->SetParameter( 2, "A2",   500, 1., 250., 800. ); // in cm
+       //fitterDraw->SetParameter( 1, "A1",   100, 1., 0., 250. ); // in cm
+       //fitterDraw->SetParameter( 2, "A2",   500, 1., 250., 800. ); // in cm
+       fitterDraw->SetParameter( 1, "A1",   300, 1., 0., 1000. ); // in cm
+       fitterDraw->SetParameter( 2, "A2",   5000, 1., 2500., 8000. ); // in cm
        //fitterDraw->FixParameter(1);
        //fitterDraw->FixParameter(2);
        Double_t arglist[10] = {0.};
