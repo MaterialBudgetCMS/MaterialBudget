@@ -9,6 +9,7 @@ Compiled version works for any CMSSW versions:
 ```
 root.exe -b revisionsInnerTrackerFit_2018.C++
 root.exe -b PixelFit_2018.C++
+root.exe -b TrackerMaterialEstimation_2018.C++
 ```
 
    * For 2018 data for public data at CMS-DP-2019-001:

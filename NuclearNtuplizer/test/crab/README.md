@@ -7,7 +7,7 @@ How to check collections inside file:
 CRAB3
 ====
 
-For Data Run2015D use CMSSW_7_6_5 make if neccessary:
+For Data Run2015D use `CMSSW_7_6_5` make if neccessary:
 ```
      export SCRAM_ARCH=slc6_amd64_gcc493
 ```
@@ -15,9 +15,9 @@ For Data Run2015D use CMSSW_7_6_5 make if neccessary:
 
 See details here:
 
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial#CRAB_configuration_parameters
+    https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial#CRAB_configuration_parameters
 
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+    https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
 
 Check if you have writing permissions for bash:
 ```
