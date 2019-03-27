@@ -18,6 +18,8 @@
 #include <TMath.h>
 #include <TVector3.h>
 
+//double PlotProduction::VectorPerpendicularR(double v1_x, double v1_y, double v1_z, double v2_x, double v2_y, double v2_z);
+
 void PlotProduction::Loop()
 {
    if (fChain == 0) return;
@@ -43,6 +45,7 @@ void PlotProduction::Loop()
    Bins[11]=    65.;    
 
     TH1D* hPFDV_CountEventsWithNI; //
+
     TH1D* hMC_NumberNI; //
     TH1D* hMC_TrkV_R; //
     TH1D* hMC_TrkV_R_Barrel; //
@@ -144,9 +147,6 @@ void PlotProduction::Loop()
     TH1D* hMC_TrkV_numberOftracks_0p2;
     TH1D* hMC_TrkV_numberOftracks_0p5;
     TH1D* hMC_TrkV_numberOftracks_1p0;
-    TH1D* hPFDV_R;
-    TH1D* hPFDV_R_Pipe;
-    TH1D* hPFDV_R_BPix;
     TH1D* hPFDV_R_isAssociatedMC;
     TH1D* hPFDV_R_isAssociatedMC_Barrel;
     TH1D* hPFDV_deltaR2d_Associated_Barrel;
@@ -162,11 +162,6 @@ void PlotProduction::Loop()
     TH1D* hPFDV_isAssociatedMC_isNuclear_Barrel;
     TH1D* hPFDV_associationMC_TrkVIdx;
     TH1D* hPFDV_associationMC_TrkVIdx_Barrel;
-    TH1D* hPFDV_vTrack_pt;
-    TH1D* hPFDV_numberOftracks_0p0;
-    TH1D* hPFDV_numberOftracks_0p2;
-    TH1D* hPFDV_numberOftracks_0p5;
-    TH1D* hPFDV_numberOftracks_1p0;
     //only for one Sim Vertex with max pT out
     TH1D* hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut; 
     TH1D* hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut;
@@ -184,7 +179,19 @@ void PlotProduction::Loop()
     TH1D* hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut;
     TH1D* hMC_TrkV_momentumOut_pt_Barrel_MaxCut;
     TH1D* hMC_TrkV_momentumOut_pt_Forward_MaxCut;
-    /// Histograms
+
+    ///////////////
+    /// Histograms for Data:
+    TH1D* hPFDV_NumberNI; //
+    TH1D* hPFDV_R;
+    TH1D* hPFDV_R_Pipe;
+    TH1D* hPFDV_R_BPix;
+    TH1D* hPFDV_vTrack_pt;
+    TH1D* hPFDV_numberOftracks_0p0;
+    TH1D* hPFDV_numberOftracks_0p2;
+    TH1D* hPFDV_numberOftracks_0p5;
+    TH1D* hPFDV_numberOftracks_1p0;
+
     TH2D* hPFDV_XY_Map;
     TH2D* hPFDV_RhoPhi_Map;
     TH2D* hPFDV_RhoPhi_Map_Pipe;
@@ -209,6 +216,15 @@ void PlotProduction::Loop()
     TH2D* hPFDV_XY_Map_Pipe_AbsZ25;
     TH2D* hPFDV_RhoPhi_Map_Pipe_AbsZ25;
     TH2D* hPFDV_XY_Pixel_AbsZ25;
+    TH2D* hPFDV_XY_PixelSingleNI_AbsZ25;
+    TH2D* hPFDV_XY_PixelMultNI_AbsZ25;
+    TH1D* hPFDV_dRxy_MultNI_AbsZ25;
+    TH1D* hPFDV_Rxy2nd_MultNI_AbsZ25;
+    TH1D* hPFDV_Rxy2ndCut_MultNI_AbsZ25;
+    TH1D* hPFDV_dRperp_MultNI_AbsZ25;
+    TH1D* hPFDV_dRpar_MultNI_AbsZ25;
+    TH1D* hPFDV_dphi_MultNI_AbsZ25;
+    TH1D* hPFDV_dphidtheta_MultNI_AbsZ25;
 //
 //    TH2D* hPFDV_XY_Map_Corr_AbsZ25;
 //    TH2D* hPFDV_RhoPhi_Map_Corr_AbsZ25;
@@ -434,9 +450,9 @@ void PlotProduction::Loop()
   hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel->Sumw2();
 
 
-  hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2 = new TH1D( "hMC_TrkV_R_isNuclearInteraction_eta", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2 = new TH1D( "hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2", "N.I. in Tracker", 50, -2.5, 2.5);
   hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2->Sumw2();
-  hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2 = new TH1D( "hMC_TrkV_R_isAssociatedPF_eta", "N.I. in Tracker", 50, -2.5, 2.5);
+  hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2 = new TH1D( "hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2", "N.I. in Tracker", 50, -2.5, 2.5);
   hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2->Sumw2();
   
 
@@ -497,7 +513,7 @@ void PlotProduction::Loop()
   hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
   hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut->Sumw2();
   
-  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicularMaxCut", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
+  hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut = new TH1D( "hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut", "N.I. in Tracker", dR_Nbin, dR_xmin, dR_xmax);
   hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut->Sumw2();
 
   hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut = new TH1D( "hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut", "N.I. in Tracker", 50, -2.5, 2.5);
@@ -534,6 +550,9 @@ void PlotProduction::Loop()
   /// Output histograms and graphs etc
   hPFDV_CountEventsWithNI = new TH1D( "hPFDV_CountEventsWithNI", "N.I. in Tracker", 3, 0, 2 );
   hPFDV_CountEventsWithNI->Sumw2();
+  hPFDV_NumberNI = new TH1D( "hPFDV_NumberNI", "# reco NI per event", 11, -0.5, 10.5 );
+  hPFDV_NumberNI->Sumw2();
+
 
   hPFDV_isAssociatedMC = new TH1D( "hPFDV_isAssociatedMC", "CMS work in progress", 10, -5, 5 );
   hPFDV_isAssociatedMC->Sumw2();
@@ -662,6 +681,24 @@ void PlotProduction::Loop()
 
   hPFDV_XY_Pixel_AbsZ25 = new TH2D( "hPFDV_XY_Pixel_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
   hPFDV_XY_Pixel_AbsZ25->Sumw2();
+  hPFDV_XY_PixelSingleNI_AbsZ25 = new TH2D( "hPFDV_XY_PixelSingleNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
+  hPFDV_XY_PixelSingleNI_AbsZ25->Sumw2();
+  hPFDV_XY_PixelMultNI_AbsZ25 = new TH2D( "hPFDV_XY_PixelMultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
+  hPFDV_XY_PixelMultNI_AbsZ25->Sumw2();
+  hPFDV_dRperp_MultNI_AbsZ25 = new TH1D( "hPFDV_dRperp_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 30.);
+  hPFDV_dRperp_MultNI_AbsZ25->Sumw2();
+  hPFDV_dRxy_MultNI_AbsZ25 = new TH1D( "hPFDV_dRxy_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 30.);
+  hPFDV_dRxy_MultNI_AbsZ25->Sumw2();
+  hPFDV_Rxy2nd_MultNI_AbsZ25 = new TH1D( "hPFDV_Rxy2nd_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 30.);
+  hPFDV_Rxy2nd_MultNI_AbsZ25->Sumw2();
+  hPFDV_Rxy2ndCut_MultNI_AbsZ25 = new TH1D( "hPFDV_Rxy2ndCut_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 30.);
+  hPFDV_Rxy2ndCut_MultNI_AbsZ25->Sumw2();
+  hPFDV_dRpar_MultNI_AbsZ25 = new TH1D( "hPFDV_dRpar_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 60.);
+  hPFDV_dRpar_MultNI_AbsZ25->Sumw2();
+  hPFDV_dphi_MultNI_AbsZ25 = new TH1D( "hPFDV_dphi_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 3.14);
+  hPFDV_dphi_MultNI_AbsZ25->Sumw2();
+  hPFDV_dphidtheta_MultNI_AbsZ25 = new TH1D( "hPFDV_dphidtheta_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 3.14);
+  hPFDV_dphidtheta_MultNI_AbsZ25->Sumw2();
 //
 //  hPFDV_XY_Map_Corr_AbsZ25 = new TH2D( "hPFDV_XY_Map_Corr_AbsZ25", "N.I. in Tracker, BS Corr, |z| < 25 cm", 1000, -100, 100, 1000, -100, 100 );
 //  hPFDV_RhoPhi_Map_Corr_AbsZ25 = new TH2D( "hPFDV_RhoPhi_Map_Corr_AbsZ25", "N.I. in Tracker, BS Corr, |z| < 25 cm", 400, -TMath::Pi(), TMath::Pi(), 500, 0, 100 );
@@ -758,6 +795,7 @@ void PlotProduction::Loop()
     m_hPFDV_RhoPhi_Map_Pipe.insert( std::pair<int, TH2D*>( k, h2 ) );
   }
 
+   int isData = 0;
    Long64_t nentries = fChain->GetEntriesFast();
    Long64_t n_recoNI = 0;
    Long64_t nbytes = 0, nb = 0;
@@ -770,7 +808,8 @@ void PlotProduction::Loop()
       std::cout << "Loop over entry " << jentry << "/" << nentries << "." << std::endl; 
 
     /// Here all the branches are available
-    double ni_x, ni_y, ni_z, ni_rho, ni_phi;
+    double ni_x, ni_y, ni_z, ni_rho, ni_R, ni_phi, ni_theta;
+    double nj_x, nj_y, nj_z, nj_rho, nj_R, nj_phi, nj_theta;
     int ni_z_i;
 
     double ni_MC_x, ni_MC_y, ni_MC_z, ni_MC_rho;
@@ -1355,6 +1394,8 @@ void PlotProduction::Loop()
     if (numberOfPFDV >= 1){
        hPFDV_CountEventsWithNI->Fill(1.);
     }
+    if (numberOfPFDV < 10)hPFDV_NumberNI -> Fill(numberOfPFDV);
+    else hPFDV_NumberNI -> Fill(10.);
 
     for ( unsigned int i = 0; i < numberOfPFDV; i++ )
     {
@@ -1459,6 +1500,8 @@ void PlotProduction::Loop()
 
         hPFDV_XY_Map_Pipe_AbsZ25->Fill( ni_x, ni_y );
         hPFDV_XY_Pixel_AbsZ25->Fill( ni_x, ni_y );
+        if (numberOfPFDV == 1) hPFDV_XY_PixelSingleNI_AbsZ25->Fill( ni_x, ni_y );
+        if (numberOfPFDV > 1) hPFDV_XY_PixelMultNI_AbsZ25->Fill( ni_x, ni_y );
         hPFDV_RhoPhi_Map_Pipe_AbsZ25->Fill( ni_phi, ni_rho );
 
        // m_hPFDV_XY_Map.find( ni_z_i )->second->Fill( ni_x, ni_y );
@@ -1568,10 +1611,197 @@ void PlotProduction::Loop()
 //        m_hPFDV_XY_Map_Corr_Pipe_Weight.find( ni_z_i )->second->Fill( ni_x_c, ni_y_c, ni_rho_c*ni_rho_c );
 //        m_hPFDV_RhoPhi_Map_Corr_Pipe_Weight.find( ni_z_i )->second->Fill( ni_phi_c, ni_rho_c, ni_rho_c*ni_rho_c );
 //      }  
-      }
-   }
+    } // end RECO NI
+
+    // make analysis if we have more then 1 RECO NI per event:
+    if (numberOfPFDV > 1){
+       for ( unsigned int i = 0; i < numberOfPFDV-1; i++ )
+       for ( unsigned int j = i+1; j < numberOfPFDV; j++ )
+       {
+          ni_x = PFDV_x->at(i);
+          ni_y = PFDV_y->at(i);
+          ni_z = PFDV_z->at(i);
+          ni_phi = TMath::ATan2( ni_y, ni_x );
+          ni_rho = TMath::Sqrt( ni_x*ni_x + ni_y*ni_y );
+          ni_R = TMath::Sqrt( ni_x*ni_x + ni_y*ni_y + ni_z*ni_z);
+          ni_theta = TMath::ACos(ni_z/ni_R);
+          nj_x = PFDV_x->at(j);
+          nj_y = PFDV_y->at(j);
+          nj_z = PFDV_z->at(j);
+          nj_phi = TMath::ATan2( nj_y, nj_x );
+          nj_rho = TMath::Sqrt( nj_x*nj_x + nj_y*nj_y );
+          nj_R = TMath::Sqrt( nj_x*nj_x + nj_y*nj_y + nj_z*nj_z);
+          nj_theta = TMath::ACos(nj_z/nj_R);
+          double dphi_NI = fabs(ni_phi-nj_phi);
+          double Pi = 2.*acos(0);
+          if (dphi_NI > Pi) dphi_NI = fabs(2*Pi - dphi_NI); 
+          double dtheta_NI = fabs(ni_theta-nj_theta);
+          if (dtheta_NI > Pi) dtheta_NI = fabs(2*Pi - dtheta_NI); 
+          if ( fabs(ni_z) < 25 && fabs(nj_z) < 25 ) { // select only barrel NIs
+          //if (ni_rho > 2.44 && ni_rho < 3.95 && nj_rho > 3.95 && nj_rho < 6.3) { // ni at L1, nj between L1 and L2
+          if (ni_rho > 2.44 && ni_rho < 3.45) { // ni at L1
+            double dRperp = PlotProduction::VectorPerpendicularR(ni_x, ni_y, ni_z, nj_x, nj_y, nj_z);
+            double dRpar = PlotProduction::VectorParallelR(ni_x, ni_y, ni_z, nj_x, nj_y, nj_z);
+            hPFDV_dRperp_MultNI_AbsZ25->Fill(dRperp); 
+            hPFDV_dRpar_MultNI_AbsZ25->Fill(dRpar); 
+            hPFDV_dRxy_MultNI_AbsZ25->Fill(fabs(ni_rho - nj_rho)); 
+            hPFDV_Rxy2nd_MultNI_AbsZ25->Fill(nj_rho); 
+            hPFDV_dphi_MultNI_AbsZ25->Fill(dphi_NI); 
+            hPFDV_dphidtheta_MultNI_AbsZ25->Fill(dphi_NI*dtheta_NI); 
+            if(dphi_NI*dtheta_NI < 0.05)hPFDV_Rxy2ndCut_MultNI_AbsZ25->Fill(nj_rho); 
+          }
+          //if (nj_rho > 2.44 && nj_rho < 3.95 && ni_rho > 3.95 && ni_rho < 6.3) { // nj at L1, ni between L1 and L2
+          if (nj_rho > 2.44 && nj_rho < 3.45) { // nj at L1 
+            double dRperp = PlotProduction::VectorPerpendicularR(nj_x, nj_y, nj_z, ni_x, ni_y, ni_z);
+            double dRpar = PlotProduction::VectorParallelR(nj_x, nj_y, nj_z, ni_x, ni_y, ni_z);
+            hPFDV_dRperp_MultNI_AbsZ25->Fill(dRperp); 
+            hPFDV_dRpar_MultNI_AbsZ25->Fill(dRpar); 
+            hPFDV_dRxy_MultNI_AbsZ25->Fill(fabs(ni_rho - nj_rho)); 
+            hPFDV_Rxy2nd_MultNI_AbsZ25->Fill(ni_rho); 
+            hPFDV_dphi_MultNI_AbsZ25->Fill(dphi_NI); 
+            hPFDV_dphidtheta_MultNI_AbsZ25->Fill(dphi_NI*dtheta_NI); 
+            if(dphi_NI*dtheta_NI < 0.05)hPFDV_Rxy2ndCut_MultNI_AbsZ25->Fill(ni_rho); 
+          }
+          } // end barrel cut on z
+       }
+    } // end if numberOfPFDV > 1
+    isData = isRealData;
+   }// end cycle per event
    std::cout << " Total number of NI: n_recoNI = " << n_recoNI <<std::endl;
+   std::cout << " isData = " << isData <<std::endl;
+   //Delete MC histo if it is Data
+   if (isData == 1 ){
+    outputFile->Delete("hMC_NumberNI;*"); //
+    outputFile->Delete("hMC_TrkV_R;*"); //
+    outputFile->Delete("hMC_TrkV_R_Barrel;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2;*");
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2;*");
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Barrel;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p5;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr1p0;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p5;*"); //
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr1p0;*"); //
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF;*"); //
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Barrel;*"); //
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel;*"); //
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2;*"); //
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p5;*"); //
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr1p0;*"); // 
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2;*"); //
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p5;*"); // 
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr1p0;*"); //
+    outputFile->Delete("hMC_TrkV_isNuclearInteraction;*");
+    outputFile->Delete("hMC_TrkV_isNuclearInteraction_Barrel;*");
+    outputFile->Delete("hMC_TrkV_isAssociatedPF;*");
+    outputFile->Delete("hMC_TrkV_isAssociatedPF_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDVIdx;*");
+    outputFile->Delete("hMC_TrkV_associationPFDVIdx_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR2d;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR2d_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3d;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3d_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3d_Forward;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateR;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateVerR;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateVerXY;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateVerZ;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateR3d;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateR3dPerpendicular;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateR3dParallel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_DuplicateR3dPerpendicularAbs;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dPerpendicular;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_Forward;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dPerpendicularRel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dParallel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dParallel_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dParallel_Forward;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dParallelRel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaChargeSource_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaChargeSource_Forward;*");
+    outputFile->Delete("hMC_TrkV_momentumOut_pt_Barrel;*");
+    outputFile->Delete("hMC_TrkV_momentumInc_pt_Barrel;*");
+    outputFile->Delete("hMC_TrkV_momentum_dtheta_Barrel;*");
+    outputFile->Delete("hMC_TrkV_momentumOut_mass_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_pdgIdSource_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_pdgIdSource_Forward;*");
+    outputFile->Delete("hMC_TrkV_pdgIdSource_Barrel;*");
+    outputFile->Delete("hMC_TrkV_pdgIdSource_Forward;*");
+    outputFile->Delete("hMC_TrkV_numberOftracks_0p2;*");
+    outputFile->Delete("hMC_TrkV_numberOftracks_0p5;*");
+    outputFile->Delete("hMC_TrkV_numberOftracks_1p0;*");
+    outputFile->Delete("hPFDV_R_isAssociatedMC;*");
+    outputFile->Delete("hPFDV_R_isAssociatedMC_Barrel;*");
+    outputFile->Delete("hPFDV_deltaR2d_Associated_Barrel;*");
+    outputFile->Delete("hPFDV_deltaR2d_Associated;*");
+    outputFile->Delete("hPFDV_deltaR3d_Associated;*");
+    outputFile->Delete("hPFDV_deltaR3d_Associated_Barrel;*");
+    outputFile->Delete("hPFDV_deltaR3d_Associated_Forward;*");
+    outputFile->Delete("hPFDV_deltaR3d_Associated_Rebin;*");
+    outputFile->Delete("hPFDV_deltaR3d_Associated_Barrel_Rebin;*");
+    outputFile->Delete("hPFDV_deltaR3d_Associated_Forward_Rebin;*");
+    outputFile->Delete("hPFDV_isAssociatedMC;*");
+    outputFile->Delete("hPFDV_isAssociatedMC_Barrel;*");
+    outputFile->Delete("hPFDV_isAssociatedMC_isNuclear_Barrel;*");
+    outputFile->Delete("hPFDV_associationMC_TrkVIdx;*");
+    outputFile->Delete("hPFDV_associationMC_TrkVIdx_Barrel;*");
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dParallel_MaxCut;*"); 
+    outputFile->Delete("hMC_TrkV_associationPFDV_deltaR3dPerpendicular_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_eta_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_eta_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_eta_Rlt4_3Tr0p2_MaxCut;*"); 
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_eta_Rlt4_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_eta_Rlt15_3Tr0p2_MaxCut;*"); 
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_eta_Rlt15_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_eta_Rgt15_3Tr0p2_MaxCut;*"); 
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_eta_Rgt15_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Barrel_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isNuclearInteraction_Rebin_Forward_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Barrel_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_R_isAssociatedPF_Rebin_Forward_3Tr0p2_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_momentumOut_pt_Barrel_MaxCut;*");
+    outputFile->Delete("hMC_TrkV_momentumOut_pt_Forward_MaxCut;*");
+   }
    outputFile->Write();
    outputFile->Close();
    delete outputFile;
+}
+
+double PlotProduction::VectorPerpendicularR(double v1_x, double v1_y, double v1_z, double v2_x, double v2_y, double v2_z)
+{
+// find Perpendicular of dR between vectors
+
+double dVecX = v2_x - v1_x;
+double dVecY = v2_y - v1_y;
+double dVecZ = v2_z - v1_z;
+double dR_perX = v2_y*dVecZ -v2_z*dVecY;
+double dR_perY = v2_z*dVecX -v2_x*dVecZ;
+double dR_perZ = v2_x*dVecY -v2_y*dVecX;
+double abs_vec = sqrt(v2_x*v2_x + v2_y*v2_y +v2_z*v2_z);
+
+double dR_per = sqrt(dR_perX*dR_perX + dR_perY*dR_perY + dR_perZ*dR_perZ);
+
+if (abs_vec > 0) dR_per = dR_per/abs_vec;
+else dR_per = 1000.;
+
+return dR_per;
+}
+
+double PlotProduction::VectorParallelR(double v1_x, double v1_y, double v1_z, double v2_x, double v2_y, double v2_z)
+{
+// find Parallel of dR between vectors
+
+double dVecX = v2_x - v1_x;
+double dVecY = v2_y - v1_y;
+double dVecZ = v2_z - v1_z;
+double dR_par = v2_x*dVecX + v2_y*dVecY + v2_z*dVecZ;
+double abs_vec = sqrt(v2_x*v2_x + v2_y*v2_y +v2_z*v2_z);
+if (abs_vec > 0) dR_par = fabs(dR_par/abs_vec);
+else dR_par = 1000.;
+
+return dR_par;
 }

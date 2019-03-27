@@ -247,6 +247,8 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   double VectorPerpendicularR(double v1_x, double v1_y, double v1_z, double v2_x, double v2_y, double v2_z);
+   double VectorParallelR(double v1_x, double v1_y, double v1_z, double v2_x, double v2_y, double v2_z);
 };
 
 #endif
