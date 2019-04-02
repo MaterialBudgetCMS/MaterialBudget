@@ -174,7 +174,9 @@ void TrackerMaterialEstimation_2018()
   // for 0.04 cm bining -> fast proccess
   //TString PlotObject = "hPFDV_XY_PixelSupport";
   // for 0.01 cm bining -> long proccess
-  TString PlotObject = "hPFDV_XY_Pixel";
+  TString PlotObject = "hPFDV_XY_Pixel";       // NI All
+  //TString PlotObject = "hPFDV_XY_PixelMultNI";   // NI >= 1
+  //TString PlotObject = "hPFDV_XY_PixelSingleNI";   // NI == 1
   TString PlotObjectBg = "hPFDV_RhoPhi_PixelSupport";
   //doesn't exits:
   //TString PlotObjectBg = "hPFDV_RhoPhi_Pixel";
@@ -755,274 +757,6 @@ void TrackerMaterialEstimation_2018()
     Double_t bgFit1[40];
     Double_t bgFit1Err[40];
 
-
-    //divide 2D x-y plot into 40 sectors in phi as function of R
-    for ( UInt_t phiSect = 0; phiSect < 40; phiSect ++ )
-    {
-      //Int_t numBinsX = h->GetNbinsX();
-      //Int_t numBinsY = h->GetNbinsY();
-      Double_t Xmax_h = h->GetXaxis()->GetBinCenter(numBinsX ) + h->GetXaxis()->GetBinWidth( numBinsX )/2;
-      if(numBinsX != numBinsY) std::cout << "WARNING numBinsX = " << numBinsX << "is not equal to numBinsY = " << numBinsY << std::endl;
-      TH1D* hbgua0 = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
-      TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
-      TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
-      //std::cout << "Xmax_h = " << Xmax_h << endl;
-
-      for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-      {
-        for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-        {
-          Double_t x = h->GetXaxis()->GetBinCenter( ix );
-          Double_t y = h->GetYaxis()->GetBinCenter( iy );
-
-          // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
-          // positions of the two halves so that the background subtraction is cleaner.
-          Double_t x0ref = x0;
-          Double_t y0ref = y0;
-          if (FitObject == "PixelShieldMinus" && x >= 0) {x0ref = x0_PixelShieldPlus; y0ref = y0_PixelShieldPlus;}
-          if (FitObject == "PixelSupportMinus" && x >= 0) {x0ref = x0_PixelSupportPlus; y0ref = y0_PixelSupportPlus;}
-
-          if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
-          if (FitObject == "PixelShield2Arcs" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
-
-          Double_t xc = x - x0ref;
-          Double_t yc = y - y0ref;
-
-          //Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
-
-          Double_t rc = TMath::Sqrt( x*x + y*y ); // without correction to center of material
-
-          if ( rc < Rmin || rc > Rmax ) continue;
-
-          //Double_t pc = TMath::ATan2( yc, xc );
-          Double_t pc = TMath::ATan2( y, x );
-          if(pc < 0) pc = pc + 2*TMath::Pi();
-          Int_t thisPhiSect = floor(  pc  / ( 2*TMath::Pi() ) * 40 );
-
-          if ( thisPhiSect != Int_t(phiSect) ) continue;
-          //if(thisPhiSect == 0)std::cout << "thisPhiSect = " << thisPhiSect << " pc = " << pc << std::endl;
-
-          Double_t binNum = h->GetBinContent( ix, iy );
-
-          Double_t densityNum = binNum / ( rc * (TMath::Pi()/20) * hbgua0->GetXaxis()->GetBinWidth(1) );
-
-          hbgua0->Fill( rc, densityNum );
-
-          //if ( ( rc > Rmin && rc < RSmin ) || ( rc > RSmax && rc < Rmax ) )
-          Int_t BG_flag = 0;
-          for ( UInt_t iBG = 0; iBG <= UInt_t(sizeM); iBG++ ){
-             // set up baground region
-             Double_t rc_M_min = Rmin;
-             if (iBG > 0 ) rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 1.0;
-             if (iBG > 5 ) rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 0.5;
-             Double_t rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.2;
-             if (iBG > 0 && iBG < UInt_t(sizeM) )rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.5;
-             if (rc > rc_M_min && rc < rc_M_max){
-                 BG_flag = 1;
-                // remove BG region related to double outter shield structure:
-                if (iBG == 5 && (phiSect == 1 || phiSect == 8 || phiSect == 11 || phiSect == 18 || phiSect == 21 || phiSect == 28 || phiSect == 31 || phiSect == 38) ) BG_flag = 0;            
-                // remove BG region related to rails:
-                if (iBG == 6 && ((phiSect >= 7 && phiSect <=12)|| (phiSect >= 27 && phiSect <=32) ) ) BG_flag = 0;            
-             }
-          }
-
-          if ( BG_flag == 1 )
-          {
-            hbgua1->Fill( rc, densityNum );
-          }
-          else if ( rc >= RSmin && rc <= RSmax )
-          {
-            hbgua2->Fill( rc, densityNum );
-          }
-        }
-      }
-
-
-      cPlots->cd();
-      hbgua0->SetMinimum(0);
-      hbgua0->GetXaxis()->SetTitle("#rho (x^{2015}_{0},y^{2015}_{0}) (cm)");
-      //hbgua0->GetXaxis()->SetRangeUser(PipeInf, FitSup+0.1);
-      hbgua0->GetXaxis()->SetRangeUser(Rmin, Rmax);
-
-
-      hbgua0->Draw();
-      cPlots->Update();
-
-      TPaveStats* sBg = (TPaveStats*)hbgua0->GetListOfFunctions()->FindObject("stats");
-      x1L = sBg->GetX1NDC();
-      x2L = sBg->GetX2NDC();
-      y1L = sBg->GetY1NDC();
-      y2L = sBg->GetY2NDC();
-
-      hbgua0->SetStats(0);
-      hbgua1->SetStats(0);
-      hbgua2->SetStats(0);
-
-      hbgua0->Draw();
-      hbgua1->SetFillStyle(3004);
-      hbgua1->SetFillColor(kRed);
-      hbgua1->SetMarkerColor(kRed);
-      hbgua1->SetLineColor(kRed);
-      hbgua1->Draw("same");
-      hbgua2->SetFillStyle(3005);
-      hbgua2->SetFillColor(kGreen);
-      hbgua2->SetMarkerColor(kGreen);
-      hbgua2->SetLineColor(kGreen);
-      hbgua2->Draw("same");
-
-      //TF1 *fitBg = new TF1( "fitBg","[0] + x*[1]", RBGmin , RBGmax );
-      //TF1 *fitBg = new TF1( "fitBg","[0]*[0]*TMath::Exp([1]*x)", RBGmin , RBGmax );
-      TF1 *fitBg = new TF1( "fitBg",func_fitBg, RBGmin , RBGmax, 2 );
-      fitBg->SetParameter(0, 10);
-      fitBg->SetParameter(1, 0.01);
-      fitBg->FixParameter(1,0);
-      if (NameInputFile == "../PseudoBeamPipe/PseudoBeamPipe") {
-          fitBg->FixParameter(1,0);
-          fitBg->FixParameter(0,0); // for pseudo beam pipe only
-      }
-      cout << "*** We pass fit parameters settings **** " << endl;
-      fitBg->SetParName(0, "N0");
-      fitBg->SetParName(1, "k");
-      //we  need set limits here to avoid negative values in fit (it will crash)
-      //fitBg->SetParLimits(0, 0, 1E9);
-      //fitBg->SetParLimits(1, -1E9, 0);
-      fitBg->SetLineWidth(3);
-      if (NameInputFile != "../PseudoBeamPipe/PseudoBeamPipe") hbgua1->Fit("fitBg","MR0");
-      fitBg->Draw("same");
-
-      bgFit0[phiSect] = fitBg->GetParameter(0);
-      bgFit0Err[phiSect] = fitBg->GetParError(0);
-      if (bgFit0Err[phiSect] < 0) cout << "Erorr: bgFit0Err = " << bgFit0Err << endl;
-      bgFit1[phiSect] = fitBg->GetParameter(1);
-      bgFit1Err[phiSect] = fitBg->GetParError(1);
-      if (bgFit1Err[phiSect] < 0) cout << "Erorr: bgFit1Err = " << bgFit1Err << endl;
-
-      TLegend* legBg = new TLegend(x1L, 0.6, x2L, y2L, "");
-      legBg->SetTextFont(42);
-      legBg->SetTextSize(0.03*ScaleSize);
-      legBg->SetFillColor(kWhite);
-      legBg->SetTextColor(kBlack);
-      legBg->AddEntry(hbgua0,"Data 2018","l");
-      legBg->AddEntry(hbgua2,"Signal fit region","f");
-      legBg->AddEntry(hbgua1,"Sideband fit region","f");
-      legBg->AddEntry(fitBg,"Sideband fit function","l");
-      legBg->Draw("same");
-
-      gStyle->SetOptStat(1000111110);
-
-// uncomment if you want fit only background plots in slices
-/*
-      std::ostringstream fn;
-      fn << "Plots/"<<plotBg.c_str()<<"_BGUA" << "_" << phiSect<<".pdf";
-      cPlots->SaveAs(fn.str().c_str());
-      fn.str("");
-      fn << "Plots/"<<plotBg.c_str()<<"_BGUA" << "_" << phiSect<<".png";
-      cPlots->SaveAs(fn.str().c_str());
-*/
-      //delete to avoid memory leak:
-      //cPlots->Delete();
-      //if(cPlots)delete cPlots;
-      delete hbgua0;
-      delete hbgua1;
-      delete hbgua2;
-
-    } //end phi sector cycle
-
-    /// -------------------------- Step 2: calculate background --------------------------------
-
-    plot = plot + "_Bgk";
-    cPlots = new TCanvas(("c_"+plot).c_str(),"");
-    cPlots->cd();
-
-    //create empty 2d histo for backroung estimation in signal region
-    TH2D* h0 = new TH2D( plot.c_str(), h->GetTitle(), h->GetNbinsX(), h->GetXaxis()->GetBinLowEdge(1), h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()),
-                                                      h->GetNbinsY(), h->GetYaxis()->GetBinLowEdge(1), h->GetYaxis()->GetBinUpEdge(h->GetNbinsY()) );
-    h0->GetXaxis()->SetTitle("x (cm)");
-    h0->GetYaxis()->SetTitle("y (cm)");
-
-    //Int_t numBinsX = h0->GetNbinsX();
-    //Int_t numBinsY = h0->GetNbinsY();
-    for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-    {
-      for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-      {
-        //Double_t binNum = h->GetBinContent( ix, iy );
-
-        Double_t x = h->GetXaxis()->GetBinCenter( ix );
-        Double_t y = h->GetYaxis()->GetBinCenter( iy );
-
-        // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
-        // positions of the two halves so that the background subtraction is cleaner.
-        Double_t x0ref = x0;
-        Double_t y0ref = y0;
-        if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
-        if(FitObject == "PixelSupportMinus" && x >= 0) x0ref = x0_PixelSupportPlus, y0ref = y0_PixelSupportPlus;
-
-          if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
-          if (FitObject == "PixelShield2Arcs" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
-
-        Double_t xc = x - x0ref;
-        Double_t yc = y - y0ref;
-
-        Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
-
-        if ( rc < Rmin || rc > Rmax ) continue;
-
-        //Double_t pc = TMath::ATan2( yc, xc );
-        Double_t pc = TMath::ATan2( y, x );
-        if(pc < 0) pc = pc + 2*TMath::Pi();
-
-        if ( rc > RSmin && rc < RSmax )
-        {
-          UInt_t phiSect = floor(  pc   / ( 2*TMath::Pi() ) * 40 );
-
-          //Double_t par0 = 1/3. * ( bgFit0[phiSect] + bgFit0[(41+phiSect)%40] + bgFit0[(39+phiSect)%40] );
-          //Double_t par1 = 1/3. * ( bgFit1[phiSect] + bgFit1[(41+phiSect)%40] + bgFit1[(39+phiSect)%40] );
-          Double_t par0 =  bgFit0[phiSect];
-          Double_t par1 =  bgFit1[phiSect];
-          Double_t par0_p1 =  bgFit0[(41+phiSect)%40];
-          Double_t par1_p1 =  bgFit1[(41+phiSect)%40];
-          Double_t par0_m1 =  bgFit0[(39+phiSect)%40];
-          Double_t par1_m1 =  bgFit1[(39+phiSect)%40];
-          //cout << "par0_p1 =  " << par0_p1 << " par1_p1 =  " << par1_p1 << " par0_m1 =  " << par0_m1 << " par1_m1 =  " << par1_m1 << endl;
-
-          Double_t x_rc[1];     x_rc[0]= rc;
-          Double_t par_rc[2]; par_rc[0] = par0; par_rc[1] = par1;
-          Double_t par_rc_p1[2]; par_rc_p1[0] = par0_p1; par_rc_p1[1] = par1_p1;
-          Double_t par_rc_m1[2]; par_rc_m1[0] = par0_m1; par_rc_m1[1] = par1_m1;
-          
-          Double_t bgDensity = func_fitBg(x_rc,par_rc);
-          /// Average over 3 adjacent sectors to smooth differences
-          if (AverageBG == 1) bgDensity = (func_fitBg(x_rc,par_rc) + func_fitBg(x_rc,par_rc_p1) + func_fitBg(x_rc,par_rc_m1) )/3.;
-          //cout << "bgDensity = " << bgDensity << endl;
-          //cout << "func_fitBg(x_rc,par_rc) = " << func_fitBg(x_rc,par_rc) << endl;
-          //cout << "func_fitBg(x_rc,par_rc_p1) = " << func_fitBg(x_rc,par_rc_p1) << endl;
-          //cout << "func_fitBg(x_rc,par_rc_m1) = " << func_fitBg(x_rc,par_rc_m1) << endl;
-
-          Double_t bgNum = h0->GetXaxis()->GetBinWidth( ix ) * h0->GetYaxis()->GetBinWidth( iy ) * bgDensity;
-
-          if ( ( rc > RSmin && rc < RSmax ) )
-            h0->Fill( x, y, bgNum );
-        }
-      }
-    }
-
-    h0->Draw("COL");
-
-    // plot average estimated background in signal region from PipeInf to PipeSup
-    cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG.pdf"));
-    cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG.png"));
-
-
-    h0->Draw("LEGO");
-
-    cPlots->Update();
-    //cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG_LEGO.pdf"));
-    cPlots->SaveAs(("Plots/"+FitObject+"_DrawBG_LEGO.png"));
-    //cPlots->Delete();
-    //delete cPlots;
-
     /// ----------- Step 3: cross check background with original densities used for the fit -------------
 
     for ( UInt_t phiSect = 0; phiSect < 40; phiSect ++ )
@@ -1030,21 +764,29 @@ void TrackerMaterialEstimation_2018()
       //std::cout << "********MADE IT INTO LOOP********" << std::endl;
       //Int_t numBinsX = h->GetNbinsX();
       //Int_t numBinsY = h->GetNbinsY();
-      Double_t Xmax_h = h->GetXaxis()->GetBinCenter(numBinsX ) + h->GetXaxis()->GetBinWidth( numBinsX )/2;
+
+      // Get histo
+      TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
+      hSlicePhi->Rebin(2);
+      Int_t numBinsSliceX = hSlicePhi->GetNbinsX(); 
+      Double_t Xmax_h = hSlicePhi->GetXaxis()->GetBinCenter(numBinsSliceX) + hSlicePhi->GetXaxis()->GetBinWidth(numBinsSliceX)/2;
 
       //std::cout << "********ABOUT TO CREATE HISTOGRAMS********" << std::endl;
-      TH1D* hbgua0 = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
-      TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
-      TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
-      TH1D* hbgua3 = new TH1D( (plotBg+"_BGUA3").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      //TH1D* hSlicePhi = new TH1D( (plotBg+"_BGUA0").c_str(), "Counts per Unit Area in transverse plane", Int_t(numBinsX/2), 0., Xmax_h );
+      //TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
+      //TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
+      //TH1D* hbgua3 = new TH1D( (plotBg+"_BGUA3").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
+      TH1D* hSlicePhiBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiBG");
+      TH1D* hSlicePhiSignal = (TH1D*)hSlicePhi ->Clone("hSlicePhiSignal");
+      TH1D* hSlicePhiBGest = (TH1D*)hSlicePhi ->Clone("hSlicePhiBGest");
+      hSlicePhiBG->Reset();
+      hSlicePhiSignal->Reset();
+      hSlicePhiBGest->Reset();
       //std::cout << "Int_t(numBinsX/2) = " << Int_t(numBinsX/2) << std::endl;
       //std::cout << "********FINISHED CREATING HISTOGRAMS********" << std::cout;
-      for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+      for ( UInt_t ix = 1; ix <= UInt_t(numBinsSliceX); ix++ )
       {
-        for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-        {
-          Double_t x = h->GetXaxis()->GetBinCenter( ix );
-          Double_t y = h->GetYaxis()->GetBinCenter( iy );
+          Double_t x = hSlicePhiBG->GetXaxis()->GetBinCenter( ix );
 
           // adjust the calculation of rho for the minus side of the pixel shield to accomodate the differing 
           // positions of the two halves so that the background subtraction is cleaner.
@@ -1056,31 +798,25 @@ void TrackerMaterialEstimation_2018()
           if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
           if (FitObject == "PixelShield2Arcs" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
 
-          Double_t xc = x - x0ref;
-          Double_t yc = y - y0ref;
+          //Double_t xc = x - x0ref;
+          //Double_t yc = y - y0ref;
 
           //Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
-          Double_t rc = TMath::Sqrt( x*x + y*y ); //without correction to material position
+          //Double_t rc = TMath::Sqrt( x*x + y*y ); //without correction to material position
+          Double_t rc = x; //without correction to material position from 1D histo
 
-          if ( rc < Rmin || rc > Rmax ) continue;
+          if ( rc < Rmin || rc > Rmax ) continue; //radius without correction to material
 
-          //Double_t pc = TMath::ATan2( yc, xc );
-          Double_t pc = TMath::ATan2( y, x );
-          if(pc < 0) pc = pc + 2*TMath::Pi();
+          //Double_t pc = TMath::ATan2( y, x );
+          //if(pc < 0) pc = pc + 2*TMath::Pi();
 
-          Int_t thisPhiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
+          //Int_t thisPhiSect = floor(  pc / ( 2*TMath::Pi() ) * 40 );
 
-          if ( thisPhiSect != Int_t(phiSect) ) continue;
+          //if ( thisPhiSect != Int_t(phiSect) ) continue;
 
-          //if (thisPhiSect == 0) std::cout << "thisPhiSect = " << thisPhiSect << " pc = " << pc << " x = " << x << " y = " << y << std::endl;
-
-          Double_t binNum = h->GetBinContent( ix, iy );
-
-          Double_t densityNum = binNum / ( rc * (TMath::Pi()/20) * hbgua0->GetXaxis()->GetBinWidth(1) );
-
-          hbgua0->Fill( rc, densityNum );
-
-          //if ( ( rc > Rmin && rc < RSmin ) || ( rc > RSmax && rc < Rmax ) )
+          Double_t binNum = hSlicePhi->GetBinContent( ix );
+        
+          Double_t pc = ( 2*TMath::Pi() ) * Double_t(phiSect)/40; // approximate estimation angle for phi sector
           Int_t BG_flag = 0;
           for ( UInt_t iBG = 0; iBG <= UInt_t(sizeM); iBG++ ){
              // set up baground region
@@ -1100,146 +836,78 @@ void TrackerMaterialEstimation_2018()
 
           if ( BG_flag == 1 )
           {
-            hbgua1->Fill( rc, densityNum );
+            hSlicePhiBG->Fill( rc, binNum );
           }
           else if ( rc >= RSmin && rc <= RSmax )
           {
-            hbgua2->Fill( rc, densityNum );
+            hSlicePhiSignal->Fill( rc, binNum );
           }
 
-          Double_t binNum0 = h0->GetBinContent( ix, iy );
+          //Double_t binNum0 = h0->GetBinContent( ix, iy );
+          //Double_t densityNum0 = binNum0 / ( rc * (TMath::Pi()/20) * hSlicePhi->GetXaxis()->GetBinWidth(1) );
+          //if ( ( rc > RSmin && rc < RSmax ) )
+          //{
+          //  hSlicePhiBGest->Fill( rc, densityNum0 );
+          //}
 
-          Double_t densityNum0 = binNum0 / ( rc * (TMath::Pi()/20) * hbgua0->GetXaxis()->GetBinWidth(1) );
-          if ( ( rc > RSmin && rc < RSmax ) )
-          {
-            hbgua3->Fill( rc, densityNum0 );
-          }
-
-        }
-      } // end cycle by h
+      } // end cycle by hSlicePhi
 
       // 
-      // estimate if we have other objects in fit region with width = RangeEstimatorQuality
-      Double_t SignalLowEdge = 0.; Double_t SignalUpperEdge = 0.; Double_t BgUpperEdge = 0.;
-      //std::cout << " Int_t(numBinsX/2) = " << Int_t(numBinsX/2) << " hbgua0->GetNbinsX() = " << hbgua0->GetNbinsX() << std::endl;
-      for ( UInt_t ix = 1; ix <= UInt_t(numBinsX/2); ix++ )
-      { 
-        Double_t x = hbgua0->GetXaxis()->GetBinCenter( ix );
-        Double_t value = hbgua0->GetBinContent(ix);
-        if( x > RSmin && x < (RSmin+RangeEstimatorQuality) ) SignalLowEdge = SignalLowEdge + value;
-        if( (FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse" || FitObject == "BeamPipe" || FitObject == "BeamPipeEllipse") 
-             && x > RSmax && x < (RSmax+RangeEstimatorQuality)) SignalUpperEdge = SignalUpperEdge + value;
-        if( (FitObject == "PixelShieldEllipse" || FitObject == "PixelShield2Ellipses" || FitObject == "PixelShield2Arcs"|| FitObject == "PixelShield" || FitObject == "PixelShieldPlus" || FitObject == "PixelShieldMinus") 
-            && x > (RSmax-RangeEstimatorQuality) && x < RSmax) SignalUpperEdge = SignalUpperEdge + value;
-        
-        if( x > (RBGmax-RangeEstimatorQuality) && x < RBGmax) BgUpperEdge = BgUpperEdge + value;
-      }
-      bgFitQuality[phiSect] = 1; //good phi sector for fit      
-
-      // Flag phi sectors to be excluded from the fit using bin contents in the signal and background region
-      if( FitObject == "PixelSupportPlus" || FitObject == "PixelSupportMinus")
-        {
-         if (SignalLowEdge > 0.6*BgUpperEdge || SignalUpperEdge > 1.3*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-        }
-      if( FitObject == "PixelSupport" || FitObject == "PixelSupportEllipse")
-        {
-         //if (SignalLowEdge > 0.2*BgUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-         if (BgUpperEdge > 2.0*SignalUpperEdge ) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-         std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   BgUpperEdge/SignalUpperEdge = "<< BgUpperEdge/SignalUpperEdge << std::endl;
-         //cout << " BgUpperEdge = " << BgUpperEdge << " SignalUpperEdge = " << SignalUpperEdge << endl;
-        }
-      if(FitObject == "PixelShield")
-        {
-        if (SignalUpperEdge > 1.3*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-        std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
-        std::cout << "********DONE CHECKING SLICE TO REMOVE STRUCTURES********" << std::endl;
-        }
-      if(FitObject == "PixelShieldPlus" )
-        {
-        if (SignalUpperEdge > 1.15*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-        std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
-        }
-      if(FitObject == "PixelShieldMinus")
-        {
-        if (SignalUpperEdge > 1.15*BgUpperEdge) bgFitQuality[phiSect] = 0; //bad phi sector for fit 
-        std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
-        }
-      if(FitObject == "PixelShieldEllipse")
-        {
-        if (SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        std::cout << "Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
-        }
-      if(FitObject == "PixelShield2Ellipses" || (FitObject == "PixelShield2Arcs" && k == -6))
-        {
-        if (SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        cout << "BgUpperEdge =" << BgUpperEdge << endl;
-        std::cout << "Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   SignalUpperEdge/BgUpperEdge =" << SignalUpperEdge/BgUpperEdge << std::endl;
-        }
-      if(FitObject == "PixelShield2Arcs" && k != -6)
-        {
-        if (k == 4 && SignalUpperEdge > 1.25*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        //if (k == 4 && SignalUpperEdge > 2.*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        if (k == -5 && SignalUpperEdge > 1.4*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        if (k == -4 && SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        if (k == -2 && SignalUpperEdge > 1.*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        if (k == 0 && SignalUpperEdge > 0.85*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        if (k == 2 && SignalUpperEdge > 1.2*BgUpperEdge) bgFitQuality[phiSect] = 0; // bad phi sector for fit
-        std::cout << "Phi Sector = " << phiSect << " hQuality fill = " << bgFitQuality[phiSect] << "   SignalUpperEdge/BgUpperEdge =" << SignalUpperEdge/BgUpperEdge << std::endl;
-        }
-      if(BgUpperEdge > 0.)hQuality->Fill( max(SignalLowEdge/BgUpperEdge, SignalUpperEdge/BgUpperEdge) );
-      if(FitObject == "PixelShield")std::cout <<"Phi Sector = " << phiSect << " hQuality fill = " << SignalUpperEdge/BgUpperEdge << std::endl;
 
       cPlots->cd();
-      hbgua0->SetMinimum(0);
-      //hbgua0->GetXaxis()->SetTitle("#rho (x^{2017}_{0},y^{2017}_{0}) (cm)");
-      hbgua0->GetXaxis()->SetTitleOffset(1.05);
-      hbgua0->GetXaxis()->SetTitle("#rho (x_{0}, y_{0}) (cm)");
-      hbgua0->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hbgua0->GetXaxis()->GetBinWidth(1)));
-      hbgua0->GetXaxis()->SetRangeUser(Rmin, Rmax);
-      hbgua0->Draw();
+      cPlots->SetLogy(1);
+      //hSlicePhi->SetMinimum(0);
+      hSlicePhi->SetMinimum(10);
+      hSlicePhi->SetMaximum(20000);
+      //hSlicePhi->GetXaxis()->SetTitle("#rho (x^{2017}_{0},y^{2017}_{0}) (cm)");
+      hSlicePhi->GetXaxis()->SetTitleOffset(1.05);
+      hSlicePhi->GetXaxis()->SetTitle("#rho (x_{0}, y_{0}) (cm)");
+      hSlicePhi->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hSlicePhi->GetXaxis()->GetBinWidth(1)));
+      hSlicePhi->GetXaxis()->SetRangeUser(Rmin, Rmax);
+      hSlicePhi->Draw();
       cPlots->Update();
 
       // Format the plots of the phi sectors
-      TPaveStats* sBg = (TPaveStats*)hbgua0->GetListOfFunctions()->FindObject("stats");
+      TPaveStats* sBg = (TPaveStats*)hSlicePhi->GetListOfFunctions()->FindObject("stats");
       x1L = sBg->GetX1NDC();
       x2L = sBg->GetX2NDC();
       y1L = sBg->GetY1NDC();
       y2L = sBg->GetY2NDC();
 
-      hbgua0->SetStats(0);
-      hbgua1->SetStats(0);
-      hbgua2->SetStats(0);
+      hSlicePhi->SetStats(0);
+      hSlicePhiBG->SetStats(0);
+      hSlicePhiSignal->SetStats(0);
  
       //gStyle->SetHatchesSpacing(2.0);
       //gStyle->SetHatchesLineWidth(2);
-      hbgua0->SetLineWidth(3);
-      hbgua1->SetLineWidth(3);
-      hbgua2->SetLineWidth(3);
-      hbgua3->SetLineWidth(3);
-      hbgua0->Draw("histo");
-      hbgua1->SetFillStyle(3004);
-      //hbgua1->SetFillStyle(545);
-      hbgua1->SetFillColor(kRed+1);
-      hbgua1->SetMarkerColor(kRed+1);
-      hbgua1->SetLineColor(kRed+1);
-      hbgua1->Draw("samehisto");
-      //hbgua2->SetFillStyle(3005);
-      hbgua2->SetFillStyle(3013);
-      hbgua2->SetFillColor(kGreen+2);
-      hbgua2->SetMarkerColor(kGreen+2);
-      hbgua2->SetLineColor(kGreen+2);
-      //hbgua2->Draw("samehisto");
-      hbgua3->SetFillStyle(3005);
-      //hbgua3->SetFillStyle(3335);
-      hbgua3->SetFillColor(kBlue);
-      hbgua3->SetMarkerColor(kBlue);
-      hbgua3->SetLineColor(kBlue);
-      hbgua3->Draw("samehisto");
+      hSlicePhi->SetLineWidth(3);
+      hSlicePhiBG->SetLineWidth(3);
+      hSlicePhiSignal->SetLineWidth(3);
+      hSlicePhiBGest->SetLineWidth(3);
+      hSlicePhi->Draw("histo");
+      hSlicePhiBG->SetFillStyle(3004);
+      //hSlicePhiBG->SetFillStyle(545);
+      hSlicePhiBG->SetFillColor(kRed+1);
+      hSlicePhiBG->SetMarkerColor(kRed+1);
+      hSlicePhiBG->SetLineColor(kRed+1);
+      hSlicePhiBG->Draw("samehisto");
+      //hSlicePhiSignal->SetFillStyle(3005);
+      hSlicePhiSignal->SetFillStyle(3013);
+      hSlicePhiSignal->SetFillColor(kGreen+2);
+      hSlicePhiSignal->SetMarkerColor(kGreen+2);
+      hSlicePhiSignal->SetLineColor(kGreen+2);
+      //hSlicePhiSignal->Draw("samehisto");
+      hSlicePhiBGest->SetFillStyle(3005);
+      //hSlicePhiBGest->SetFillStyle(3335);
+      hSlicePhiBGest->SetFillColor(kBlue);
+      hSlicePhiBGest->SetMarkerColor(kBlue);
+      hSlicePhiBGest->SetLineColor(kBlue);
+      hSlicePhiBGest->Draw("samehisto");
 
       //TF1 *fitBg = new TF1( "fitBg","[0] + x*[1]", RBGmin, RBGmax );
       TF1 *fitBg = new TF1( "fitBg",func_fitBg, RBGmin , RBGmax, 2 );
-      fitBg->SetParameter(0, bgFit0[phiSect]);
-      fitBg->SetParameter(1, bgFit1[phiSect]);
+      //fitBg->SetParameter(0, bgFit0[phiSect]);
+      //fitBg->SetParameter(1, bgFit1[phiSect]);
       fitBg->SetParName(0, "N0");
       fitBg->SetParName(1, "k");
       fitBg->SetLineWidth(3);
@@ -1253,20 +921,20 @@ void TrackerMaterialEstimation_2018()
       legBg->SetTextSize(0.04*ScaleSize);
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
-      if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hbgua0,"EXCLUDED from FIT","");
-      //legBg->AddEntry(hbgua0,Form("Data 2018, #phi sector = %d", phiSect),"");
-      legBg->AddEntry(hbgua0,Form("Data 2018, #phi sector = %d", phiSect),"l");
-      legBg->AddEntry(hbgua0,"|z| < 25 cm ","");
-      legBg->AddEntry(hbgua2,"Signal fit region","f");
-      legBg->AddEntry(hbgua1,"Sideband fit region","f");
+      //if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hSlicePhi,"EXCLUDED from FIT","");
+      //legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"");
+      legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"l");
+      legBg->AddEntry(hSlicePhi,"|z| < 25 cm ","");
+      legBg->AddEntry(hSlicePhiSignal,"Signal fit region","f");
+      legBg->AddEntry(hSlicePhiBG,"Sideband fit region","f");
       //legBg->AddEntry(fitBg,"sideband fit function","l");
-      legBg->AddEntry(hbgua3,"Estimated background","f");
+      legBg->AddEntry(hSlicePhiBGest,"Estimated background","f");
       legBg->Draw("same");
 
       //gStyle->SetLineWidth(3);
-      //hbgua0->SetAxisWidth(3);
-      hbgua0->Draw("AXISsame");
-      hbgua0->Draw("histosame");
+      //hSlicePhi->SetAxisWidth(3);
+      hSlicePhi->Draw("AXISsame");
+      hSlicePhi->Draw("histosame");
       //gStyle->SetLineWidth(1);
       //TLine * lineTop = new TLine ( x1, y1, x2, y2 );
       TLine * lineX = new TLine ( Rmin, 0, Rmax , 0. );
@@ -1274,34 +942,30 @@ void TrackerMaterialEstimation_2018()
       lineX->SetLineWidth(3);
       lineX->Draw("same");
 
-      if (phiSect == 1 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
+      //if (phiSect == 1 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
       gStyle->SetOptStat(1000111110);
       //gStyle->SetOptStat(0000000000);
 
       std::ostringstream fn;
       std::ostringstream fn_pdf;
       //fn << "Plots/"<<plotBg<<"_BGUA_XCk" << "_" << phiSect<<".pdf";
-      fn_pdf << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".pdf";
+      //fn_pdf << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".pdf";
       //cPlots->SaveAs(fn.str().c_str());
       fn.str("");
-      fn << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".png";
+      fn << "Plots/MaterialPhiSector_" << phiSect<<".png";
       if (FitObject != "PixelSupportRails" && FitObject != "PixelSupportRailsPositive" && FitObject != "PixelSupportRailsNegative")cPlots->SaveAs(fn.str().c_str());
-      if (phiSect == 1 && FitObject == "BeamPipe")cPlots->SaveAs(fn_pdf.str().c_str());
+      //if (phiSect == 1 && FitObject == "BeamPipe")cPlots->SaveAs(fn_pdf.str().c_str());
       //delete to avoid memory leak:
       //cPlots->Delete();
       //delete cPlots;
-      delete hbgua0;
-      delete hbgua1;
-      delete hbgua2;
-      delete hbgua3;
+      delete hSlicePhi;
+      delete hSlicePhiBG;
+      delete hSlicePhiSignal;
+      delete hSlicePhiBGest;
     } //end phi cicle
 
     continue;// END for material estimation
  
-    cQuality = new TCanvas("");
-    cQuality->cd();
-    hQuality->Draw("e");
-    //cQuality->Print("Plots/Quality.png");
 
     /// ----------------------- Step 4: subtract the background from the signal ---------------
 
@@ -1986,11 +1650,11 @@ void TrackerMaterialEstimation_2018()
     cPlots->Update();
     std::cout << "Done updating plots" << std::endl;
 
-    TPaveStats* s = (TPaveStats*)h0->GetListOfFunctions()->FindObject("stats");
-    x1L = s->GetX1NDC();
-    x2L = s->GetX2NDC();
-    y1L = s->GetY1NDC();
-    y2L = s->GetY2NDC();
+    //TPaveStats* s = (TPaveStats*)h0->GetListOfFunctions()->FindObject("stats");
+    //x1L = s->GetX1NDC();
+    //x2L = s->GetX2NDC();
+    //y1L = s->GetY1NDC();
+    //y2L = s->GetY2NDC();
 
     cout << "======  TEST 4 seg. vio. " << endl;
     // Create the stats box for everything that is not the minus side of the pixel shield,

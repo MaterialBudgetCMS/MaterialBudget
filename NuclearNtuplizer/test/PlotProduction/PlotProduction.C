@@ -216,8 +216,8 @@ void PlotProduction::Loop()
     TH2D* hPFDV_XY_Map_Pipe_AbsZ25;
     TH2D* hPFDV_RhoPhi_Map_Pipe_AbsZ25;
     TH2D* hPFDV_XY_Pixel_AbsZ25;
-    TH2D* hPFDV_XY_PixelSingleNI_AbsZ25;
-    TH2D* hPFDV_XY_PixelMultNI_AbsZ25;
+    //TH2D* hPFDV_XY_PixelSingleNI_AbsZ25;
+    //TH2D* hPFDV_XY_PixelMultNI_AbsZ25;
     TH1D* hPFDV_dRxy_MultNI_AbsZ25;
     TH1D* hPFDV_Rxy2nd_MultNI_AbsZ25;
     TH1D* hPFDV_Rxy2ndCut_MultNI_AbsZ25;
@@ -681,10 +681,10 @@ void PlotProduction::Loop()
 
   hPFDV_XY_Pixel_AbsZ25 = new TH2D( "hPFDV_XY_Pixel_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
   hPFDV_XY_Pixel_AbsZ25->Sumw2();
-  hPFDV_XY_PixelSingleNI_AbsZ25 = new TH2D( "hPFDV_XY_PixelSingleNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
-  hPFDV_XY_PixelSingleNI_AbsZ25->Sumw2();
-  hPFDV_XY_PixelMultNI_AbsZ25 = new TH2D( "hPFDV_XY_PixelMultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
-  hPFDV_XY_PixelMultNI_AbsZ25->Sumw2();
+  //hPFDV_XY_PixelSingleNI_AbsZ25 = new TH2D( "hPFDV_XY_PixelSingleNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
+  //hPFDV_XY_PixelSingleNI_AbsZ25->Sumw2();
+  //hPFDV_XY_PixelMultNI_AbsZ25 = new TH2D( "hPFDV_XY_PixelMultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 5000, -25, 25, 5000, -25, 25 );
+  //hPFDV_XY_PixelMultNI_AbsZ25->Sumw2();
   hPFDV_dRperp_MultNI_AbsZ25 = new TH1D( "hPFDV_dRperp_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 30.);
   hPFDV_dRperp_MultNI_AbsZ25->Sumw2();
   hPFDV_dRxy_MultNI_AbsZ25 = new TH1D( "hPFDV_dRxy_MultNI_AbsZ25", "N.I. in Tracker, |z| < 25 cm", 500, 0, 30.);
@@ -785,7 +785,7 @@ void PlotProduction::Loop()
     histoName.str("");
     histoTitle.str("");
     histoName << "hPFDV_XY_Map_Pipe_" << k*5 << "_" << (k+1)*5;
-    histoTitle << "N.I. in Tracker, " << k*5 << " (cm) <= z < " << (k+1)*5 << " (cm)";
+    histoTitle << "NI, " << k*5 << " (cm) <= z < " << (k+1)*5 << " (cm)";
     TH2D* h1 = new TH2D( histoName.str().c_str(), histoTitle.str().c_str(), 1000, -5, 5, 1000, -5, 5 );
     h1->Sumw2();
     m_hPFDV_XY_Map_Pipe.insert( std::pair<int, TH2D*>( k, h1 ) );
@@ -793,6 +793,63 @@ void PlotProduction::Loop()
     histoName << "hPFDV_RhoPhi_Map_Pipe_" << k*5 << "_" << (k+1)*5;
     TH2D* h2 = new TH2D( histoName.str().c_str(), histoTitle.str().c_str(), 400, -TMath::Pi(), TMath::Pi(), 500, 0, 5 );
     m_hPFDV_RhoPhi_Map_Pipe.insert( std::pair<int, TH2D*>( k, h2 ) );
+  }
+
+  std::map<int, TH1D*> m_hPFDV_PixelSlicePhi;
+  std::map<int, TH1D*> m_hPFDV_PixelSlicePhiSingleNI;
+  std::map<int, TH1D*> m_hPFDV_PixelSlicePhiMultNI;
+  std::map<int, TH1D*> m_hPFDV_PixelSlicePhiNoInTrk;
+  std::map<int, TH1D*> m_hPFDV_PixelSlicePhiNoInTrkSingleNI;
+  std::map<int, TH1D*> m_hPFDV_PixelSlicePhiNoInTrkMultNI;
+  for ( int k = 0; k < 40; k++ )
+  {
+    histoName.str("");
+    histoTitle.str("");
+    histoName << "hPFDV_PixelSlicePhi_" << k;
+    histoTitle << "NI for #phi sector = " << k;
+    TH1D* h1 = new TH1D( histoName.str().c_str(), histoTitle.str().c_str(), 2500, 0.0, 25.0);
+    h1->Sumw2();
+    m_hPFDV_PixelSlicePhi.insert( std::pair<int, TH1D*>( k, h1 ) );
+
+    histoName.str("");
+    histoTitle.str("");
+    histoName << "hPFDV_PixelSlicePhiSingleNI_" << k;
+    histoTitle << "Single NI for #phi sector = " << k;
+    h1 = new TH1D( histoName.str().c_str(), histoTitle.str().c_str(), 2500, 0.0, 25.0);
+    h1->Sumw2();
+    m_hPFDV_PixelSlicePhiSingleNI.insert( std::pair<int, TH1D*>( k, h1 ) );
+
+    histoName.str("");
+    histoTitle.str("");
+    histoName << "hPFDV_PixelSlicePhiMultNI_" << k;
+    histoTitle << "Multiple NI for #phi sector = " << k;
+    h1 = new TH1D( histoName.str().c_str(), histoTitle.str().c_str(), 2500, 0.0, 25.0);
+    h1->Sumw2();
+    m_hPFDV_PixelSlicePhiMultNI.insert( std::pair<int, TH1D*>( k, h1 ) );
+
+    histoName.str("");
+    histoTitle.str("");
+    histoName << "hPFDV_PixelSlicePhiNoInTrk_" << k;
+    histoTitle << "NI (NoInTrk) for #phi sector = " << k;
+    h1 = new TH1D( histoName.str().c_str(), histoTitle.str().c_str(), 2500, 0.0, 25.0);
+    h1->Sumw2();
+    m_hPFDV_PixelSlicePhiNoInTrk.insert( std::pair<int, TH1D*>( k, h1 ) );
+
+    histoName.str("");
+    histoTitle.str("");
+    histoName << "hPFDV_PixelSlicePhiNoInTrkSingleNI_" << k;
+    histoTitle << "Single NI (NoInTrk) for #phi sector = " << k;
+    h1 = new TH1D( histoName.str().c_str(), histoTitle.str().c_str(), 2500, 0.0, 25.0);
+    h1->Sumw2();
+    m_hPFDV_PixelSlicePhiNoInTrkSingleNI.insert( std::pair<int, TH1D*>( k, h1 ) );
+
+    histoName.str("");
+    histoTitle.str("");
+    histoName << "hPFDV_PixelSlicePhiNoInTrkMultNI_" << k;
+    histoTitle << "Multiple NI (NoInTrk) for #phi sector = " << k;
+    h1 = new TH1D( histoName.str().c_str(), histoTitle.str().c_str(), 2500, 0.0, 25.0);
+    h1->Sumw2();
+    m_hPFDV_PixelSlicePhiNoInTrkMultNI.insert( std::pair<int, TH1D*>( k, h1 ) );
   }
 
    int isData = 0;
@@ -1487,8 +1544,9 @@ void PlotProduction::Loop()
         }
       }
 
-
-
+      Double_t pc = ni_phi;
+      if(pc < 0) pc = pc + 2*TMath::Pi();
+      UInt_t phiSect = floor(  pc   / ( 2*TMath::Pi() ) * 40 );
 
       if ( fabs(ni_z) < 25 )
       {
@@ -1500,8 +1558,8 @@ void PlotProduction::Loop()
 
         hPFDV_XY_Map_Pipe_AbsZ25->Fill( ni_x, ni_y );
         hPFDV_XY_Pixel_AbsZ25->Fill( ni_x, ni_y );
-        if (numberOfPFDV == 1) hPFDV_XY_PixelSingleNI_AbsZ25->Fill( ni_x, ni_y );
-        if (numberOfPFDV > 1) hPFDV_XY_PixelMultNI_AbsZ25->Fill( ni_x, ni_y );
+        //if (numberOfPFDV == 1) hPFDV_XY_PixelSingleNI_AbsZ25->Fill( ni_x, ni_y );
+        //if (numberOfPFDV > 1) hPFDV_XY_PixelMultNI_AbsZ25->Fill( ni_x, ni_y );
         hPFDV_RhoPhi_Map_Pipe_AbsZ25->Fill( ni_phi, ni_rho );
 
        // m_hPFDV_XY_Map.find( ni_z_i )->second->Fill( ni_x, ni_y );
@@ -1512,6 +1570,16 @@ void PlotProduction::Loop()
 
         m_hPFDV_XY_Map_Pipe.find( ni_z_i )->second->Fill( ni_x, ni_y );
         m_hPFDV_RhoPhi_Map_Pipe.find( ni_z_i )->second->Fill( ni_phi, ni_rho );
+
+        m_hPFDV_PixelSlicePhi.find(phiSect)->second->Fill(ni_rho);
+        if (numberOfPFDV == 1) m_hPFDV_PixelSlicePhiSingleNI.find(phiSect)->second->Fill(ni_rho);
+        if (numberOfPFDV > 1) m_hPFDV_PixelSlicePhiMultNI.find(phiSect)->second->Fill(ni_rho);
+        //reject NI wiht primary or merged tracks
+        if (PFDV_isThereMergedTrack->at(i) == false && PFDV_isTherePrimaryTrack->at(i) == false){
+           m_hPFDV_PixelSlicePhiNoInTrk.find(phiSect)->second->Fill(ni_rho); 
+           if (numberOfPFDV == 1) m_hPFDV_PixelSlicePhiNoInTrkSingleNI.find(phiSect)->second->Fill(ni_rho);
+           if (numberOfPFDV > 1) m_hPFDV_PixelSlicePhiNoInTrkMultNI.find(phiSect)->second->Fill(ni_rho);
+        }
       }
 //
 //      /// Correct for Beamspot Position
@@ -1648,7 +1716,7 @@ void PlotProduction::Loop()
             hPFDV_Rxy2nd_MultNI_AbsZ25->Fill(nj_rho); 
             hPFDV_dphi_MultNI_AbsZ25->Fill(dphi_NI); 
             hPFDV_dphidtheta_MultNI_AbsZ25->Fill(dphi_NI*dtheta_NI); 
-            if(dphi_NI*dtheta_NI < 0.05)hPFDV_Rxy2ndCut_MultNI_AbsZ25->Fill(nj_rho); 
+            if(dphi_NI*dtheta_NI < 0.01)hPFDV_Rxy2ndCut_MultNI_AbsZ25->Fill(nj_rho); 
           }
           //if (nj_rho > 2.44 && nj_rho < 3.95 && ni_rho > 3.95 && ni_rho < 6.3) { // nj at L1, ni between L1 and L2
           if (nj_rho > 2.44 && nj_rho < 3.45) { // nj at L1 
