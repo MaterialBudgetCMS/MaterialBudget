@@ -52,8 +52,11 @@
 using namespace std;
 
 TH2D* h;
+TH1D* hSlicePhiBG;
 TH2D* h_Extra;
 Double_t Rmin, Rmax, RBGmin, RBGmax, RSmin, RSmax, RPlot;
+vector<double> rcBGmin;
+vector<double> rcBGmax;
 
 // create function to fit the plus side of the pixel support
 void funPixelSupportPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
@@ -81,9 +84,11 @@ void funArcMinus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
 // 21.68; -0.07; -0.28
 //create function to fit objects in 2D with circle (Arc)
 void chiSquareFunc( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
+void chiSquareBG( Int_t&, Double_t*, Double_t&, Double_t*, Int_t );
 
 //create Fit function for background
 Double_t func_fitBg(Double_t*, Double_t* );
+Double_t func_fitBgAll(Double_t*, Double_t* );
 Double_t fun2(Double_t*, Double_t* );
 
 //create Circle/Arc  or Ellipse function in phi,R plane:
@@ -217,6 +222,7 @@ void TrackerMaterialEstimation_2018()
   vector<double> x0M = {0.171,    0.10,   0.10,   0.10,   0.10,   0.10,   -0.075,   0.};
   vector<double> y0M = {-0.176,  -0.10,  -0.10,  -0.10,  -0.10,  -0.10,    -0.315,   0.};
   vector<double> r0M = { 2.210,   2.94,   6.80,  10.9,   16.0,   18.7,    21.753,  23.5};
+
   Int_t sizeM = x0M.size();
   if ( x0M.size() != y0M.size()) cout << "ERROR: x0M.size() ! = y0M.size()" << endl;
   if ( x0M.size() != r0M.size()) cout << "ERROR: x0M.size() ! = r0M.size()" << endl;
@@ -233,7 +239,7 @@ void TrackerMaterialEstimation_2018()
   //*** set parameters for Beam Pipe fit
   if(FitObject == "BeamPipe"){
      //Rmin = 1.8, Rmax = /*5.*/3.0, RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2.0/*1.9*/, RSmax = 2.35/*2.4*/, RPlot = /*5.*/3.5;
-     Rmin = 1., Rmax = 25., RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2./*1.9*/, RSmax = 2.35/*2.4*/, RPlot = 25.;
+     Rmin = 1.6, Rmax = 25., RBGmin = 2.35/*2.4*/, RBGmax = 2.6/*3.*/, RSmin = 2./*1.9*/, RSmax = 2.35/*2.4*/, RPlot = 25.;
      RangeEstimatorQuality = 0.1;
      x_Sys = 0.003; //size of systematics in cm
      r_Sys = 0.003; //size of systematics in cm
@@ -696,56 +702,52 @@ void TrackerMaterialEstimation_2018()
    hQuality->Sumw2();
 
 
-    /// Step 0: apply flux factor
-
-
-
-
-    for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
-      {
-        for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
-        {
-          Double_t x = h->GetXaxis()->GetBinCenter( ix );
-          Double_t y = h->GetYaxis()->GetBinCenter( iy );
-
-          // correct flux on (0,0) (bad)
-          //Double_t xc = x;
-          //Double_t yc = y;
-          //correct flux on beam stop (good)
-          Double_t xc = x-x_BS[0];
-          Double_t yc = y-y_BS[0];
-
-          Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
-
-          //          if ( rc < Inf || rc > Sup ) continue;
-
-          Double_t binNum = h->GetBinContent( ix, iy );
-          Double_t binNum_Draw = h_Draw->GetBinContent( ix, iy );
-
-          Double_t r0ref = r0;
-          if (FitObject == "PixelShieldMinus" && x >= 0) r0ref = r0_PixelShieldPlus;
-          if (FitObject == "PixelSupportMinus" && x >= 0) r0ref = r0_PixelSupportPlus;
-          Double_t densityNum = binNum * rc*rc / (r0ref*r0ref);
-          Double_t densityNum_Draw = binNum_Draw * rc*rc / (r0ref*r0ref);
-
-          // make flux correction ofr h_Draw and h 
-          h_Draw->SetBinContent(ix, iy, densityNum_Draw);
-          h->SetBinContent(ix, iy, densityNum);
-
-        }
-      }
-    h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
-    h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    //h->Draw("LEGO");
-    h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
-    h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
-    //hEmpty -> Draw("");
-    //h_Draw->Draw("COLZsame");
-    h_Draw->Draw("LEGO");
-    //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.pdf"));
-    cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.png"));
-    //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_COLZ.png"));
-
+//    /// Step 0: apply flux factor
+//    for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+//      {
+//        for ( UInt_t iy = 1; iy <= UInt_t(numBinsY); iy++ )
+//        {
+//          Double_t x = h->GetXaxis()->GetBinCenter( ix );
+//          Double_t y = h->GetYaxis()->GetBinCenter( iy );
+//
+//          // correct flux on (0,0) (bad)
+//          //Double_t xc = x;
+//          //Double_t yc = y;
+//          //correct flux on beam stop (good)
+//          Double_t xc = x-x_BS[0];
+//          Double_t yc = y-y_BS[0];
+//
+//          Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
+//
+//          //          if ( rc < Inf || rc > Sup ) continue;
+//
+//          Double_t binNum = h->GetBinContent( ix, iy );
+//          Double_t binNum_Draw = h_Draw->GetBinContent( ix, iy );
+//
+//          Double_t r0ref = r0;
+//          if (FitObject == "PixelShieldMinus" && x >= 0) r0ref = r0_PixelShieldPlus;
+//          if (FitObject == "PixelSupportMinus" && x >= 0) r0ref = r0_PixelSupportPlus;
+//          Double_t densityNum = binNum * rc*rc / (r0ref*r0ref);
+//          Double_t densityNum_Draw = binNum_Draw * rc*rc / (r0ref*r0ref);
+//
+//          // make flux correction ofr h_Draw and h 
+//          h_Draw->SetBinContent(ix, iy, densityNum_Draw);
+//          h->SetBinContent(ix, iy, densityNum);
+//
+//        }
+//      }
+//    h->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+//    h->GetYaxis()->SetRangeUser(-RPlot, RPlot);
+//    //h->Draw("LEGO");
+//    h_Draw->GetXaxis()->SetRangeUser(-RPlot, RPlot);
+//    h_Draw->GetYaxis()->SetRangeUser(-RPlot, RPlot);
+//    //hEmpty -> Draw("");
+//    //h_Draw->Draw("COLZsame");
+//    h_Draw->Draw("LEGO");
+//    //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.pdf"));
+//    cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_LEGO.png"));
+//    //cPlots->SaveAs(("Plots/"+FitObject+"_FluxCorrection_COLZ.png"));
+//
 
     /// -------------- Step 1: find the background density as a function of phi and rho(x0, y0) ----------
 
@@ -768,6 +770,8 @@ void TrackerMaterialEstimation_2018()
       // Get histo
       TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
       hSlicePhi->Rebin(2);
+      //TH1D* hSlicePhiNoInTrk = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiNoInTrk_%d", phiSect)); //PhiSlice
+      //hSlicePhiNoInTrk->Rebin(2);
       Int_t numBinsSliceX = hSlicePhi->GetNbinsX(); 
       Double_t Xmax_h = hSlicePhi->GetXaxis()->GetBinCenter(numBinsSliceX) + hSlicePhi->GetXaxis()->GetBinWidth(numBinsSliceX)/2;
 
@@ -776,7 +780,7 @@ void TrackerMaterialEstimation_2018()
       //TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
       //TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
       //TH1D* hbgua3 = new TH1D( (plotBg+"_BGUA3").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
-      TH1D* hSlicePhiBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiBG");
+      hSlicePhiBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiBG");
       TH1D* hSlicePhiSignal = (TH1D*)hSlicePhi ->Clone("hSlicePhiSignal");
       TH1D* hSlicePhiBGest = (TH1D*)hSlicePhi ->Clone("hSlicePhiBGest");
       hSlicePhiBG->Reset();
@@ -784,6 +788,8 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiBGest->Reset();
       //std::cout << "Int_t(numBinsX/2) = " << Int_t(numBinsX/2) << std::endl;
       //std::cout << "********FINISHED CREATING HISTOGRAMS********" << std::cout;
+      rcBGmin = {0, 0, 0, 0, 0, 0, 0, 0}; 
+      rcBGmax = {0, 0, 0, 0, 0, 0, 0, 0};
       for ( UInt_t ix = 1; ix <= UInt_t(numBinsSliceX); ix++ )
       {
           Double_t x = hSlicePhiBG->GetXaxis()->GetBinCenter( ix );
@@ -824,13 +830,36 @@ void TrackerMaterialEstimation_2018()
              if (iBG > 0 ) rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 1.0;
              if (iBG > 5 ) rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 0.5;
              Double_t rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.2;
-             if (iBG > 0 && iBG < UInt_t(sizeM) )rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.5;
+             //if (iBG > 0 && iBG < UInt_t(sizeM) )rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.5;
+             if (iBG > 0 && iBG < UInt_t(sizeM) )rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.7;
+             // cut between beam pine and L1:
+             if (iBG == 1 ) rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 0.07;
+	     if (iBG == 1 )rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.53;
+             if (iBG == 1 && (phiSect >= 9 && phiSect <= 16)){
+                rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 0.35;
+	        rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.38;
+             }
+             if (iBG == 1 && (phiSect == 8 && phiSect == 17)){
+                rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 0.5;
+	        rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.2;
+             }
+             if (iBG == 1 && (phiSect >= 32 && phiSect <= 34)){
+                rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 0.17;
+	        rc_M_max = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.4;
+             }
+
+             // for eadge of rails:
+             if (iBG == 6 && (phiSect ==32 || phiSect == 27 )) rc_M_max = 20.5;
+             if (iBG == 6 && (phiSect ==12 || phiSect == 7 )) rc_M_max = 20.;
              if (rc > rc_M_min && rc < rc_M_max){
                  BG_flag = 1;
                 // remove BG region related to double outter shield structure:
-                if (iBG == 5 && (phiSect == 1 || phiSect == 8 || phiSect == 11 || phiSect == 18 || phiSect == 21 || phiSect == 28 || phiSect == 31 || phiSect == 38) ) BG_flag = 0;            
+                if (iBG == 5 && (phiSect == 1 || phiSect == 7 || phiSect == 8 || phiSect == 11 || phiSect == 18 || phiSect == 21 || phiSect == 22 || phiSect == 28 || phiSect == 31 || phiSect == 32 || phiSect == 37 || phiSect == 38) ) BG_flag = 0;            
                 // remove BG region related to rails:
-                if (iBG == 6 && ((phiSect >= 7 && phiSect <=12)|| (phiSect >= 27 && phiSect <=32) ) ) BG_flag = 0;            
+                if (iBG == 6 && ((phiSect >= 8 && phiSect <=11)|| (phiSect >= 28 && phiSect <=31) ) ) BG_flag = 0;            
+                
+                // Fill BG region:
+                if (BG_flag == 1 && iBG < UInt_t(sizeM)){rcBGmin[iBG] = rc_M_min; rcBGmax[iBG] = rc_M_max;}
              }
           }
 
@@ -850,9 +879,69 @@ void TrackerMaterialEstimation_2018()
           //  hSlicePhiBGest->Fill( rc, densityNum0 );
           //}
 
-      } // end cycle by hSlicePhi
+      } // end cycle by hSlicePhi histo
 
-      // 
+      Double_t bgRegionFit0[sizeM];
+      Double_t bgRegionFit1[sizeM];
+      for ( UInt_t iBG = 0; iBG < UInt_t(sizeM); iBG++ ){
+          // Make fit:
+         if(fabs(rcBGmin[iBG]) < 0.001){rcBGmin[iBG] = 0; rcBGmax[iBG] = 0;} // if BG is not definded so skip fit
+         else{
+            TF1 *fitBg = new TF1( "fitBg",func_fitBg, rcBGmin[iBG], rcBGmax[iBG], 2 );
+            fitBg->SetParameter(0, 10);
+            fitBg->SetParameter(1, 0.01);
+            fitBg->SetParName(0, "N0");
+            fitBg->SetParName(1, "k");
+            hSlicePhi->Fit("fitBg","MR0Q");
+            bgRegionFit0[iBG] = fitBg->GetParameter(0);
+            bgRegionFit1[iBG] = fitBg->GetParameter(1);
+         }
+      }
+      //
+
+      TVirtualFitter* fitterDraw;
+      fitterDraw = TVirtualFitter::Fitter( 0, 9 );
+      //                                                  npar
+      // Set the function that the fitter will use and set the parameters
+      fitterDraw->SetFCN( chiSquareBG );
+      fitterDraw->SetParameter( 0,  "par0",   140., 0.01, 0., 500. ); 
+      fitterDraw->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 2,  "par2",   120, 0.01, 0., 500. ); 
+      fitterDraw->SetParameter( 3, "par3",    -0.4, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 4, "par4",    100., 0.01, 0., 500. ); 
+      fitterDraw->SetParameter( 5, "par5",    -0.3, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 6, "par6",     50., 0.01, 0., 200. ); 
+      fitterDraw->SetParameter( 7, "par7",    -0.25, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 8, "par8",    50., 0.01, 0., 200. ); 
+      fitterDraw->SetParameter( 9, "par9",    -0.2, 0.01, -10., 10. ); 
+      if (NameInputFile == "../PseudoBeamPipe/PseudoBeamPipe") {
+         fitterDraw->SetParameter( 0,  "par0",   10., 0.01, -200., 200. ); 
+      }
+      //   fitterDraw->FixParameter(1); fitterDraw->FixParameter(2); 
+
+      Double_t arglist[10] = {0.};
+      fitterDraw->ExecuteCommand( "MIGRAD", arglist, 0 );
+      Double_t parBG[10];
+      parBG[0] = fitterDraw->GetParameter(0);
+      parBG[1] = fitterDraw->GetParameter(1);
+      parBG[2] = fitterDraw->GetParameter(2);
+      parBG[3] = fitterDraw->GetParameter(3);
+      parBG[4] = fitterDraw->GetParameter(4);
+      parBG[5] = fitterDraw->GetParameter(5);
+      parBG[6] = fitterDraw->GetParameter(6);
+      parBG[7] = fitterDraw->GetParameter(7);
+      parBG[8] = fitterDraw->GetParameter(8);
+      parBG[9] = fitterDraw->GetParameter(9);
+      cout << "parBG[0] = " << parBG[0] << endl;
+      cout << "parBG[1] = " << parBG[1] << endl;
+      cout << "parBG[2] = " << parBG[2] << endl;
+      cout << "parBG[3] = " << parBG[3] << endl;
+      cout << "parBG[4] = " << parBG[4] << endl;
+      cout << "parBG[5] = " << parBG[5] << endl;
+      cout << "parBG[6] = " << parBG[6] << endl;
+      cout << "parBG[7] = " << parBG[7] << endl;
+      cout << "parBG[8] = " << parBG[8] << endl;
+      cout << "parBG[9] = " << parBG[9] << endl;
 
       cPlots->cd();
       cPlots->SetLogy(1);
@@ -885,12 +974,49 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiSignal->SetLineWidth(3);
       hSlicePhiBGest->SetLineWidth(3);
       hSlicePhi->Draw("histo");
+
+      //hSlicePhiNoInTrk->SetLineWidth(3);
+      //hSlicePhiNoInTrk->SetLineColor(kGreen+1);
+      //hSlicePhiNoInTrk->Draw("samehisto");
+
       hSlicePhiBG->SetFillStyle(3004);
       //hSlicePhiBG->SetFillStyle(545);
       hSlicePhiBG->SetFillColor(kRed+1);
       hSlicePhiBG->SetMarkerColor(kRed+1);
       hSlicePhiBG->SetLineColor(kRed+1);
       hSlicePhiBG->Draw("samehisto");
+
+      //for ( UInt_t iBG = 0; iBG < UInt_t(sizeM-1); iBG++ ){
+      //   if (fabs(rcBGmin[iBG] < 0.001)) continue; // do nothing if it is not defined
+      //   Double_t x_max = rcBGmin[iBG+1];
+      //   if (fabs(rcBGmin[iBG+1] < 0.001 )) x_max = 25.; // if it is not defined
+      //   if (iBG == 0 && fabs(rcBGmin[iBG+2] > 0.001 )) x_max = rcBGmin[iBG+2]; // if it is not defined
+      //   TF1 *fitBg = new TF1( "fitBg",func_fitBg, rcBGmin[iBG], x_max, 2 );
+      //   fitBg->SetParameter(0, bgRegionFit0[iBG]);
+      //   fitBg->SetParameter(1, bgRegionFit1[iBG]);
+      //   fitBg->SetParName(0, "N0");
+      //   fitBg->SetParName(1, "k");
+      //   fitBg->SetLineWidth(3);
+      //   fitBg->SetLineColor(kRed+1);
+      //   fitBg->Draw("same");
+      //}
+      
+     TF1 *fitBgAll = new TF1( "fitBgAll",func_fitBgAll, 1., 25., 10 );
+     fitBgAll ->SetNpx(1000);
+     fitBgAll->SetParameter(0, parBG[0]);
+     fitBgAll->SetParameter(1, parBG[1]);
+     fitBgAll->SetParameter(2, parBG[2]);
+     fitBgAll->SetParameter(3, parBG[3]);
+     fitBgAll->SetParameter(4, parBG[4]);
+     fitBgAll->SetParameter(5, parBG[5]);
+     fitBgAll->SetParameter(6, parBG[6]);
+     fitBgAll->SetParameter(7, parBG[7]);
+     fitBgAll->SetParameter(8, parBG[8]);
+     fitBgAll->SetParameter(9, parBG[9]);
+     fitBgAll->SetLineWidth(3);
+     fitBgAll->SetLineColor(kRed+1);
+     fitBgAll->Draw("same");
+
       //hSlicePhiSignal->SetFillStyle(3005);
       hSlicePhiSignal->SetFillStyle(3013);
       hSlicePhiSignal->SetFillColor(kGreen+2);
@@ -904,18 +1030,9 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiBGest->SetLineColor(kBlue);
       hSlicePhiBGest->Draw("samehisto");
 
-      //TF1 *fitBg = new TF1( "fitBg","[0] + x*[1]", RBGmin, RBGmax );
-      TF1 *fitBg = new TF1( "fitBg",func_fitBg, RBGmin , RBGmax, 2 );
-      //fitBg->SetParameter(0, bgFit0[phiSect]);
-      //fitBg->SetParameter(1, bgFit1[phiSect]);
-      fitBg->SetParName(0, "N0");
-      fitBg->SetParName(1, "k");
-      fitBg->SetLineWidth(3);
-      //fitBg->Draw("same");
 
-      //TLegend* legBg = new TLegend(x1L, 0.52, x2L, y2L, "");
-      //TLegend* legBg = new TLegend(0.45, 0.6, 0.8, 0.9, "");
-      TLegend* legBg = new TLegend(0.5, 0.6, 0.7, 0.8, "");
+      //TLegend* legBg = new TLegend(0.5, 0.6, 0.7, 0.8, "");
+      TLegend* legBg = new TLegend(0.5, 0.7, 0.7, 0.8, "");
       if(FitObject == "PixelSupportEllipse")legBg = new TLegend(0.2, 0.6, 0.4, 0.8, "");
       legBg->SetTextFont(42);
       legBg->SetTextSize(0.04*ScaleSize);
@@ -925,10 +1042,11 @@ void TrackerMaterialEstimation_2018()
       //legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"");
       legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"l");
       legBg->AddEntry(hSlicePhi,"|z| < 25 cm ","");
-      legBg->AddEntry(hSlicePhiSignal,"Signal fit region","f");
+      //legBg->AddEntry(hSlicePhiNoInTrk,"Data, no income/merged track","l");
+      //legBg->AddEntry(hSlicePhiSignal,"Signal fit region","f");
       legBg->AddEntry(hSlicePhiBG,"Sideband fit region","f");
       //legBg->AddEntry(fitBg,"sideband fit function","l");
-      legBg->AddEntry(hSlicePhiBGest,"Estimated background","f");
+      //legBg->AddEntry(hSlicePhiBGest,"Estimated background","f");
       legBg->Draw("same");
 
       //gStyle->SetLineWidth(3);
@@ -3218,6 +3336,40 @@ Double_t func_fitBg(Double_t *x ,Double_t *par)
  //std::cout << "x[0] = " << x[0] << " value = " << value <<std::endl;
  return value;
 }
+//
+Double_t func_fitBgAll(Double_t *x ,Double_t *par)
+{
+ Double_t value=0;
+ if (x[0] < rcBGmax[1]) value = par[0]*par[0]*exp(par[1]*x[0]);
+ // between beam pipe and L1
+ if (x[0] > rcBGmax[1]&& x[0] < rcBGmin[2]){
+    Double_t x1 = rcBGmax[1];
+    Double_t x2 = rcBGmin[2];
+    Double_t y1 = par[0]*par[0]*exp(par[1]*x1);
+    Double_t y2 = par[2]*par[2]*exp(par[3]*x2);
+    Double_t b = (y1-y2)/(x1-x2);
+    Double_t a = (y2*x1-y1*x2)/(x1-x2);
+    value = a + b*x[0];
+ }
+ // after L1
+ if (x[0] > rcBGmin[2])value = par[2]*par[2]*exp(par[3]*x[0]);
+ // after L2
+ if (x[0] > (rcBGmin[3]-0.4))value =par[4]*par[4]*exp(par[5]*x[0]);
+ // after L3
+ if (x[0] > (rcBGmin[4]-0.4))value =par[6]*par[6]*exp(par[7]*x[0]);
+ // after L4
+ Double_t xminL4 = rcBGmin[5];
+ if (rcBGmin[5] < 15) xminL4 = 17.;
+ if (x[0] > xminL4){
+   value =par[8]*par[8]*exp(par[9]*x[0]);
+ }
+ Double_t xminST = rcBGmin[7];
+ if (xminST < 20) xminST = 22.;
+ if (x[0] > xminST){ // plateau after support tube
+   value = par[8]*par[8]*exp(par[9]*xminST); 
+ }
+ return value;
+}
 
 Double_t fun2(Double_t *x ,Double_t *par)
 {
@@ -3271,6 +3423,34 @@ Double_t func_EllipseRhoPhi(Double_t *x, Double_t *par)
  return value;
 }
 
+//create function to fit BG in phi slice
+void chiSquareBG( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
+{
+  Int_t numBinsX = hSlicePhiBG->GetNbinsX();
+  Double_t chiSquare = 0.0;
+  Double_t diff = 0.0;
+  for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
+  {
+      Double_t binNum = hSlicePhiBG->GetBinContent( ix);
+
+      if ( binNum <= 0 ) continue; // fit only where BG is not zero
+
+      Double_t x[1];
+      x[0] = hSlicePhiBG->GetXaxis()->GetBinCenter( ix );
+      //if (x < 11. || x > 22.) continue; // fit after 3d BPIX layer
+      //if (x < 7.|| x > 22.) continue; // fit after 2d BPIX layer
+      //if (x < 3.|| x > 22.) continue; // fit after 1st BPIX layer
+      if (x[0] > 23.) continue; // fit after 1st BPIX layer
+      //cout << "binNum = " << binNum << endl;
+      Double_t value = func_fitBgAll(x, par);
+      //Double_t value = par[0]*par[0]*exp(par[1]*x) + par[2]*par[2]*exp(par[3]*x) + par[4]*par[4]*exp(par[5]*x);
+      diff = binNum - value;
+      chiSquare += diff*diff /binNum;//  + halfWidthPipe*halfWidthPipe );// + halfWidthPipe*halfWidthPipe );
+
+  }
+  //cout << "chiSquare = " << chiSquare << endl; 
+  f = chiSquare;
+}
 //create function to fit beam pipe in 2D (circle)
 void chiSquareFunc( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
 { 
