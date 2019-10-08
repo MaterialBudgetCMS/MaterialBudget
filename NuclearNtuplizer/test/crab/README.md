@@ -48,6 +48,9 @@ Set enviroment:
 
 Sent crab job with python for 2018:
 ```
+python crab_DYFall2017FlatPU.py samples/sample_DYFall2017realisticPU.py
+python crab_DYFall2017FlatPU.py samples/sample_DYFall2017FlatPU.py
+
 python crab_Run2018_2018_AOD.py samples/sample_Run2018D_SingleMu_AOD.py 
 python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018B_SingleMu_RawToReco.py
 python crab_Run2018_RawToReco_2018D.py samples/sample_Run2018C_SingleMu_RawToReco.py
