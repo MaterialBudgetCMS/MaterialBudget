@@ -38,16 +38,20 @@ void TrackingSteps::Loop()
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
+      if( jentry%100000 == 0 )
+      std::cout << "Loop over entry " << jentry << "/" << nentries << "." << std::endl;
+      if (jentry > 1000000)break;// only if want process only part of data
+
       // if (Cut(ientry) < 0) continue;
       //cout <<  (*PFDV_isNuclear).size() << endl;
-      for (int inucl = 0; inucl < (*PFDV_isNuclear).size(); inucl++){
+      for (unsigned int inucl = 0; inucl < (*PFDV_isNuclear).size(); inucl++){
 	//	if (!(*PFDV_isNuclear)[inucl]) continue;
 	
       
       int maxAlgo = 0;
       // cout << ((*PFDV_vTrack_algo)[inucl]).size() << endl;
 
-      for (unsigned int j=0;j<(*PFDV_vTrack_algo[inucl]).size();j++) {
+      for (unsigned int j=0;j<((*PFDV_vTrack_algo)[inucl]).size();j++) {
 	//	if ((*tkSecondary)[j]){
 	//cout << "trk secondary " << (*tkSecondary)[j] << endl;
 	//	cout << "(*PFDV_vTrack_algo)[j] = " << (*PFDV_vTrack_algo)[inucl][j] << endl;
@@ -59,7 +63,8 @@ void TrackingSteps::Loop()
 
       double rho = sqrt(x*x+y*y);
 
-      if (fabs(z) > 20) continue;
+      //if (fabs(z) > 25) continue;
+      if (fabs(z) > 25 || rho > 25) continue;
 
       if (maxAlgo==4) h4->Fill(rho);
       else if (maxAlgo==5) h5->Fill(rho);
@@ -70,7 +75,7 @@ void TrackingSteps::Loop()
       else if (maxAlgo==10) h10->Fill(rho);
       else if (maxAlgo==11) h11->Fill(rho);
       else if (maxAlgo==12) h12->Fill(rho);
-      else cout << "ARGH!!!   " << maxAlgo << endl;
+      //else cout << "ARGH!!!   " << maxAlgo << endl;
 
       }
 
@@ -93,7 +98,7 @@ void TrackingSteps::Loop()
    */
 
    
-   //  TCanvas* c1 = new TCanvas();
+     TCanvas* c1 = new TCanvas();
    //   gStyle->SetOptStat(0);
   
    h5->Add(h4);
@@ -121,6 +126,7 @@ void TrackingSteps::Loop()
    h12->GetXaxis()->SetTitle("#rho");
    h12->GetYaxis()->SetTitle("Fraction of Nucl. Int.");
    h12->GetYaxis()->SetTitleOffset(1.3);
+   h12->GetXaxis()->SetRangeUser(0.,25.);
    h12->Draw();
    
    h11->Draw("same");
@@ -133,7 +139,7 @@ void TrackingSteps::Loop()
    h4->Draw("same");
    
    
-   leg = new TLegend(0.1,0.9,0.9,1);
+   TLegend* leg = new TLegend(0.1,0.9,0.9,1);
    leg->SetNColumns(4);
    leg->SetFillColor(kWhite);
    leg->AddEntry(h4, "N_{algo}=0","f");

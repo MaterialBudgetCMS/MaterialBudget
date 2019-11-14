@@ -8,17 +8,41 @@
 #ifndef TrackingSteps_h
 #define TrackingSteps_h
 
-#include <TROOT.h>
+// Header file for the classes stored in the TTree if any.
+#include <string>
+#include <stdexcept>
+#include <stdlib.h>
+#include <vector>
+
 #include <TChain.h>
+#include <TTree.h>
 #include <TFile.h>
 #include <TH1D.h>
+#include <TH2D.h>
+#include "TF2.h"
+#include "TH2.h"
+#include <TMath.h>
+//#include <TVirtualFitter.h>
+//#include <TFitter.h>
+#include <TAttLine.h> // for colors and transperent
+//#include "Fit/DataRange.h"
+#include <TStyle.h>
+#include <TEllipse.h>
+#include <iostream>
+#include "TCanvas.h"
+#include "TROOT.h"
+#include "TPaveStats.h"
+//#include "TColor.h" 
+#include "TLegend.h"
+#include <math.h>
+#include "TArc.h"
+#include "TGraph.h"
+#include "TLatex.h"
+#include "TGraphErrors.h"
+#include <TAttFill.h>
+#include <TLatex.h>
 
-// Header file for the classes stored in the TTree if any.
-#include <vector>
-#include <vector>
-#include <vector>
-#include <vector>
-#include <vector>
+using namespace std;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -265,12 +289,16 @@ TrackingSteps::TrackingSteps(TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
+
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/afs/cern.ch/user/k/kropiv/public/forMax/Ntuple_MC_100GeVpions.root");
+      //TString FileNameRoot = "/afs/cern.ch/user/k/kropiv/public/forMax/Ntuple_MC_100GeVpions.root";
+      TString FileNameRoot = "/eos/cms/store/group/dpg_tracker_strip/tracker/MaterialBudget/NI/DYFall2017realisticPU/DYFall2017realisticPU_part.root";
+
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(FileNameRoot);
       if (!f || !f->IsOpen()) {
-         f = new TFile("/afs/cern.ch/user/k/kropiv/public/forMax/Ntuple_MC_100GeVpions.root");
+         f = new TFile(FileNameRoot);
       }
-      TDirectory * dir = (TDirectory*)f->Get("/afs/cern.ch/user/k/kropiv/public/forMax/Ntuple_MC_100GeVpions.root:/MyNtupleMaking");
+      TDirectory * dir = (TDirectory*)f->Get(FileNameRoot+":/MyNtupleMaking");
       dir->GetObject("NuclearInteractionsTree",tree);
 
    }
@@ -510,16 +538,19 @@ void TrackingSteps::Init(TTree *tree)
    Notify();
 
    out = new TFile("out_eta.root","recreate");
-   
-   h4 = new TH1D("r4","r4",80,0,80);
-   h5 = new TH1D("r5","r5",80,0,80);
-   h6 = new TH1D("r6","r6",80,0,80);
-   h7 = new TH1D("r7","r7",80,0,80);
-   h8 = new TH1D("r8","r8",80,0,80);
-   h9 = new TH1D("r9","r9",80,0,80);
-   h10 = new TH1D("r10","r10",80,0,80);
-   h11 = new TH1D("r11","r11",80,0,80);
-   h12 = new TH1D("r12","r12",80,0,80);
+
+   int nbin = 250;
+   double Xmin = 0;
+   double Xmax = 25;   
+   h4 = new TH1D("r4","r4",nbin,Xmin,Xmax);
+   h5 = new TH1D("r5","r5",nbin,Xmin,Xmax);
+   h6 = new TH1D("r6","r6",nbin,Xmin,Xmax);
+   h7 = new TH1D("r7","r7",nbin,Xmin,Xmax);
+   h8 = new TH1D("r8","r8",nbin,Xmin,Xmax);
+   h9 = new TH1D("r9","r9",nbin,Xmin,Xmax);
+   h10 = new TH1D("r10","r10",nbin,Xmin,Xmax);
+   h11 = new TH1D("r11","r11",nbin,Xmin,Xmax);
+   h12 = new TH1D("r12","r12",nbin,Xmin,Xmax);
 
 
 
