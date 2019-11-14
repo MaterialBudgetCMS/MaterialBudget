@@ -57,6 +57,11 @@ TH2D* h_Extra;
 Double_t Rmin, Rmax, RBGmin, RBGmax, RSmin, RSmax, RPlot;
 vector<double> rcBGmin;
 vector<double> rcBGmax;
+TCanvas* cPlots;
+float ScaleSize = 1. - 2.*0.16;  
+
+// creat plot Data + MC:
+void PlotMaker(TH1D*,TH1D*,TString);
 
 // create function to fit the plus side of the pixel support
 void funPixelSupportPlus( Int_t &, Double_t *, Double_t &, Double_t *, Int_t );
@@ -141,13 +146,11 @@ void TrackerMaterialEstimation_2018()
   //  example_plot( iPeriod, 33 );  // right-aligned  
 
   //Start Initialization:
-  float ScaleSize = 1. - 2.*0.16;  
   
   TH2D* h_RhoPhi;
   TH2D* h_RhoPhi_Extra;
   TH2D* h_ZR;
   TH2D* h_XY;
-  TCanvas* cPlots;
   TCanvas* cQuality;
   TH1D* hQuality;
   TH1D* hYderivative;
@@ -378,6 +381,7 @@ void TrackerMaterialEstimation_2018()
   //TFile* inputFile = TFile::Open("PlotProduced_2018D_RawToReco.root");
   //TFile* inputFile = TFile::Open("PlotProduced_2018BCD_RawToReco.root");
   TFile* inputFile = TFile::Open("PlotProduced_2018D_AODpart.root");
+  TFile* inputFileMC = TFile::Open("MCplot_DYFall2017realisticPU.root");
   // for pseudo MC only:
   //TString NameInputFile = "../PseudoBeamPipe/PseudoBeamPipe";
   //TFile* inputFile = TFile::Open(NameInputFile+".root");
@@ -761,6 +765,12 @@ void TrackerMaterialEstimation_2018()
 
     /// ----------- Step 3: cross check background with original densities used for the fit -------------
 
+    TH1D* hSlicePhi_Tot = (TH1D*)inputFile->Get("hPFDV_PixelSlicePhi_0")->Clone("hSlicePhi_Tot");
+    TH1D* hSlicePhiMC_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhi_0")->Clone("hSlicePhiMC_Tot");
+    TH1D* hSlicePhiSingleNI_Tot = (TH1D*)inputFile->Get("hPFDV_PixelSlicePhiSingleNI_0")->Clone("hSlicePhiSingleNI_Tot");
+    TH1D* hSlicePhiMCSingleNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiSingleNI_0")->Clone("hSlicePhiMCSingleNI_Tot");
+    TH1D* hSlicePhiMultNI_Tot = (TH1D*)inputFile->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMultNI_Tot");
+    TH1D* hSlicePhiMCMultNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMCMultNI_Tot");
     for ( UInt_t phiSect = 0; phiSect < 40; phiSect ++ )
     {
       //std::cout << "********MADE IT INTO LOOP********" << std::endl;
@@ -769,7 +779,17 @@ void TrackerMaterialEstimation_2018()
 
       // Get histo
       TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
-      hSlicePhi->Rebin(2);
+      TH1D* hSlicePhiMC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
+      if(phiSect > 0){
+		hSlicePhi_Tot -> Add(hSlicePhi); 
+		hSlicePhiMC_Tot -> Add(hSlicePhiMC);
+		hSlicePhiSingleNI_Tot -> Add((TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect))); 
+		hSlicePhiMCSingleNI_Tot -> Add((TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect)));
+		hSlicePhiMultNI_Tot -> Add((TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiMultNI_%d", phiSect))); 
+		hSlicePhiMCMultNI_Tot -> Add((TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhiMultNI_%d", phiSect)));
+      }
+      hSlicePhi->Rebin(4);
+      hSlicePhiMC->Rebin(4);
       //TH1D* hSlicePhiNoInTrk = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiNoInTrk_%d", phiSect)); //PhiSlice
       //hSlicePhiNoInTrk->Rebin(2);
       Int_t numBinsSliceX = hSlicePhi->GetNbinsX(); 
@@ -946,13 +966,17 @@ void TrackerMaterialEstimation_2018()
       cPlots->cd();
       cPlots->SetLogy(1);
       //hSlicePhi->SetMinimum(0);
-      hSlicePhi->SetMinimum(10);
-      hSlicePhi->SetMaximum(20000);
+      //hSlicePhi->SetMinimum(10);
+      hSlicePhi->SetMinimum(1000);
+      hSlicePhi->SetMaximum(40000);
+      //hSlicePhi->SetMaximum(20000);
       //hSlicePhi->GetXaxis()->SetTitle("#rho (x^{2017}_{0},y^{2017}_{0}) (cm)");
       hSlicePhi->GetXaxis()->SetTitleOffset(1.05);
-      hSlicePhi->GetXaxis()->SetTitle("#rho (x_{0}, y_{0}) (cm)");
+      //hSlicePhi->GetXaxis()->SetTitle("#rho (x_{0}, y_{0}) (cm)");
+      hSlicePhi->GetXaxis()->SetTitle("r (cm)");
       hSlicePhi->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hSlicePhi->GetXaxis()->GetBinWidth(1)));
-      hSlicePhi->GetXaxis()->SetRangeUser(Rmin, Rmax);
+      //hSlicePhi->GetXaxis()->SetRangeUser(Rmin, Rmax);
+      hSlicePhi->GetXaxis()->SetRangeUser(Rmin,8.);
       hSlicePhi->Draw();
       cPlots->Update();
 
@@ -970,10 +994,15 @@ void TrackerMaterialEstimation_2018()
       //gStyle->SetHatchesSpacing(2.0);
       //gStyle->SetHatchesLineWidth(2);
       hSlicePhi->SetLineWidth(3);
+      hSlicePhiMC->SetLineWidth(3);
       hSlicePhiBG->SetLineWidth(3);
       hSlicePhiSignal->SetLineWidth(3);
       hSlicePhiBGest->SetLineWidth(3);
       hSlicePhi->Draw("histo");
+      hSlicePhiMC->SetLineColor(kGreen+2);
+      Double_t Integral_MC = hSlicePhiMC->Integral();
+      if(Integral_MC > 0.)hSlicePhiMC->Scale(hSlicePhi->Integral()/Integral_MC);
+      hSlicePhiMC->Draw("samehisto");
 
       //hSlicePhiNoInTrk->SetLineWidth(3);
       //hSlicePhiNoInTrk->SetLineColor(kGreen+1);
@@ -1032,7 +1061,7 @@ void TrackerMaterialEstimation_2018()
 
 
       //TLegend* legBg = new TLegend(0.5, 0.6, 0.7, 0.8, "");
-      TLegend* legBg = new TLegend(0.5, 0.7, 0.7, 0.8, "");
+      TLegend* legBg = new TLegend(0.4, 0.65, 0.7, 0.8, "");
       if(FitObject == "PixelSupportEllipse")legBg = new TLegend(0.2, 0.6, 0.4, 0.8, "");
       legBg->SetTextFont(42);
       legBg->SetTextSize(0.04*ScaleSize);
@@ -1041,6 +1070,7 @@ void TrackerMaterialEstimation_2018()
       //if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hSlicePhi,"EXCLUDED from FIT","");
       //legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"");
       legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"l");
+      legBg->AddEntry(hSlicePhiMC,Form("MC DY Fall2017, #phi sector = %d", phiSect),"l");
       legBg->AddEntry(hSlicePhi,"|z| < 25 cm ","");
       //legBg->AddEntry(hSlicePhiNoInTrk,"Data, no income/merged track","l");
       //legBg->AddEntry(hSlicePhiSignal,"Signal fit region","f");
@@ -1055,7 +1085,8 @@ void TrackerMaterialEstimation_2018()
       hSlicePhi->Draw("histosame");
       //gStyle->SetLineWidth(1);
       //TLine * lineTop = new TLine ( x1, y1, x2, y2 );
-      TLine * lineX = new TLine ( Rmin, 0, Rmax , 0. );
+      //TLine * lineX = new TLine ( Rmin, 0, Rmax , 0. );
+      TLine * lineX = new TLine ( Rmin, 0, 8 , 0. );
       lineX->SetLineColor(kBlack);
       lineX->SetLineWidth(3);
       lineX->Draw("same");
@@ -1077,10 +1108,76 @@ void TrackerMaterialEstimation_2018()
       //cPlots->Delete();
       //delete cPlots;
       delete hSlicePhi;
+      delete hSlicePhiMC;
       delete hSlicePhiBG;
       delete hSlicePhiSignal;
       delete hSlicePhiBGest;
     } //end phi cicle
+
+      hSlicePhi_Tot->Rebin(4);
+      hSlicePhiMC_Tot->Rebin(4);
+      TString PlotTitle = "Plots/Material_Tot.png";
+      PlotMaker(hSlicePhi_Tot, hSlicePhiMC_Tot, PlotTitle);
+
+      hSlicePhiSingleNI_Tot->Rebin(4);
+      hSlicePhiMCSingleNI_Tot->Rebin(4);
+      PlotTitle = "Plots/MaterialSingleNI_Tot.png";
+      PlotMaker(hSlicePhiSingleNI_Tot, hSlicePhiMCSingleNI_Tot, PlotTitle);
+
+      hSlicePhiMultNI_Tot->Rebin(4);
+      hSlicePhiMCMultNI_Tot->Rebin(4);
+      PlotTitle = "Plots/MaterialMultNI_Tot.png";
+      PlotMaker(hSlicePhiMultNI_Tot, hSlicePhiMCMultNI_Tot, PlotTitle);
+
+
+      //cPlots->cd();
+      //cPlots->SetLogy(1);
+      //hSlicePhi_Tot->SetMinimum(1.E3);
+      //hSlicePhi_Tot->SetMaximum(1.E6);
+      //hSlicePhi_Tot->GetXaxis()->SetTitleOffset(1.05);
+      //hSlicePhi_Tot->GetXaxis()->SetTitle("r (cm)");
+      //hSlicePhi_Tot->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hSlicePhi_Tot->GetXaxis()->GetBinWidth(1)));
+      //hSlicePhi_Tot->GetXaxis()->SetRangeUser(Rmin,Rmax);
+      //hSlicePhi_Tot->Draw();
+      //cPlots->Update();
+
+      //////// Format the plots of the phi sectors
+      //////TPaveStats* sBg = (TPaveStats*)hSlicePhi->GetListOfFunctions()->FindObject("stats");
+      //////x1L = sBg->GetX1NDC();
+      //////x2L = sBg->GetX2NDC();
+      //////y1L = sBg->GetY1NDC();
+      //////y2L = sBg->GetY2NDC();
+
+      //hSlicePhi_Tot->SetStats(0);
+
+      //hSlicePhi_Tot->SetLineWidth(3);
+      //hSlicePhiMC_Tot->SetLineWidth(3);
+      //hSlicePhi_Tot->Draw("histo");
+      //hSlicePhiMC_Tot->SetLineColor(kGreen+2);
+      //Double_t Integral_MC_Tot = hSlicePhiMC_Tot->Integral();
+      //if(Integral_MC_Tot > 0.)hSlicePhiMC_Tot->Scale(hSlicePhi_Tot->Integral()/Integral_MC_Tot);
+      //hSlicePhiMC_Tot->Draw("samehisto");
+
+      //TLegend* LegTot = new TLegend(0.5, 0.7, 0.7, 0.8, "");
+      //if(FitObject == "PixelSupportEllipse")LegTot = new TLegend(0.2, 0.6, 0.4, 0.8, "");
+      //LegTot->SetTextFont(42);
+      //LegTot->SetTextSize(0.04*ScaleSize);
+      //LegTot->SetFillColor(kWhite);
+      //LegTot->SetTextColor(kBlack);
+      //LegTot->AddEntry(hSlicePhi_Tot,"Data 2018","l");
+      //LegTot->AddEntry(hSlicePhiMC_Tot,"MC DY Fall2017","l");
+      //LegTot->AddEntry(hSlicePhi_Tot,"|z| < 25 cm ","");
+      ////LegTot->AddEntry(hSlicePhiBG,"Sideband fit region","f");
+      //LegTot->Draw("same");
+
+      //hSlicePhi_Tot->Draw("AXISsame");
+      //hSlicePhi_Tot->Draw("histosame");
+      //TLine * lineX_Tot = new TLine ( Rmin, 0, Rmax , 0. );
+      //lineX_Tot->SetLineColor(kBlack);
+      //lineX_Tot->SetLineWidth(3);
+      //lineX_Tot->Draw("same");
+
+      //cPlots->SaveAs("Plots/Material_Tot.png");
 
     continue;// END for material estimation
  
@@ -3327,6 +3424,56 @@ void TrackerMaterialEstimation_2018()
 
 // Function Definition:
 
+void PlotMaker(TH1D* hData,TH1D* hMC, TString PlotTitle)
+{
+      cPlots->cd();
+      cPlots->SetLogy(1);
+      hData->SetMinimum(0.5E3);
+      hData->SetMaximum(1.E6);
+      hData->GetXaxis()->SetTitleOffset(1.05);
+      hData->GetXaxis()->SetTitle("r (cm)");
+      hData->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hData->GetXaxis()->GetBinWidth(1)));
+      hData->GetXaxis()->SetRangeUser(Rmin,Rmax);
+      hData->Draw();
+      cPlots->Update();
+
+      ////// Format the plots of the phi sectors
+      ////TPaveStats* sBg = (TPaveStats*)hSlicePhi->GetListOfFunctions()->FindObject("stats");
+      ////x1L = sBg->GetX1NDC();
+      ////x2L = sBg->GetX2NDC();
+      ////y1L = sBg->GetY1NDC();
+      ////y2L = sBg->GetY2NDC();
+
+      hData->SetStats(0);
+
+      hData->SetLineWidth(3);
+      hMC->SetLineWidth(3);
+      hData->Draw("histo");
+      hMC->SetLineColor(kGreen+2);
+      Double_t Integral_MC_Tot = hMC->Integral();
+      if(Integral_MC_Tot > 0.)hMC->Scale(hData->Integral()/Integral_MC_Tot);
+      hMC->Draw("samehisto");
+
+      TLegend* LegTot = new TLegend(0.5, 0.7, 0.7, 0.8, "");
+      LegTot->SetTextFont(42);
+      LegTot->SetTextSize(0.04*ScaleSize);
+      LegTot->SetFillColor(kWhite);
+      LegTot->SetTextColor(kBlack);
+      LegTot->AddEntry(hData,"Data 2018","l");
+      LegTot->AddEntry(hMC,"MC DY Fall2017","l");
+      LegTot->AddEntry(hData,"|z| < 25 cm ","");
+      //LegTot->AddEntry(hSlicePhiBG,"Sideband fit region","f");
+      LegTot->Draw("same");
+
+      hData->Draw("AXISsame");
+      hData->Draw("histosame");
+      TLine * lineX_Tot = new TLine ( Rmin, 0, Rmax , 0. );
+      lineX_Tot->SetLineColor(kBlack);
+      lineX_Tot->SetLineWidth(3);
+      //lineX_Tot->Draw("same");
+
+      cPlots->SaveAs(PlotTitle);
+}
 
 //create Fit function for background
 Double_t func_fitBg(Double_t *x ,Double_t *par)
