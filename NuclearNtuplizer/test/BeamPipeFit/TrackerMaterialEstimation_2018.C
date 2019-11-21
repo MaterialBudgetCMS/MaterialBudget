@@ -778,11 +778,13 @@ void TrackerMaterialEstimation_2018()
       //Int_t numBinsY = h->GetNbinsY();
 
       // Get histo
-      TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
-      TH1D* hSlicePhiMC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
+      //TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
+      //TH1D* hSlicePhiMC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
+      TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect)); //PhiSlice
+      TH1D* hSlicePhiMC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect)); //PhiSlice
       if(phiSect > 0){
-		hSlicePhi_Tot -> Add(hSlicePhi); 
-		hSlicePhiMC_Tot -> Add(hSlicePhiMC);
+		hSlicePhi_Tot -> Add((TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect))); 
+		hSlicePhiMC_Tot -> Add((TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)));
 		hSlicePhiSingleNI_Tot -> Add((TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect))); 
 		hSlicePhiMCSingleNI_Tot -> Add((TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect)));
 		hSlicePhiMultNI_Tot -> Add((TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiMultNI_%d", phiSect))); 
@@ -966,8 +968,8 @@ void TrackerMaterialEstimation_2018()
       cPlots->cd();
       cPlots->SetLogy(1);
       //hSlicePhi->SetMinimum(0);
-      //hSlicePhi->SetMinimum(10);
-      hSlicePhi->SetMinimum(1000);
+      hSlicePhi->SetMinimum(10);
+      //hSlicePhi->SetMinimum(1000);
       hSlicePhi->SetMaximum(40000);
       //hSlicePhi->SetMaximum(20000);
       //hSlicePhi->GetXaxis()->SetTitle("#rho (x^{2017}_{0},y^{2017}_{0}) (cm)");
@@ -975,8 +977,8 @@ void TrackerMaterialEstimation_2018()
       //hSlicePhi->GetXaxis()->SetTitle("#rho (x_{0}, y_{0}) (cm)");
       hSlicePhi->GetXaxis()->SetTitle("r (cm)");
       hSlicePhi->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hSlicePhi->GetXaxis()->GetBinWidth(1)));
-      //hSlicePhi->GetXaxis()->SetRangeUser(Rmin, Rmax);
-      hSlicePhi->GetXaxis()->SetRangeUser(Rmin,8.);
+      hSlicePhi->GetXaxis()->SetRangeUser(Rmin, Rmax);
+      //hSlicePhi->GetXaxis()->SetRangeUser(Rmin,8.);
       hSlicePhi->Draw();
       cPlots->Update();
 
@@ -1057,7 +1059,8 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiBGest->SetFillColor(kBlue);
       hSlicePhiBGest->SetMarkerColor(kBlue);
       hSlicePhiBGest->SetLineColor(kBlue);
-      hSlicePhiBGest->Draw("samehisto");
+      
+      //hSlicePhiBGest->Draw("samehisto");
 
 
       //TLegend* legBg = new TLegend(0.5, 0.6, 0.7, 0.8, "");
@@ -1085,8 +1088,8 @@ void TrackerMaterialEstimation_2018()
       hSlicePhi->Draw("histosame");
       //gStyle->SetLineWidth(1);
       //TLine * lineTop = new TLine ( x1, y1, x2, y2 );
-      //TLine * lineX = new TLine ( Rmin, 0, Rmax , 0. );
-      TLine * lineX = new TLine ( Rmin, 0, 8 , 0. );
+      TLine * lineX = new TLine ( Rmin, 0, Rmax , 0. );
+      //TLine * lineX = new TLine ( Rmin, 0, 8 , 0. );
       lineX->SetLineColor(kBlack);
       lineX->SetLineWidth(3);
       lineX->Draw("same");
@@ -1103,6 +1106,26 @@ void TrackerMaterialEstimation_2018()
       fn.str("");
       fn << "Plots/MaterialPhiSector_" << phiSect<<".png";
       if (FitObject != "PixelSupportRails" && FitObject != "PixelSupportRailsPositive" && FitObject != "PixelSupportRailsNegative")cPlots->SaveAs(fn.str().c_str());
+      TH1D* hSlicePhiNoBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiNoBG");
+      hSlicePhiNoBG->Reset();
+      hSlicePhiNoBG->Sumw2();
+      hSlicePhiNoBG->FillRandom("fitBgAll",10000000);
+      Double_t Integral_GEN = hSlicePhiNoBG->Integral();
+      Double_t BinWidth = hSlicePhi->GetXaxis()->GetBinWidth(1);
+      Double_t xmin_int = hSlicePhi->GetXaxis()->GetBinLowEdge(1);
+      Double_t xmax_int = hSlicePhi->GetXaxis()->GetBinUpEdge(hSlicePhi->GetNbinsX());
+      Double_t Integral_FUNC = fitBgAll->Integral(Rmin,Rmax)/BinWidth;
+      if(Integral_GEN > 0.)hSlicePhiNoBG->Scale(Integral_FUNC/Integral_GEN);
+      hSlicePhiNoBG -> Add (hSlicePhi, hSlicePhiNoBG, 1., -1.);
+
+      cPlots->SetLogy(0);
+      hSlicePhiNoBG->SetMinimum(0);
+      hSlicePhiNoBG->SetMaximum(20000);
+
+      hSlicePhiNoBG -> Draw("histo");
+      //fitBgAll->Draw("same");
+      cPlots->SaveAs(Form("Plots/MaterialPhiSectorNoBG_%d.png", phiSect));
+      
       //if (phiSect == 1 && FitObject == "BeamPipe")cPlots->SaveAs(fn_pdf.str().c_str());
       //delete to avoid memory leak:
       //cPlots->Delete();
