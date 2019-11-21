@@ -271,6 +271,14 @@ public :
    TH1D * h12;
    TFile* out;
 
+   TH1D * hNumOfValidHits;
+   TH1D * hNumOfValidHitsMean;
+   // 1.8-3.5; 6.-7.5; 10-12; 15-17;
+   TH1D * hNumOfValidHitsMeanBPL1;
+   TH1D * hNumOfValidHitsMeanL2;
+   TH1D * hNumOfValidHitsMeanL3;
+   TH1D * hNumOfValidHitsMeanL4;
+
    TrackingSteps(TTree *tree=0);
    virtual ~TrackingSteps();
    virtual Int_t    Cut(Long64_t entry);
@@ -553,6 +561,13 @@ void TrackingSteps::Init(TTree *tree)
    h12 = new TH1D("r12","r12",nbin,Xmin,Xmax);
 
 
+   hNumOfValidHits = new TH1D("hNumOfValidHits","hNumOfValidHits",40,-0.5,39.5);
+   hNumOfValidHitsMean = new TH1D("hNumOfValidHitsMean","hNumOfValidHits",40,-0.5,39.5);
+   // 1.8-3.5; 6.-7.5; 10-12; 15-17;
+   hNumOfValidHitsMeanBPL1 = new TH1D("hNumOfValidHitsMeanPBL1","hNumOfValidHitsBPL1",40,-0.5,39.5);
+   hNumOfValidHitsMeanL2 = new TH1D("hNumOfValidHitsMeanL2","hNumOfValidHitsL2",40,-0.5,39.5);
+   hNumOfValidHitsMeanL3 = new TH1D("hNumOfValidHitsMeanL3","hNumOfValidHitsL3",40,-0.5,39.5);
+   hNumOfValidHitsMeanL4 = new TH1D("hNumOfValidHitsMeanL4","hNumOfValidHitsL4",40,-0.5,39.5);
 
 }
 

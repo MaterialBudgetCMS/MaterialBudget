@@ -33,6 +33,12 @@ void TrackingSteps::Loop()
 
    Long64_t nentries = fChain->GetEntriesFast();
 
+   
+   int nAlgo[26];
+   for ( unsigned int i = 0; i < 26; i++ ){
+     nAlgo[i] = 0;
+   }
+
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
@@ -40,28 +46,42 @@ void TrackingSteps::Loop()
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       if( jentry%100000 == 0 )
       std::cout << "Loop over entry " << jentry << "/" << nentries << "." << std::endl;
-      if (jentry > 1000000)break;// only if want process only part of data
+      if (jentry > 100000)break;// only if want process only part of data
 
       // if (Cut(ientry) < 0) continue;
       //cout <<  (*PFDV_isNuclear).size() << endl;
       for (unsigned int inucl = 0; inucl < (*PFDV_isNuclear).size(); inucl++){
 	//	if (!(*PFDV_isNuclear)[inucl]) continue;
 	
-      
-      int maxAlgo = 0;
-      // cout << ((*PFDV_vTrack_algo)[inucl]).size() << endl;
-
-      for (unsigned int j=0;j<((*PFDV_vTrack_algo)[inucl]).size();j++) {
-	//	if ((*tkSecondary)[j]){
-	//cout << "trk secondary " << (*tkSecondary)[j] << endl;
-	//	cout << "(*PFDV_vTrack_algo)[j] = " << (*PFDV_vTrack_algo)[inucl][j] << endl;
-	if(((*PFDV_vTrack_algo)[inucl])[j]>maxAlgo) maxAlgo=((*PFDV_vTrack_algo)[inucl])[j];
-	  //	}
-      }
-      
       double x = (*PFDV_x)[inucl], y = (*PFDV_y)[inucl],  z = (*PFDV_z)[inucl];
 
       double rho = sqrt(x*x+y*y);
+      
+      int maxAlgo = 0;
+      double numHitMean = 0;
+      // cout << ((*PFDV_vTrack_algo)[inucl]).size() << endl;
+      unsigned int numTracks = ((*PFDV_vTrack_algo)[inucl]).size();
+      if(numTracks > 0){
+	      for (unsigned int j=0;j<numTracks;j++) {
+   		//	if ((*tkSecondary)[j]){
+		//cout << "trk secondary " << (*tkSecondary)[j] << endl;
+		//	cout << "(*PFDV_vTrack_algo)[j] = " << (*PFDV_vTrack_algo)[inucl][j] << endl;
+		if(((*PFDV_vTrack_algo)[inucl])[j]>maxAlgo) maxAlgo=((*PFDV_vTrack_algo)[inucl])[j];
+		  //	}
+	        double numHit = (*PFDV_vTrack_numberOfValidHits)[inucl][j];
+        	numHitMean = numHitMean + numHit;
+	        hNumOfValidHits -> Fill(numHit);
+        	//std::cout << "NumOfValidHits = " << (*PFDV_vTrack_numberOfValidHits)[inucl][j] << std::endl;
+	      }
+	numHitMean = numHitMean/numTracks;
+	hNumOfValidHitsMean -> Fill(numHitMean);
+	// 1.8-3.5; 6.-7.5; 10-12; 15-17;
+        if(rho > 1.8 && rho < 3.5) hNumOfValidHitsMeanBPL1 -> Fill(numHitMean);
+        if(rho > 6. && rho < 7.5)  hNumOfValidHitsMeanL2 -> Fill(numHitMean);
+        if(rho > 10. && rho < 12.) hNumOfValidHitsMeanL3 -> Fill(numHitMean);
+        if(rho > 15. && rho < 17.) hNumOfValidHitsMeanL4 -> Fill(numHitMean);
+      }
+      
 
       //if (fabs(z) > 25) continue;
       if (fabs(z) > 25 || rho > 25) continue;
@@ -98,7 +118,7 @@ void TrackingSteps::Loop()
    */
 
    
-     TCanvas* c1 = new TCanvas();
+     TCanvas* c1 = new TCanvas("c1","");
    //   gStyle->SetOptStat(0);
   
    h5->Add(h4);
@@ -165,7 +185,35 @@ void TrackingSteps::Loop()
    
    c1->SaveAs("Tracking.png");
    cout << "bla 5" << endl;
-   out->Close();
      
+   TCanvas* c2 = new TCanvas("c2","");
+   c2->cd();
+   hNumOfValidHits -> Draw();
+   c2->Update();
+   c2->SaveAs("NumOfValidHits.png");
+
+   hNumOfValidHitsMean -> Draw();
+   c2->Update();
+   c2->SaveAs("NumOfValidHitsMean.png");
+
+   hNumOfValidHitsMeanBPL1 -> Draw();
+   c2->Update();
+   c2->SaveAs("NumOfValidHitsMeanBPL1.png");
+
+   hNumOfValidHitsMeanL2 -> Draw();
+   c2->Update();
+   c2->SaveAs("NumOfValidHitsMeanL2.png");
+
+   hNumOfValidHitsMeanL3 -> Draw();
+   c2->Update();
+   c2->SaveAs("NumOfValidHitsMeanL3.png");
+
+   hNumOfValidHitsMeanL4 -> Draw();
+   c2->Update();
+   c2->SaveAs("NumOfValidHitsMeanL4.png");
+
+
+   out->Close();
+
 }
 //PFDV_vTrack_algo
