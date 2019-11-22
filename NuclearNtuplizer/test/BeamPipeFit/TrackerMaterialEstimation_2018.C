@@ -771,8 +771,20 @@ void TrackerMaterialEstimation_2018()
     TH1D* hSlicePhiMCSingleNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiSingleNI_0")->Clone("hSlicePhiMCSingleNI_Tot");
     TH1D* hSlicePhiMultNI_Tot = (TH1D*)inputFile->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMultNI_Tot");
     TH1D* hSlicePhiMCMultNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMCMultNI_Tot");
-    for ( UInt_t phiSect = 0; phiSect < 40; phiSect ++ )
+    const int lenPhi = 40; 
+    //const int lenPhi = 7; //for Test only...
+    const int lenStructure = 8;
+    double NumNI[lenPhi][lenStructure];
+    for(int i = 0; i < lenPhi; i++){
+	for(int j = 0; j < lenStructure; j++){
+           NumNI[i][j] = 0;
+	}
+    }
+    for ( UInt_t phiSect = 0; phiSect < lenPhi; phiSect ++ )
     {
+      vector<double> rmin_BG = { 0, 0, 0, 0, 0, 0, 0, 0};
+      vector<double> rmax_BG = { 0, 0, 0, 0, 0, 0, 0, 0};
+     
       //std::cout << "********MADE IT INTO LOOP********" << std::endl;
       //Int_t numBinsX = h->GetNbinsX();
       //Int_t numBinsY = h->GetNbinsY();
@@ -875,6 +887,8 @@ void TrackerMaterialEstimation_2018()
              if (iBG == 6 && (phiSect ==12 || phiSect == 7 )) rc_M_max = 20.;
              if (rc > rc_M_min && rc < rc_M_max){
                  BG_flag = 1;
+		 rmin_BG[iBG] = rc_M_min;
+		 rmax_BG[iBG] = rc_M_max;
                 // remove BG region related to double outter shield structure:
                 if (iBG == 5 && (phiSect == 1 || phiSect == 7 || phiSect == 8 || phiSect == 11 || phiSect == 18 || phiSect == 21 || phiSect == 22 || phiSect == 28 || phiSect == 31 || phiSect == 32 || phiSect == 37 || phiSect == 38) ) BG_flag = 0;            
                 // remove BG region related to rails:
@@ -1123,6 +1137,24 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiNoBG->SetMaximum(20000);
 
       hSlicePhiNoBG -> Draw("histo");
+        TLegend* legNoBG = new TLegend(0.5, 0.70, 0.7, 0.8, "");
+        legNoBG->SetTextFont(42);
+        legNoBG->SetTextSize(0.04*ScaleSize);
+        legNoBG->SetFillColor(kWhite);
+        legNoBG->SetTextColor(kBlack);
+        legNoBG->AddEntry(hSlicePhiNoBG,Form("Data 2018, #phi sector = %d", phiSect),"l");
+        legNoBG->AddEntry(hSlicePhiNoBG,"|z| < 25 cm ","");
+        legNoBG->Draw("same");
+
+      for ( UInt_t i_cal = 0; i_cal < lenStructure ; i_cal++ ){
+              Double_t xmin_cal = rmax_BG[i_cal];
+              Double_t xmax_cal = Rmax;
+              if (i_cal < (lenStructure-1))xmax_cal = rmin_BG[i_cal+1];
+              Int_t xID_min = round((xmin_cal - xmin_int)/BinWidth);
+              Int_t xID_max = round((xmax_cal - xmin_int)/BinWidth);
+	      NumNI[phiSect][i_cal] = hSlicePhiNoBG -> Integral(xID_min,xID_max);
+              //cout << "For structure i = " << i_cal <<  " phiSect = " << phiSect << " xmin_cal = " << xmin_cal << " xmax_cal = " << xmax_cal << " NumNI = " << NumNI[phiSect][i_cal] << endl;
+      }
       //fitBgAll->Draw("same");
       cPlots->SaveAs(Form("Plots/MaterialPhiSectorNoBG_%d.png", phiSect));
       
@@ -1136,6 +1168,40 @@ void TrackerMaterialEstimation_2018()
       delete hSlicePhiSignal;
       delete hSlicePhiBGest;
     } //end phi cicle
+
+    double normNumNI[lenPhi][lenStructure];
+    for(int i = 0; i < lenPhi; i++){
+        for(int j = 0; j < lenStructure; j++){
+           if(fabs(NumNI[i][j])< 0.001)cout << "Warning too small: NumNI[" << i << "][" << j << "] = " << NumNI[i][j] << endl;
+           // normalize to L2 (j = 2)
+           if (fabs(NumNI[i][2]) > 0.001) normNumNI[i][j] = NumNI[i][j]/NumNI[i][2];
+           //cout << "Test phi = " << i << " ID Structure = " << j << "Rate to L2 = " << normNumNI[i][j] << endl; 
+        }
+    }
+    for(int i = 0; i < lenPhi; i++){
+        const char *Structure[lenStructure] = {"beam pipe", "L1", "L2", "L3", "L4", "OS", "PS", "TL1"};
+        TH1F *hRate = new TH1F("hRate","Rate to L2",3,0,3);
+        hRate->SetStats(0);
+        hRate->SetFillColor(38);
+        hRate->SetCanExtend(TH1::kAllAxes);
+        for (Int_t j=0;j<lenStructure;j++) {
+    	    hRate->Fill(Structure[j],normNumNI[i][j]);
+	}
+	hRate->LabelsDeflate();
+        //hRate->SetMinimum(0);
+        //hRate->SetMaximum(3.0);
+	hRate->Draw("histo");
+	TLegend* legRate = new TLegend(0.5, 0.70, 0.7, 0.8, "");
+	legRate->SetTextFont(42);
+	legRate->SetTextSize(0.04*ScaleSize);
+	legRate->SetFillColor(kWhite);
+	legRate->SetTextColor(kBlack);
+	legRate->AddEntry(hRate,Form("Data 2018, #phi sector = %d", i),"f");
+	legRate->AddEntry(hRate,"|z| < 25 cm ","");
+	legRate->Draw("same");
+	cPlots->SaveAs(Form("Plots/MaterialPhiSectorRate_%d.png", i));
+        delete hRate;
+   }
 
       hSlicePhi_Tot->Rebin(4);
       hSlicePhiMC_Tot->Rebin(4);
@@ -3290,157 +3356,157 @@ void TrackerMaterialEstimation_2018()
 
 
   }
-  cout << "======    Pass Fit and Plots" << endl;
-
-  /// Summary TGraph
-  cPlots = new TCanvas("results","");
-  cPlots->cd();
-  TGraphErrors* gRfit = new TGraphErrors( 10, resZ, resR, errZ, errR );
-  gRfit->GetXaxis()->SetTitle("z (cm)");
-  gRfit->GetYaxis()->SetTitle("R (cm)");
-  gRfit->SetTitle("fit results");
-  gRfit->SetMarkerStyle(20);
-  gRfit->SetMarkerSize(1.2);
-  gRfit->SetMarkerColor(kBlack);
-  gRfit->SetDrawOption("ap");
-  TF1* fRfit = new TF1("fRfit","[0]+[1]*x",-25,25);
-  fRfit->SetParNames("R_{s} (cm)","k_{R} (cm/cm)");
-  fRfit->SetLineColor(kBlack);
-  fRfit->SetMarkerColor(kBlack);
-  gRfit->Fit("fRfit","RWEMS");
-  gRfit->Draw("ap");
-  cPlots->Update();
-
-  TGraphErrors* gx0fit = new TGraphErrors( 10, resZ, resx0, errZ, errx0 );
-  gx0fit->GetXaxis()->SetTitle("z (cm)");
-  gx0fit->GetYaxis()->SetTitle("x_{0} (mm)");
-  gx0fit->SetTitle("fit results");
-  gx0fit->SetMarkerStyle(20);
-  gx0fit->SetMarkerSize(1.2);
-  gx0fit->SetMarkerColor(kRed);
-  gx0fit->SetLineColor(kRed);
-  gx0fit->SetDrawOption("ap");
-  TF1* fx0fit = new TF1("fx0fit","[0]+[1]*x",-25,25);
-  fx0fit->SetParNames("x_{0s} (mm)","k_{x0} (mm/cm)");
-  fx0fit->SetLineColor(kRed);
-  fx0fit->SetMarkerColor(kRed);
-  gx0fit->Fit("fx0fit","RWEMS");
-  gx0fit->Draw("ap");
-  cPlots->Update();
-
-  TGraphErrors* gy0fit = new TGraphErrors( 10, resZ, resy0, errZ, erry0 );
-  gy0fit->GetXaxis()->SetTitle("z (cm)");
-  gy0fit->GetYaxis()->SetTitle("y_{0} [mm]");
-  gy0fit->SetTitle("fit results");
-  gy0fit->SetMarkerStyle(20);
-  gy0fit->SetMarkerSize(1.2);
-  gy0fit->SetMarkerColor(kBlue);
-  gy0fit->SetLineColor(kBlue);
-  gy0fit->SetDrawOption("ap");
-  TF1* fy0fit = new TF1("fy0fit","[0]+[1]*x",-25,25);
-  fy0fit->SetParNames("y_{0s} (mm)","k_{y0} (mm/cm)");
-  fy0fit->SetLineColor(kBlue);
-  fy0fit->SetMarkerColor(kBlue);
-  gy0fit->Fit("fy0fit","RWEMS");
-  gy0fit->Draw("ap");
-  cPlots->Update();
-
-  cPlots->cd();
-
-  TPad* pad1 = new TPad("pad1", "", 0, 0.64, 1, 1.00, 0, 0, 0);
-  TPad* pad2 = new TPad("pad2", "", 0, 0.38, 1, 0.64, 0, 0, 0);
-  TPad* pad3 = new TPad("pad3", "", 0, 0.00, 1, 0.38, 0, 0, 0);
-
-  pad3->SetTopMargin(0.000);
-  pad3->SetBottomMargin(pad3->GetBottomMargin()*2.6);
-  pad2->SetBottomMargin(0.000);
-  pad2->SetTopMargin(0.000);
-  pad1->SetTopMargin(pad1->GetTopMargin()*2.6);
-  pad1->SetBottomMargin(0.000);
-
-  //gRfit->SetTitle("");
-
-  pad1->Draw();
-  pad2->Draw();
-  pad3->Draw();
-
-  double labelSizeFactor1 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad1->GetHNDC();
-  double labelSizeFactor2 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad2->GetHNDC();
-  double labelSizeFactor3 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad3->GetHNDC();
-
-  pad1->cd();
-  //gRfit->SetTitle("fit results");
-  //gRfit->GetYaxis()->SetTitle("a, b (cm)");
-  gRfit->GetYaxis()->SetRangeUser(RSmin, RSmax);
-  gRfit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
-  gRfit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
-  gRfit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor1);
-  gRfit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor1);
-  gRfit->GetYaxis()->SetTitleOffset(gRfit->GetYaxis()->GetTitleOffset()/labelSizeFactor1);
-  gRfit->Draw("ap");
-  pad1->Update();
-  TPaveStats *statsRfit = (TPaveStats*)gRfit->GetListOfFunctions()->FindObject("stats");
-  statsRfit->SetTextColor(kBlack);
-  statsRfit->SetLineColor(kBlack);
-  statsRfit->SetX1NDC(x1L);
-  statsRfit->SetX2NDC(x2L);
-  statsRfit->SetY1NDC(0.371);
-  statsRfit->SetY2NDC(0.665);
-  pad1->Update();
-  TPaveText *title = (TPaveText*)pad1->GetPrimitive("title");
-  cout << "======    Check Error 1" << endl;
-  //title->SetY1NDC( 0.78 );
-  //title->SetY2NDC( 0.94 );
-  cout << "======    Check Error 2" << endl;
-
-  //gbfit->Draw("p same");
-  //gbfit->GetListOfFunctions()->FindObject("stats")->Delete();
-
-  pad1->Modified();
-
-  pad2->cd();
-  gx0fit->SetTitle("");
-  gx0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
-  gx0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
-  gx0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
-  gx0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor2);
-  gx0fit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor2);
-  gx0fit->GetYaxis()->SetTitleOffset(gx0fit->GetYaxis()->GetTitleOffset()/labelSizeFactor2);
-  gx0fit->Draw("ap");
-  pad2->Update();
-  TPaveStats *statsx0fit = (TPaveStats*)gx0fit->GetListOfFunctions()->FindObject("stats");
-  statsx0fit->SetTextColor(kRed);
-  statsx0fit->SetLineColor(kRed);
-  statsx0fit->SetX1NDC(x1L);
-  statsx0fit->SetX2NDC(x2L);
-  statsx0fit->SetY1NDC(0.5);
-  statsx0fit->SetY2NDC(0.9);
-  pad2->Update();
-
-
-  pad3->cd();
-  gy0fit->SetTitle("");
-  gy0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
-  gy0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
-  gy0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
-  gy0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor3);
-  gy0fit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor3);
-  gy0fit->GetYaxis()->SetTitleOffset(gy0fit->GetYaxis()->GetTitleOffset()/labelSizeFactor3);
-  gy0fit->Draw("ap");
-  pad3->Update();
-  TPaveStats *statsy0fit = (TPaveStats*)gy0fit->GetListOfFunctions()->FindObject("stats");
-  statsy0fit->SetTextColor(kBlue);
-  statsy0fit->SetLineColor(kBlue);
-  statsy0fit->SetX1NDC(x1L);
-  statsy0fit->SetX2NDC(x2L);
-  statsy0fit->SetY1NDC(0.657);
-  statsy0fit->SetY2NDC(0.932);
-  //gphi21fit->Draw("p same");
-  //gphi21fit->GetListOfFunctions()->FindObject("stats")->Delete();
-
-  pad3->Update();
-  //cPlots->SaveAs("Plots/FitResults.pdf");
-  //cPlots->SaveAs("Plots/FitResults.png");
+//  cout << "======    Pass Fit and Plots" << endl;
+//
+//  /// Summary TGraph
+//  cPlots = new TCanvas("results","");
+//  cPlots->cd();
+//  TGraphErrors* gRfit = new TGraphErrors( 10, resZ, resR, errZ, errR );
+//  gRfit->GetXaxis()->SetTitle("z (cm)");
+//  gRfit->GetYaxis()->SetTitle("R (cm)");
+//  gRfit->SetTitle("fit results");
+//  gRfit->SetMarkerStyle(20);
+//  gRfit->SetMarkerSize(1.2);
+//  gRfit->SetMarkerColor(kBlack);
+//  gRfit->SetDrawOption("ap");
+//  TF1* fRfit = new TF1("fRfit","[0]+[1]*x",-25,25);
+//  fRfit->SetParNames("R_{s} (cm)","k_{R} (cm/cm)");
+//  fRfit->SetLineColor(kBlack);
+//  fRfit->SetMarkerColor(kBlack);
+//  gRfit->Fit("fRfit","RWEMS");
+//  gRfit->Draw("ap");
+//  cPlots->Update();
+//
+//  TGraphErrors* gx0fit = new TGraphErrors( 10, resZ, resx0, errZ, errx0 );
+//  gx0fit->GetXaxis()->SetTitle("z (cm)");
+//  gx0fit->GetYaxis()->SetTitle("x_{0} (mm)");
+//  gx0fit->SetTitle("fit results");
+//  gx0fit->SetMarkerStyle(20);
+//  gx0fit->SetMarkerSize(1.2);
+//  gx0fit->SetMarkerColor(kRed);
+//  gx0fit->SetLineColor(kRed);
+//  gx0fit->SetDrawOption("ap");
+//  TF1* fx0fit = new TF1("fx0fit","[0]+[1]*x",-25,25);
+//  fx0fit->SetParNames("x_{0s} (mm)","k_{x0} (mm/cm)");
+//  fx0fit->SetLineColor(kRed);
+//  fx0fit->SetMarkerColor(kRed);
+//  gx0fit->Fit("fx0fit","RWEMS");
+//  gx0fit->Draw("ap");
+//  cPlots->Update();
+//
+//  TGraphErrors* gy0fit = new TGraphErrors( 10, resZ, resy0, errZ, erry0 );
+//  gy0fit->GetXaxis()->SetTitle("z (cm)");
+//  gy0fit->GetYaxis()->SetTitle("y_{0} [mm]");
+//  gy0fit->SetTitle("fit results");
+//  gy0fit->SetMarkerStyle(20);
+//  gy0fit->SetMarkerSize(1.2);
+//  gy0fit->SetMarkerColor(kBlue);
+//  gy0fit->SetLineColor(kBlue);
+//  gy0fit->SetDrawOption("ap");
+//  TF1* fy0fit = new TF1("fy0fit","[0]+[1]*x",-25,25);
+//  fy0fit->SetParNames("y_{0s} (mm)","k_{y0} (mm/cm)");
+//  fy0fit->SetLineColor(kBlue);
+//  fy0fit->SetMarkerColor(kBlue);
+//  gy0fit->Fit("fy0fit","RWEMS");
+//  gy0fit->Draw("ap");
+//  cPlots->Update();
+//
+//  cPlots->cd();
+//
+//  TPad* pad1 = new TPad("pad1", "", 0, 0.64, 1, 1.00, 0, 0, 0);
+//  TPad* pad2 = new TPad("pad2", "", 0, 0.38, 1, 0.64, 0, 0, 0);
+//  TPad* pad3 = new TPad("pad3", "", 0, 0.00, 1, 0.38, 0, 0, 0);
+//
+//  pad3->SetTopMargin(0.000);
+//  pad3->SetBottomMargin(pad3->GetBottomMargin()*2.6);
+//  pad2->SetBottomMargin(0.000);
+//  pad2->SetTopMargin(0.000);
+//  pad1->SetTopMargin(pad1->GetTopMargin()*2.6);
+//  pad1->SetBottomMargin(0.000);
+//
+//  //gRfit->SetTitle("");
+//
+//  pad1->Draw();
+//  pad2->Draw();
+//  pad3->Draw();
+//
+//  double labelSizeFactor1 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad1->GetHNDC();
+//  double labelSizeFactor2 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad2->GetHNDC();
+//  double labelSizeFactor3 = (pad1->GetHNDC()+pad2->GetHNDC()+pad3->GetHNDC()) / pad3->GetHNDC();
+//
+//  pad1->cd();
+//  //gRfit->SetTitle("fit results");
+//  //gRfit->GetYaxis()->SetTitle("a, b (cm)");
+//  gRfit->GetYaxis()->SetRangeUser(RSmin, RSmax);
+//  gRfit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
+//  gRfit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor1);
+//  gRfit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor1);
+//  gRfit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor1);
+//  gRfit->GetYaxis()->SetTitleOffset(gRfit->GetYaxis()->GetTitleOffset()/labelSizeFactor1);
+//  gRfit->Draw("ap");
+//  pad1->Update();
+//  TPaveStats *statsRfit = (TPaveStats*)gRfit->GetListOfFunctions()->FindObject("stats");
+//  statsRfit->SetTextColor(kBlack);
+//  statsRfit->SetLineColor(kBlack);
+//  statsRfit->SetX1NDC(x1L);
+//  statsRfit->SetX2NDC(x2L);
+//  statsRfit->SetY1NDC(0.371);
+//  statsRfit->SetY2NDC(0.665);
+//  pad1->Update();
+//  TPaveText *title = (TPaveText*)pad1->GetPrimitive("title");
+//  cout << "======    Check Error 1" << endl;
+//  //title->SetY1NDC( 0.78 );
+//  //title->SetY2NDC( 0.94 );
+//  cout << "======    Check Error 2" << endl;
+//
+//  //gbfit->Draw("p same");
+//  //gbfit->GetListOfFunctions()->FindObject("stats")->Delete();
+//
+//  pad1->Modified();
+//
+//  pad2->cd();
+//  gx0fit->SetTitle("");
+//  gx0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
+//  gx0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
+//  gx0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor2);
+//  gx0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor2);
+//  gx0fit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor2);
+//  gx0fit->GetYaxis()->SetTitleOffset(gx0fit->GetYaxis()->GetTitleOffset()/labelSizeFactor2);
+//  gx0fit->Draw("ap");
+//  pad2->Update();
+//  TPaveStats *statsx0fit = (TPaveStats*)gx0fit->GetListOfFunctions()->FindObject("stats");
+//  statsx0fit->SetTextColor(kRed);
+//  statsx0fit->SetLineColor(kRed);
+//  statsx0fit->SetX1NDC(x1L);
+//  statsx0fit->SetX2NDC(x2L);
+//  statsx0fit->SetY1NDC(0.5);
+//  statsx0fit->SetY2NDC(0.9);
+//  pad2->Update();
+//
+//
+//  pad3->cd();
+//  gy0fit->SetTitle("");
+//  gy0fit->GetYaxis()->SetRangeUser(-1.5, 1.5);
+//  gy0fit->GetXaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
+//  gy0fit->GetYaxis()->SetLabelSize(gStyle->GetLabelSize()*labelSizeFactor3);
+//  gy0fit->GetXaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor3);
+//  gy0fit->GetYaxis()->SetTitleSize(gStyle->GetTitleSize()*labelSizeFactor3);
+//  gy0fit->GetYaxis()->SetTitleOffset(gy0fit->GetYaxis()->GetTitleOffset()/labelSizeFactor3);
+//  gy0fit->Draw("ap");
+//  pad3->Update();
+//  TPaveStats *statsy0fit = (TPaveStats*)gy0fit->GetListOfFunctions()->FindObject("stats");
+//  statsy0fit->SetTextColor(kBlue);
+//  statsy0fit->SetLineColor(kBlue);
+//  statsy0fit->SetX1NDC(x1L);
+//  statsy0fit->SetX2NDC(x2L);
+//  statsy0fit->SetY1NDC(0.657);
+//  statsy0fit->SetY2NDC(0.932);
+//  //gphi21fit->Draw("p same");
+//  //gphi21fit->GetListOfFunctions()->FindObject("stats")->Delete();
+//
+//  pad3->Update();
+//  //cPlots->SaveAs("Plots/FitResults.pdf");
+//  //cPlots->SaveAs("Plots/FitResults.png");
 
 }
 //End Main Program
