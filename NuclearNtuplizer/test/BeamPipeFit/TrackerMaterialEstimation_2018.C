@@ -52,11 +52,11 @@
 using namespace std;
 
 TH2D* h;
-TH1D* hSlicePhiBG;
+TH1D* hSlicePhiBG_Fit;
 TH2D* h_Extra;
 Double_t Rmin, Rmax, RBGmin, RBGmax, RSmin, RSmax, RPlot;
-vector<double> rcBGmin;
-vector<double> rcBGmax;
+vector<double> rcBGmin_Fit;
+vector<double> rcBGmax_Fit;
 TCanvas* cPlots;
 float ScaleSize = 1. - 2.*0.16;  
 
@@ -391,15 +391,19 @@ void TrackerMaterialEstimation_2018()
     //const int lenPhi = 7; //for Test only...
     const int lenStructure = 8;
     double NumNI[lenPhi][lenStructure];
+    double NumNI_MC[lenPhi][lenStructure];
     for(int i = 0; i < lenPhi; i++){
 	for(int j = 0; j < lenStructure; j++){
            NumNI[i][j] = 0;
+           NumNI_MC[i][j] = 0;
 	}
     }
     for ( UInt_t phiSect = 0; phiSect < lenPhi; phiSect ++ )
     {
       vector<double> rmin_BG = { 0, 0, 0, 0, 0, 0, 0, 0};
       vector<double> rmax_BG = { 0, 0, 0, 0, 0, 0, 0, 0};
+      vector<double> rmin_BG_MC = { 0, 0, 0, 0, 0, 0, 0, 0};
+      vector<double> rmax_BG_MC = { 0, 0, 0, 0, 0, 0, 0, 0};
      
       //std::cout << "********MADE IT INTO LOOP********" << std::endl;
       //Int_t numBinsX = h->GetNbinsX();
@@ -430,6 +434,8 @@ void TrackerMaterialEstimation_2018()
       //TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
       //TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
       //TH1D* hbgua3 = new TH1D( (plotBg+"_BGUA3").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
+      TH1D* hSlicePhiBG;
+      TH1D* hSlicePhiBG_MC;
       hSlicePhiBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiBG");
       TH1D* hSlicePhiSignal = (TH1D*)hSlicePhi ->Clone("hSlicePhiSignal");
       TH1D* hSlicePhiBGest = (TH1D*)hSlicePhi ->Clone("hSlicePhiBGest");
@@ -438,8 +444,16 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiBGest->Reset();
       //std::cout << "Int_t(numBinsX/2) = " << Int_t(numBinsX/2) << std::endl;
       //std::cout << "********FINISHED CREATING HISTOGRAMS********" << std::cout;
-      rcBGmin = {0, 0, 0, 0, 0, 0, 0, 0}; 
-      rcBGmax = {0, 0, 0, 0, 0, 0, 0, 0};
+      vector<double> rcBGmin;
+      vector<double> rcBGmax;
+      vector<double> rcBGmin_MC;
+      vector<double> rcBGmax_MC;
+      rcBGmin_Fit ={0, 0, 0, 0, 0, 0, 0, 0}; 
+      rcBGmax_Fit ={0, 0, 0, 0, 0, 0, 0, 0};
+      rcBGmin =    {0, 0, 0, 0, 0, 0, 0, 0}; 
+      rcBGmax =    {0, 0, 0, 0, 0, 0, 0, 0};
+      rcBGmin_MC = {0, 0, 0, 0, 0, 0, 0, 0}; 
+      rcBGmax_MC = {0, 0, 0, 0, 0, 0, 0, 0};
       for ( UInt_t ix = 1; ix <= UInt_t(numBinsSliceX); ix++ )
       {
           Double_t x = hSlicePhiBG->GetXaxis()->GetBinCenter( ix );
@@ -475,6 +489,8 @@ void TrackerMaterialEstimation_2018()
           Double_t pc = ( 2*TMath::Pi() ) * Double_t(phiSect)/40; // approximate estimation angle for phi sector
           Int_t BG_flag = 0;
           for ( UInt_t iBG = 0; iBG <= UInt_t(sizeM); iBG++ ){
+
+             // *****   For DATA
              // set up baground region
              Double_t rc_M_min = Rmin;
              if (iBG > 0 ) rc_M_min = r0M[iBG-1] + (x0M[iBG-1]*cos(pc) + y0M[iBG-1]*sin(pc)) + 1.0;
@@ -513,7 +529,44 @@ void TrackerMaterialEstimation_2018()
                 // Fill BG region:
                 if (BG_flag == 1 && iBG < UInt_t(sizeM)){rcBGmin[iBG] = rc_M_min; rcBGmax[iBG] = rc_M_max;}
              }
-          }
+
+             // *****   For MC (no shift from (0,0)):
+             // set up baground region
+             rc_M_min = Rmin;
+             if (iBG > 0 ) rc_M_min = r0M[iBG-1] +  1.0;
+             if (iBG > 5 ) rc_M_min = r0M[iBG-1] +  0.5;
+             rc_M_max = r0M[iBG]  - 0.2;
+             if (iBG > 0 && iBG < UInt_t(sizeM) )rc_M_max = r0M[iBG] - 0.7;
+             // cut between beam pine and L1:
+             if (iBG == 1 ) rc_M_min = r0M[iBG-1] + 0.07;
+             if (iBG == 1 )rc_M_max = r0M[iBG] - 0.53;
+             if (iBG == 1 && (phiSect >= 9 && phiSect <= 16)){
+                rc_M_min = r0M[iBG-1]  + 0.35;
+                rc_M_max = r0M[iBG] - 0.38;
+             }
+             if (iBG == 1 && (phiSect == 8 && phiSect == 17)){
+                rc_M_min = r0M[iBG-1] + 0.5;
+                rc_M_max = r0M[iBG] - 0.2;
+             }
+             if (iBG == 1 && (phiSect >= 32 && phiSect <= 34)){
+                rc_M_min = r0M[iBG-1] + 0.17;
+                rc_M_max = r0M[iBG] - 0.4;
+             }
+
+             // for eadge of rails:
+             if (iBG == 6 && (phiSect ==32 || phiSect == 27 )) rc_M_max = 20.5;
+             if (iBG == 6 && (phiSect ==12 || phiSect == 7 )) rc_M_max = 20.;
+             if (rc > rc_M_min && rc < rc_M_max){
+                 rmin_BG_MC[iBG] = rc_M_min;
+                 rmax_BG_MC[iBG] = rc_M_max;
+
+                // Fill BG region (BG_flag is calculated as for DATA):
+                if (BG_flag == 1 && iBG < UInt_t(sizeM)){rcBGmin_MC[iBG] = rc_M_min; rcBGmax_MC[iBG] = rc_M_max;}
+             }
+             // **** end MC
+
+
+          } // end for iBG
 
           if ( BG_flag == 1 )
           {
@@ -524,37 +577,36 @@ void TrackerMaterialEstimation_2018()
             hSlicePhiSignal->Fill( rc, binNum );
           }
 
-          //Double_t binNum0 = h0->GetBinContent( ix, iy );
-          //Double_t densityNum0 = binNum0 / ( rc * (TMath::Pi()/20) * hSlicePhi->GetXaxis()->GetBinWidth(1) );
-          //if ( ( rc > RSmin && rc < RSmax ) )
-          //{
-          //  hSlicePhiBGest->Fill( rc, densityNum0 );
-          //}
-
       } // end cycle by hSlicePhi histo
 
-      Double_t bgRegionFit0[sizeM];
-      Double_t bgRegionFit1[sizeM];
-      for ( UInt_t iBG = 0; iBG < UInt_t(sizeM); iBG++ ){
-          // Make fit:
-         if(fabs(rcBGmin[iBG]) < 0.001){rcBGmin[iBG] = 0; rcBGmax[iBG] = 0;} // if BG is not definded so skip fit
-         else{
-            TF1 *fitBg = new TF1( "fitBg",func_fitBg, rcBGmin[iBG], rcBGmax[iBG], 2 );
-            fitBg->SetParameter(0, 10);
-            fitBg->SetParameter(1, 0.01);
-            fitBg->SetParName(0, "N0");
-            fitBg->SetParName(1, "k");
-            hSlicePhi->Fit("fitBg","MR0Q");
-            bgRegionFit0[iBG] = fitBg->GetParameter(0);
-            bgRegionFit1[iBG] = fitBg->GetParameter(1);
-         }
-      }
-      //
+      //Double_t bgRegionFit0[sizeM];
+      //Double_t bgRegionFit1[sizeM];
+      //for ( UInt_t iBG = 0; iBG < UInt_t(sizeM); iBG++ ){
+      //    // Make fit:
+      //   if(fabs(rcBGmin[iBG]) < 0.001){rcBGmin[iBG] = 0; rcBGmax[iBG] = 0;} // if BG is not definded so skip fit
+      //   else{
+      //      TF1 *fitBg = new TF1( "fitBg",func_fitBg, rcBGmin[iBG], rcBGmax[iBG], 2 );
+      //      fitBg->SetParameter(0, 10);
+      //      fitBg->SetParameter(1, 0.01);
+      //      fitBg->SetParName(0, "N0");
+      //      fitBg->SetParName(1, "k");
+      //      hSlicePhi->Fit("fitBg","MR0Q");
+      //      bgRegionFit0[iBG] = fitBg->GetParameter(0);
+      //      bgRegionFit1[iBG] = fitBg->GetParameter(1);
+      //   }
+      //}
+      ////
 
       TVirtualFitter* fitterDraw;
-      fitterDraw = TVirtualFitter::Fitter( 0, 9 );
+      //fitterDraw = TVirtualFitter::Fitter( 0, 9 );
+      fitterDraw = TVirtualFitter::Fitter( 0, 10 );
+      for ( UInt_t iR = 0; iR < 8; iR++ ){
+          rcBGmin_Fit[iR] = rcBGmin[iR]; 
+          rcBGmax_Fit[iR] = rcBGmax[iR]; 
+      }
       //                                                  npar
       // Set the function that the fitter will use and set the parameters
+      hSlicePhiBG_Fit = (TH1D*)hSlicePhiBG ->Clone("hSlicePhiBG_Fit");
       fitterDraw->SetFCN( chiSquareBG );
       fitterDraw->SetParameter( 0,  "par0",   140., 0.01, 0., 500. ); 
       fitterDraw->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. ); 
@@ -566,34 +618,66 @@ void TrackerMaterialEstimation_2018()
       fitterDraw->SetParameter( 7, "par7",    -0.25, 0.01, -10., 10. ); 
       fitterDraw->SetParameter( 8, "par8",    50., 0.01, 0., 200. ); 
       fitterDraw->SetParameter( 9, "par9",    -0.2, 0.01, -10., 10. ); 
-      if (NameInputFile == "../PseudoBeamPipe/PseudoBeamPipe") {
-         fitterDraw->SetParameter( 0,  "par0",   10., 0.01, -200., 200. ); 
-      }
       //   fitterDraw->FixParameter(1); fitterDraw->FixParameter(2); 
 
       Double_t arglist[10] = {0.};
       fitterDraw->ExecuteCommand( "MIGRAD", arglist, 0 );
       Double_t parBG[10];
-      parBG[0] = fitterDraw->GetParameter(0);
-      parBG[1] = fitterDraw->GetParameter(1);
-      parBG[2] = fitterDraw->GetParameter(2);
-      parBG[3] = fitterDraw->GetParameter(3);
-      parBG[4] = fitterDraw->GetParameter(4);
-      parBG[5] = fitterDraw->GetParameter(5);
-      parBG[6] = fitterDraw->GetParameter(6);
-      parBG[7] = fitterDraw->GetParameter(7);
-      parBG[8] = fitterDraw->GetParameter(8);
-      parBG[9] = fitterDraw->GetParameter(9);
-      cout << "parBG[0] = " << parBG[0] << endl;
-      cout << "parBG[1] = " << parBG[1] << endl;
-      cout << "parBG[2] = " << parBG[2] << endl;
-      cout << "parBG[3] = " << parBG[3] << endl;
-      cout << "parBG[4] = " << parBG[4] << endl;
-      cout << "parBG[5] = " << parBG[5] << endl;
-      cout << "parBG[6] = " << parBG[6] << endl;
-      cout << "parBG[7] = " << parBG[7] << endl;
-      cout << "parBG[8] = " << parBG[8] << endl;
-      cout << "parBG[9] = " << parBG[9] << endl;
+      for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
+         parBG[iBG] = fitterDraw->GetParameter(iBG);
+         cout << "parBG[" << iBG << "] = " << parBG[iBG] << endl;
+      }
+
+     TF1 *fitBgAll = new TF1( "fitBgAll",func_fitBgAll, 1., 25., 10 );
+     fitBgAll ->SetNpx(1000);
+     for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
+         fitBgAll->SetParameter(iBG, parBG[iBG]);
+     }
+     fitBgAll->SetLineWidth(3);
+     fitBgAll->SetLineColor(kRed+1);
+     cout << "Test pass" << endl;
+
+//      //stara MC
+//      for ( UInt_t iR = 0; iR < 8; iR++ ){
+//          rcBGmin_Fit[iR] = rcBGmin_MC[iR]; 
+//          rcBGmax_Fit[iR] = rcBGmax_MC[iR]; 
+//      }
+//      cout << "Test pass 1 " << endl;
+//      TVirtualFitter* fitterDraw_MC;
+//      
+//      //                                                  npar
+//      // Set the function that the fitter will use and set the parameters
+//       cout << "Test pass 2 " << endl;
+//      fitterDraw_MC->SetFCN( chiSquareBG );
+//       cout << "Test pass 3 " << endl;
+//      fitterDraw_MC->SetParameter( 0,  "par0",   140., 0.01, 0., 500. );
+//      fitterDraw_MC->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. );
+//      fitterDraw_MC->SetParameter( 2,  "par2",   120, 0.01, 0., 500. );
+//      fitterDraw_MC->SetParameter( 3, "par3",    -0.4, 0.01, -10., 10. );
+//      fitterDraw_MC->SetParameter( 4, "par4",    100., 0.01, 0., 500. );
+//      fitterDraw_MC->SetParameter( 5, "par5",    -0.3, 0.01, -10., 10. );
+//      fitterDraw_MC->SetParameter( 6, "par6",     50., 0.01, 0., 200. );
+//      fitterDraw_MC->SetParameter( 7, "par7",    -0.25, 0.01, -10., 10. );
+//      fitterDraw_MC->SetParameter( 8, "par8",    50., 0.01, 0., 200. );
+//      fitterDraw_MC->SetParameter( 9, "par9",    -0.2, 0.01, -10., 10. );
+//      //   fitterDraw_MC->FixParameter(1); fitterDraw_MC->FixParameter(2); 
+//
+//      Double_t arglist_MC[10] = {0.};
+//      fitterDraw_MC->ExecuteCommand( "MIGRAD", arglist_MC, 0 );
+//      Double_t parBG_MC[10];
+//      for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
+//         parBG_MC[iBG] = fitterDraw_MC->GetParameter(iBG);
+//         cout << "parBG_MC[" << iBG << "] = " << parBG_MC[iBG] << endl;
+//      }
+//     TF1 *fitBgAll_MC = new TF1( "fitBgAll_MC",func_fitBgAll, 1., 25., 10 );
+//     fitBgAll_MC ->SetNpx(1000);
+//     for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
+//         fitBgAll_MC->SetParameter(iBG, parBG_MC[iBG]);
+//     }
+//     fitBgAll_MC->SetLineWidth(3);
+//     fitBgAll_MC->SetLineColor(kRed+1);
+//     fitBgAll_MC->Draw("same");
+//      //end MC
 
       cPlots->cd();
       cPlots->SetLogy(1);
@@ -612,7 +696,6 @@ void TrackerMaterialEstimation_2018()
       hSlicePhi->Draw();
       cPlots->Update();
 
-      cout << "Test pass" << endl;
       // Format the plots of the phi sectors
       TPaveStats* sBg = (TPaveStats*)hSlicePhi->GetListOfFunctions()->FindObject("stats");
       x1L = sBg->GetX1NDC();
@@ -647,6 +730,7 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiBG->SetMarkerColor(kRed+1);
       hSlicePhiBG->SetLineColor(kRed+1);
       hSlicePhiBG->Draw("samehisto");
+      fitBgAll->Draw("same");
 
       //for ( UInt_t iBG = 0; iBG < UInt_t(sizeM-1); iBG++ ){
       //   if (fabs(rcBGmin[iBG] < 0.001)) continue; // do nothing if it is not defined
@@ -663,21 +747,6 @@ void TrackerMaterialEstimation_2018()
       //   fitBg->Draw("same");
       //}
       
-     TF1 *fitBgAll = new TF1( "fitBgAll",func_fitBgAll, 1., 25., 10 );
-     fitBgAll ->SetNpx(1000);
-     fitBgAll->SetParameter(0, parBG[0]);
-     fitBgAll->SetParameter(1, parBG[1]);
-     fitBgAll->SetParameter(2, parBG[2]);
-     fitBgAll->SetParameter(3, parBG[3]);
-     fitBgAll->SetParameter(4, parBG[4]);
-     fitBgAll->SetParameter(5, parBG[5]);
-     fitBgAll->SetParameter(6, parBG[6]);
-     fitBgAll->SetParameter(7, parBG[7]);
-     fitBgAll->SetParameter(8, parBG[8]);
-     fitBgAll->SetParameter(9, parBG[9]);
-     fitBgAll->SetLineWidth(3);
-     fitBgAll->SetLineColor(kRed+1);
-     fitBgAll->Draw("same");
 
       //hSlicePhiSignal->SetFillStyle(3005);
       hSlicePhiSignal->SetFillStyle(3013);
@@ -739,7 +808,7 @@ void TrackerMaterialEstimation_2018()
       if (FitObject != "PixelSupportRails" && FitObject != "PixelSupportRailsPositive" && FitObject != "PixelSupportRailsNegative")cPlots->SaveAs(fn.str().c_str());
       TH1D* hSlicePhiNoBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiNoBG");
       hSlicePhiNoBG->Reset();
-      hSlicePhiNoBG->Sumw2();
+      //hSlicePhiNoBG->Sumw2();
       hSlicePhiNoBG->FillRandom("fitBgAll",10000000);
       Double_t Integral_GEN = hSlicePhiNoBG->Integral();
       Double_t BinWidth = hSlicePhi->GetXaxis()->GetBinWidth(1);
@@ -770,7 +839,11 @@ void TrackerMaterialEstimation_2018()
               Int_t xID_min = round((xmin_cal - xmin_int)/BinWidth);
               Int_t xID_max = round((xmax_cal - xmin_int)/BinWidth);
 	      NumNI[phiSect][i_cal] = hSlicePhiNoBG -> Integral(xID_min,xID_max);
-              //cout << "For structure i = " << i_cal <<  " phiSect = " << phiSect << " xmin_cal = " << xmin_cal << " xmax_cal = " << xmax_cal << " NumNI = " << NumNI[phiSect][i_cal] << endl;
+              TLine * lineSignal = new TLine ( xmin_cal, 0, xmax_cal , 0. );
+              lineSignal->SetLineColor(kRed);
+              lineSignal->SetLineWidth(5);
+              lineSignal->Draw("same");
+//cout << "For structure i = " << i_cal <<  " phiSect = " << phiSect << " xmin_cal = " << xmin_cal << " xmax_cal = " << xmax_cal << " NumNI = " << NumNI[phiSect][i_cal] << endl;
       }
       //fitBgAll->Draw("same");
       cPlots->SaveAs(Form("Plots/MaterialPhiSectorNoBG_%d.png", phiSect));
@@ -782,6 +855,7 @@ void TrackerMaterialEstimation_2018()
       delete hSlicePhi;
       delete hSlicePhiMC;
       delete hSlicePhiBG;
+      delete hSlicePhiBG_MC;
       delete hSlicePhiSignal;
       delete hSlicePhiBGest;
     } //end phi cicle
@@ -955,11 +1029,11 @@ Double_t func_fitBg(Double_t *x ,Double_t *par)
 Double_t func_fitBgAll(Double_t *x ,Double_t *par)
 {
  Double_t value=0;
- if (x[0] < rcBGmax[1]) value = par[0]*par[0]*exp(par[1]*x[0]);
+ if (x[0] < rcBGmax_Fit[1]) value = par[0]*par[0]*exp(par[1]*x[0]);
  // between beam pipe and L1
- if (x[0] > rcBGmax[1]&& x[0] < rcBGmin[2]){
-    Double_t x1 = rcBGmax[1];
-    Double_t x2 = rcBGmin[2];
+ if (x[0] > rcBGmax_Fit[1]&& x[0] < rcBGmin_Fit[2]){
+    Double_t x1 = rcBGmax_Fit[1];
+    Double_t x2 = rcBGmin_Fit[2];
     Double_t y1 = par[0]*par[0]*exp(par[1]*x1);
     Double_t y2 = par[2]*par[2]*exp(par[3]*x2);
     Double_t b = (y1-y2)/(x1-x2);
@@ -967,18 +1041,18 @@ Double_t func_fitBgAll(Double_t *x ,Double_t *par)
     value = a + b*x[0];
  }
  // after L1
- if (x[0] > rcBGmin[2])value = par[2]*par[2]*exp(par[3]*x[0]);
+ if (x[0] > rcBGmin_Fit[2])value = par[2]*par[2]*exp(par[3]*x[0]);
  // after L2
- if (x[0] > (rcBGmin[3]-0.4))value =par[4]*par[4]*exp(par[5]*x[0]);
+ if (x[0] > (rcBGmin_Fit[3]-0.4))value =par[4]*par[4]*exp(par[5]*x[0]);
  // after L3
- if (x[0] > (rcBGmin[4]-0.4))value =par[6]*par[6]*exp(par[7]*x[0]);
+ if (x[0] > (rcBGmin_Fit[4]-0.4))value =par[6]*par[6]*exp(par[7]*x[0]);
  // after L4
- Double_t xminL4 = rcBGmin[5];
- if (rcBGmin[5] < 15) xminL4 = 17.;
+ Double_t xminL4 = rcBGmin_Fit[5];
+ if (rcBGmin_Fit[5] < 15) xminL4 = 17.;
  if (x[0] > xminL4){
    value =par[8]*par[8]*exp(par[9]*x[0]);
  }
- Double_t xminST = rcBGmin[7];
+ Double_t xminST = rcBGmin_Fit[7];
  if (xminST < 20) xminST = 22.;
  if (x[0] > xminST){ // plateau after support tube
    value = par[8]*par[8]*exp(par[9]*xminST); 
@@ -1041,17 +1115,17 @@ Double_t func_EllipseRhoPhi(Double_t *x, Double_t *par)
 //create function to fit BG in phi slice
 void chiSquareBG( Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t )
 {
-  Int_t numBinsX = hSlicePhiBG->GetNbinsX();
+  Int_t numBinsX = hSlicePhiBG_Fit->GetNbinsX();
   Double_t chiSquare = 0.0;
   Double_t diff = 0.0;
   for ( UInt_t ix = 1; ix <= UInt_t(numBinsX); ix++ )
   {
-      Double_t binNum = hSlicePhiBG->GetBinContent( ix);
+      Double_t binNum = hSlicePhiBG_Fit->GetBinContent( ix);
 
       if ( binNum <= 0 ) continue; // fit only where BG is not zero
 
       Double_t x[1];
-      x[0] = hSlicePhiBG->GetXaxis()->GetBinCenter( ix );
+      x[0] = hSlicePhiBG_Fit->GetXaxis()->GetBinCenter( ix );
       //if (x < 11. || x > 22.) continue; // fit after 3d BPIX layer
       //if (x < 7.|| x > 22.) continue; // fit after 2d BPIX layer
       //if (x < 3.|| x > 22.) continue; // fit after 1st BPIX layer
