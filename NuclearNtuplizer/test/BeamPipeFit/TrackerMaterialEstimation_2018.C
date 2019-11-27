@@ -289,7 +289,7 @@ void TrackerMaterialEstimation_2018()
   gStyle->SetCanvasDefW(2000);
   gStyle->SetCanvasDefH(2000);
   //gStyle->SetPadRightMargin(0.2);
-  //gStyle->SetPadTopMargin(0.2);
+  //gStyle->SetPadTopMargin(0.1);
   //gStyle->SetStatX(0.9);
   //gStyle->SetStatY(0.90);
   //gStyle->SetStatW(0.24);
@@ -387,8 +387,8 @@ void TrackerMaterialEstimation_2018()
     TH1D* hSlicePhiMCSingleNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiSingleNI_0")->Clone("hSlicePhiMCSingleNI_Tot");
     TH1D* hSlicePhiMultNI_Tot = (TH1D*)inputFile->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMultNI_Tot");
     TH1D* hSlicePhiMCMultNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMCMultNI_Tot");
-    const int lenPhi = 40; 
-    //const int lenPhi = 7; //for Test only...
+    //const int lenPhi = 40; 
+    const int lenPhi = 3; //for Test only...
     const int lenStructure = 8;
     double NumNI[lenPhi][lenStructure];
     double NumNI_MC[lenPhi][lenStructure];
@@ -411,9 +411,9 @@ void TrackerMaterialEstimation_2018()
 
       // Get histo
       //TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
-      //TH1D* hSlicePhiMC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
+      //TH1D* hSlicePhi_MC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)); //PhiSlice
       TH1D* hSlicePhi = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect)); //PhiSlice
-      TH1D* hSlicePhiMC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect)); //PhiSlice
+      TH1D* hSlicePhi_MC = (TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhiSingleNI_%d", phiSect)); //PhiSlice
       if(phiSect > 0){
 		hSlicePhi_Tot -> Add((TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect))); 
 		hSlicePhiMC_Tot -> Add((TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhi_%d", phiSect)));
@@ -423,10 +423,11 @@ void TrackerMaterialEstimation_2018()
 		hSlicePhiMCMultNI_Tot -> Add((TH1D*)inputFileMC->Get(Form("hPFDV_PixelSlicePhiMultNI_%d", phiSect)));
       }
       hSlicePhi->Rebin(4);
-      hSlicePhiMC->Rebin(4);
+      hSlicePhi_MC->Rebin(4);
       //TH1D* hSlicePhiNoInTrk = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiNoInTrk_%d", phiSect)); //PhiSlice
       //hSlicePhiNoInTrk->Rebin(2);
       Int_t numBinsSliceX = hSlicePhi->GetNbinsX(); 
+      Int_t numBinsSliceX_MC = hSlicePhi_MC->GetNbinsX(); 
       Double_t Xmax_h = hSlicePhi->GetXaxis()->GetBinCenter(numBinsSliceX) + hSlicePhi->GetXaxis()->GetBinWidth(numBinsSliceX)/2;
 
       //std::cout << "********ABOUT TO CREATE HISTOGRAMS********" << std::endl;
@@ -434,14 +435,12 @@ void TrackerMaterialEstimation_2018()
       //TH1D* hbgua1 = new TH1D( (plotBg+"_BGUA1").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
       //TH1D* hbgua2 = new TH1D( (plotBg+"_BGUA2").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
       //TH1D* hbgua3 = new TH1D( (plotBg+"_BGUA3").c_str(), "Counts per Unit Area in transverse plane", numBinsSliceX, 0., Xmax_h );
-      TH1D* hSlicePhiBG;
-      TH1D* hSlicePhiBG_MC;
-      hSlicePhiBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiBG");
+      TH1D* hSlicePhiBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiBG");
+      TH1D* hSlicePhiBG_MC = (TH1D*)hSlicePhi_MC ->Clone("hSlicePhiBG_MC");
       TH1D* hSlicePhiSignal = (TH1D*)hSlicePhi ->Clone("hSlicePhiSignal");
-      TH1D* hSlicePhiBGest = (TH1D*)hSlicePhi ->Clone("hSlicePhiBGest");
       hSlicePhiBG->Reset();
+      hSlicePhiBG_MC->Reset();
       hSlicePhiSignal->Reset();
-      hSlicePhiBGest->Reset();
       //std::cout << "Int_t(numBinsX/2) = " << Int_t(numBinsX/2) << std::endl;
       //std::cout << "********FINISHED CREATING HISTOGRAMS********" << std::cout;
       vector<double> rcBGmin;
@@ -454,6 +453,7 @@ void TrackerMaterialEstimation_2018()
       rcBGmax =    {0, 0, 0, 0, 0, 0, 0, 0};
       rcBGmin_MC = {0, 0, 0, 0, 0, 0, 0, 0}; 
       rcBGmax_MC = {0, 0, 0, 0, 0, 0, 0, 0};
+      if(numBinsSliceX != numBinsSliceX_MC) cout << "ERROR: #bins in Data is different from MC: code will not work properly!!!" << endl;
       for ( UInt_t ix = 1; ix <= UInt_t(numBinsSliceX); ix++ )
       {
           Double_t x = hSlicePhiBG->GetXaxis()->GetBinCenter( ix );
@@ -462,14 +462,6 @@ void TrackerMaterialEstimation_2018()
           // positions of the two halves so that the background subtraction is cleaner.
           Double_t x0ref = x0;
           Double_t y0ref = y0;
-          if(FitObject == "PixelShieldMinus" && x >= 0) x0ref = x0_PixelShieldPlus, y0ref = y0_PixelShieldPlus;
-          if(FitObject == "PixelSupportMinus" && x >= 0) x0ref = x0_PixelSupportPlus, y0ref = y0_PixelSupportPlus;
-
-          if (FitObject == "PixelShield2Ellipses" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
-          if (FitObject == "PixelShield2Arcs" && x < 0) {x0ref = x0_Far; y0ref = y0_Far;}
-
-          //Double_t xc = x - x0ref;
-          //Double_t yc = y - y0ref;
 
           //Double_t rc = TMath::Sqrt( xc*xc + yc*yc );
           //Double_t rc = TMath::Sqrt( x*x + y*y ); //without correction to material position
@@ -485,9 +477,11 @@ void TrackerMaterialEstimation_2018()
           //if ( thisPhiSect != Int_t(phiSect) ) continue;
 
           Double_t binNum = hSlicePhi->GetBinContent( ix );
+          Double_t binNum_MC = hSlicePhi_MC->GetBinContent( ix );
         
           Double_t pc = ( 2*TMath::Pi() ) * Double_t(phiSect)/40; // approximate estimation angle for phi sector
           Int_t BG_flag = 0;
+          Int_t BG_flag_MC = 0;
           for ( UInt_t iBG = 0; iBG <= UInt_t(sizeM); iBG++ ){
 
              // *****   For DATA
@@ -557,11 +551,16 @@ void TrackerMaterialEstimation_2018()
              if (iBG == 6 && (phiSect ==32 || phiSect == 27 )) rc_M_max = 20.5;
              if (iBG == 6 && (phiSect ==12 || phiSect == 7 )) rc_M_max = 20.;
              if (rc > rc_M_min && rc < rc_M_max){
+                 BG_flag_MC = 1;
                  rmin_BG_MC[iBG] = rc_M_min;
                  rmax_BG_MC[iBG] = rc_M_max;
+		 // as for data
+		 if (iBG == 5 && (phiSect == 1 || phiSect == 7 || phiSect == 8 || phiSect == 11 || phiSect == 18 || phiSect == 21 || phiSect == 22 || phiSect == 28 || phiSect == 31 || phiSect == 32 || phiSect == 37 || phiSect == 38) ) BG_flag_MC = 0;
+                // remove BG region related to rails:
+                if (iBG == 6 && ((phiSect >= 8 && phiSect <=11)|| (phiSect >= 28 && phiSect <=31) ) ) BG_flag_MC = 0;
 
-                // Fill BG region (BG_flag is calculated as for DATA):
-                if (BG_flag == 1 && iBG < UInt_t(sizeM)){rcBGmin_MC[iBG] = rc_M_min; rcBGmax_MC[iBG] = rc_M_max;}
+                // Fill BG region (BG_flag_MC is calculated as for DATA):
+                if (BG_flag_MC == 1 && iBG < UInt_t(sizeM)){rcBGmin_MC[iBG] = rc_M_min; rcBGmax_MC[iBG] = rc_M_max;}
              }
              // **** end MC
 
@@ -575,6 +574,10 @@ void TrackerMaterialEstimation_2018()
           else if ( rc >= RSmin && rc <= RSmax )
           {
             hSlicePhiSignal->Fill( rc, binNum );
+          }
+          if ( BG_flag_MC == 1 )
+          {
+            hSlicePhiBG_MC->Fill( rc, binNum_MC );
           }
 
       } // end cycle by hSlicePhi histo
@@ -679,8 +682,28 @@ void TrackerMaterialEstimation_2018()
 //     fitBgAll_MC->Draw("same");
 //      //end MC
 
-      cPlots->cd();
-      cPlots->SetLogy(1);
+      TCanvas* cPlotPhi = new TCanvas();
+      // Inside this canvas, we create two pads
+      TPad *pad1 = new TPad("pad1","This is pad1",0.01,0.51,0.99,0.99); // x1, y1, x2, y2 fraction
+      TPad *pad2 = new TPad("pad2","This is pad2",0.01,0.02,0.99,0.49);
+      //pad1->SetFillColor(11);
+      //pad2->SetFillColor(11);
+      pad1->Draw();
+      pad2->Draw();
+      pad1 -> SetLogy(1);
+      pad2 -> SetLogy(1);
+      pad1->SetTopMargin(0.);
+      pad1->SetBottomMargin(0.1);
+      pad2->SetTopMargin(0.);
+      pad2->SetBottomMargin(0.1);
+
+      pad1 ->cd();
+
+      //cPlotPhi -> Divide(1,2);
+      //cPlotPhi ->cd(1);
+      //gPad -> SetLogy(1);
+      //gPad -> SetTopMargin(0.);
+
       //hSlicePhi->SetMinimum(0);
       hSlicePhi->SetMinimum(10);
       //hSlicePhi->SetMinimum(1000);
@@ -694,7 +717,7 @@ void TrackerMaterialEstimation_2018()
       hSlicePhi->GetXaxis()->SetRangeUser(Rmin, Rmax);
       //hSlicePhi->GetXaxis()->SetRangeUser(Rmin,8.);
       hSlicePhi->Draw();
-      cPlots->Update();
+      cPlotPhi ->Update();
 
       // Format the plots of the phi sectors
       TPaveStats* sBg = (TPaveStats*)hSlicePhi->GetListOfFunctions()->FindObject("stats");
@@ -710,15 +733,14 @@ void TrackerMaterialEstimation_2018()
       //gStyle->SetHatchesSpacing(2.0);
       //gStyle->SetHatchesLineWidth(2);
       hSlicePhi->SetLineWidth(3);
-      hSlicePhiMC->SetLineWidth(3);
+      hSlicePhi_MC->SetLineWidth(3);
       hSlicePhiBG->SetLineWidth(3);
       hSlicePhiSignal->SetLineWidth(3);
-      hSlicePhiBGest->SetLineWidth(3);
       hSlicePhi->Draw("histo");
-      hSlicePhiMC->SetLineColor(kGreen+2);
-      Double_t Integral_MC = hSlicePhiMC->Integral();
-      if(Integral_MC > 0.)hSlicePhiMC->Scale(hSlicePhi->Integral()/Integral_MC);
-      hSlicePhiMC->Draw("samehisto");
+      hSlicePhi_MC->SetLineColor(kGreen+2);
+      Double_t Integral_MC = hSlicePhi_MC->Integral();
+      if(Integral_MC > 0.)hSlicePhi_MC->Scale(hSlicePhi->Integral()/Integral_MC);
+      hSlicePhi_MC->Draw("samehisto");
 
       //hSlicePhiNoInTrk->SetLineWidth(3);
       //hSlicePhiNoInTrk->SetLineColor(kGreen+1);
@@ -754,32 +776,24 @@ void TrackerMaterialEstimation_2018()
       hSlicePhiSignal->SetMarkerColor(kGreen+2);
       hSlicePhiSignal->SetLineColor(kGreen+2);
       //hSlicePhiSignal->Draw("samehisto");
-      hSlicePhiBGest->SetFillStyle(3005);
-      //hSlicePhiBGest->SetFillStyle(3335);
-      hSlicePhiBGest->SetFillColor(kBlue);
-      hSlicePhiBGest->SetMarkerColor(kBlue);
-      hSlicePhiBGest->SetLineColor(kBlue);
       
-      //hSlicePhiBGest->Draw("samehisto");
 
 
-      //TLegend* legBg = new TLegend(0.5, 0.6, 0.7, 0.8, "");
-      TLegend* legBg = new TLegend(0.4, 0.65, 0.7, 0.8, "");
-      if(FitObject == "PixelSupportEllipse")legBg = new TLegend(0.2, 0.6, 0.4, 0.8, "");
+      //TLegend* legBg = new TLegend(0.4, 0.65, 0.7, 0.8, "");
+      TLegend* legBg = new TLegend(0.5, 0.75, 0.8, 0.95, "");
       legBg->SetTextFont(42);
-      legBg->SetTextSize(0.04*ScaleSize);
+      legBg->SetTextSize(0.05*ScaleSize);
       legBg->SetFillColor(kWhite);
       legBg->SetTextColor(kBlack);
       //if (bgFitQuality[phiSect] == 0) legBg->AddEntry(hSlicePhi,"EXCLUDED from FIT","");
       //legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"");
-      legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"l");
-      legBg->AddEntry(hSlicePhiMC,Form("MC DY Fall2017, #phi sector = %d", phiSect),"l");
       legBg->AddEntry(hSlicePhi,"|z| < 25 cm ","");
+      legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"l");
+      legBg->AddEntry(hSlicePhi_MC,Form("MC DY Fall2017, #phi sector = %d", phiSect),"l");
       //legBg->AddEntry(hSlicePhiNoInTrk,"Data, no income/merged track","l");
       //legBg->AddEntry(hSlicePhiSignal,"Signal fit region","f");
       legBg->AddEntry(hSlicePhiBG,"Sideband fit region","f");
       //legBg->AddEntry(fitBg,"sideband fit function","l");
-      //legBg->AddEntry(hSlicePhiBGest,"Estimated background","f");
       legBg->Draw("same");
 
       //gStyle->SetLineWidth(3);
@@ -794,18 +808,32 @@ void TrackerMaterialEstimation_2018()
       lineX->SetLineWidth(3);
       lineX->Draw("same");
 
+      //cPlotPhi  -> cd(2);
+      //gPad -> SetLogy(1);
+      //gPad -> SetTopMargin(0.);
+      pad2->cd();
+      //pad2->SetBottomMargin(0.12);
+      //TPad* pad = (TPad*)cPlotPhi->GetPad(2);
+      //pad->SetLeftMargin(0.15);
+      //pad->SetRightMargin(0.02);
+      //pad->SetFillColor(0);
+      //pad->SetBorderMode(1);
+      gStyle->SetOptFit(0);
+      gStyle->SetOptStat(0);
+      hSlicePhi_MC->GetXaxis()->SetTitle("r (cm)");
+      hSlicePhi_MC->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hSlicePhi_MC->GetXaxis()->GetBinWidth(1)));
+      hSlicePhi_MC->Draw("histo"); 
       //if (phiSect == 1 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
-      gStyle->SetOptStat(1000111110);
+      //gStyle->SetOptStat(1000111110);
       //gStyle->SetOptStat(0000000000);
-
+      cPlotPhi->Update();
       std::ostringstream fn;
       std::ostringstream fn_pdf;
-      //fn << "Plots/"<<plotBg<<"_BGUA_XCk" << "_" << phiSect<<".pdf";
-      //fn_pdf << "Plots/"<<FitObject<<"_Slice_BGUA_XCk" << "_" << phiSect<<".pdf";
-      //cPlots->SaveAs(fn.str().c_str());
       fn.str("");
       fn << "Plots/MaterialPhiSector_" << phiSect<<".png";
-      if (FitObject != "PixelSupportRails" && FitObject != "PixelSupportRailsPositive" && FitObject != "PixelSupportRailsNegative")cPlots->SaveAs(fn.str().c_str());
+      cPlotPhi->SaveAs(fn.str().c_str());
+      //cPlots -> Divide(1,1);
+      cPlots -> cd();
       TH1D* hSlicePhiNoBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiNoBG");
       hSlicePhiNoBG->Reset();
       //hSlicePhiNoBG->Sumw2();
@@ -853,11 +881,10 @@ void TrackerMaterialEstimation_2018()
       //cPlots->Delete();
       //delete cPlots;
       delete hSlicePhi;
-      delete hSlicePhiMC;
+      delete hSlicePhi_MC;
       delete hSlicePhiBG;
       delete hSlicePhiBG_MC;
       delete hSlicePhiSignal;
-      delete hSlicePhiBGest;
     } //end phi cicle
 
     double normNumNI[lenPhi][lenStructure];
