@@ -387,8 +387,8 @@ void TrackerMaterialEstimation_2018()
     TH1D* hSlicePhiMCSingleNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiSingleNI_0")->Clone("hSlicePhiMCSingleNI_Tot");
     TH1D* hSlicePhiMultNI_Tot = (TH1D*)inputFile->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMultNI_Tot");
     TH1D* hSlicePhiMCMultNI_Tot = (TH1D*)inputFileMC->Get("hPFDV_PixelSlicePhiMultNI_0")->Clone("hSlicePhiMCMultNI_Tot");
-    //const int lenPhi = 40; 
-    const int lenPhi = 3; //for Test only...
+    const int lenPhi = 40; 
+    //const int lenPhi = 3; //for Test only...
     const int lenStructure = 8;
     double NumNI[lenPhi][lenStructure];
     double NumNI_MC[lenPhi][lenStructure];
@@ -538,19 +538,21 @@ void TrackerMaterialEstimation_2018()
              if (iBG > 0 && iBG < UInt_t(sizeM) )rc_M_max = r0M[iBG] - 0.7;
              // cut between beam pine and L1:
              if (iBG == 1 ) rc_M_min = r0M[iBG-1] + 0.07;
-             if (iBG == 1 )rc_M_max = r0M[iBG] - 0.53;
-             if (iBG == 1 && (phiSect >= 9 && phiSect <= 16)){
-                rc_M_min = r0M[iBG-1]  + 0.35;
-                rc_M_max = r0M[iBG] - 0.38;
-             }
-             if (iBG == 1 && (phiSect == 8 && phiSect == 17)){
-                rc_M_min = r0M[iBG-1] + 0.5;
-                rc_M_max = r0M[iBG] - 0.2;
-             }
-             if (iBG == 1 && (phiSect >= 32 && phiSect <= 34)){
-                rc_M_min = r0M[iBG-1] + 0.17;
-                rc_M_max = r0M[iBG] - 0.4;
-             }
+             if (iBG == 1 )rc_M_max = r0M[iBG] - 0.5;
+             //if (iBG == 1 )rc_M_max = r0M[iBG] - 0.53;
+             //if (iBG == 1 && (phiSect >= 9 && phiSect <= 16)){
+             //   rc_M_min = r0M[iBG-1]  + 0.35;
+             //   rc_M_max = r0M[iBG] - 0.38;
+             //}
+
+             //if (iBG == 1 && (phiSect == 8 && phiSect == 17)){
+             //   rc_M_min = r0M[iBG-1] + 0.5;
+             //   rc_M_max = r0M[iBG] - 0.2;
+             //}
+             //if (iBG == 1 && (phiSect >= 32 && phiSect <= 34)){
+             //   rc_M_min = r0M[iBG-1] + 0.17;
+             //   rc_M_max = r0M[iBG] - 0.4;
+             //}
 
              // for eadge of rails:
              if (iBG == 6 && (phiSect ==32 || phiSect == 27 )) rc_M_max = 20.5;
@@ -616,16 +618,26 @@ void TrackerMaterialEstimation_2018()
       // Set the function that the fitter will use and set the parameters
       hSlicePhiBG_Fit = (TH1D*)hSlicePhiBG ->Clone("hSlicePhiBG_Fit");
       fitterDraw->SetFCN( chiSquareBG );
-      fitterDraw->SetParameter( 0,  "par0",   140., 0.01, 0., 500. ); 
-      fitterDraw->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. ); 
-      fitterDraw->SetParameter( 2,  "par2",   120, 0.01, 0., 500. ); 
-      fitterDraw->SetParameter( 3, "par3",    -0.4, 0.01, -10., 10. ); 
-      fitterDraw->SetParameter( 4, "par4",    100., 0.01, 0., 500. ); 
-      fitterDraw->SetParameter( 5, "par5",    -0.3, 0.01, -10., 10. ); 
-      fitterDraw->SetParameter( 6, "par6",     50., 0.01, 0., 200. ); 
-      fitterDraw->SetParameter( 7, "par7",    -0.25, 0.01, -10., 10. ); 
-      fitterDraw->SetParameter( 8, "par8",    50., 0.01, 0., 200. ); 
-      fitterDraw->SetParameter( 9, "par9",    -0.2, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 0,  "par0",   125., 0.01, 0., 500. ); 
+      fitterDraw->SetParameter( 1, "par1",   -0.5, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 2,  "par2",   100, 0.01, 0., 500. ); 
+      fitterDraw->SetParameter( 3, "par3",    -0.3, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 4, "par4",    260., 0.01, 0., 500. ); 
+      fitterDraw->SetParameter( 5, "par5",    -0.5, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 6, "par6",     180., 0.01, 0., 500. ); 
+      fitterDraw->SetParameter( 7, "par7",    -0.4, 0.01, -10., 10. ); 
+      fitterDraw->SetParameter( 8, "par8",    12., 0.01, -100., 200. ); 
+      fitterDraw->SetParameter( 9, "par9",    -0.1, 0.01, -10., 10. ); 
+      //fitterDraw->SetParameter( 0,  "par0",   140., 0.01, 0., 500. ); 
+      //fitterDraw->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. ); 
+      //fitterDraw->SetParameter( 2,  "par2",   120, 0.01, 0., 500. ); 
+      //fitterDraw->SetParameter( 3, "par3",    -0.4, 0.01, -10., 10. ); 
+      //fitterDraw->SetParameter( 4, "par4",    100., 0.01, 0., 500. ); 
+      //fitterDraw->SetParameter( 5, "par5",    -0.3, 0.01, -10., 10. ); 
+      //fitterDraw->SetParameter( 6, "par6",     50., 0.01, 0., 200. ); 
+      //fitterDraw->SetParameter( 7, "par7",    -0.25, 0.01, -10., 10. ); 
+      //fitterDraw->SetParameter( 8, "par8",    50., 0.01, 0., 200. ); 
+      //fitterDraw->SetParameter( 9, "par9",    -0.2, 0.01, -10., 10. ); 
       //   fitterDraw->FixParameter(1); fitterDraw->FixParameter(2); 
 
       Double_t arglist[10] = {0.};
@@ -661,7 +673,8 @@ void TrackerMaterialEstimation_2018()
       fitterDraw_MC->SetFCN( chiSquareBG );
        cout << "Test pass 3 " << endl;
       fitterDraw_MC->SetParameter( 0,  "par0",   140., 0.01, 0., 500. );
-      fitterDraw_MC->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. );
+      //fitterDraw_MC->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. );
+      fitterDraw_MC->SetParameter( 1, "par1",   -0.5, 0.01, -10., 10. );
       fitterDraw_MC->SetParameter( 2,  "par2",   120, 0.01, 0., 500. );
       fitterDraw_MC->SetParameter( 3, "par3",    -0.4, 0.01, -10., 10. );
       fitterDraw_MC->SetParameter( 4, "par4",    100., 0.01, 0., 500. );
@@ -855,11 +868,17 @@ void TrackerMaterialEstimation_2018()
       fn.str("");
       fn << "Plots/MaterialPhiSector_" << phiSect<<".png";
       cPlotPhi->SaveAs(fn.str().c_str());
-      //cPlots -> Divide(1,1);
-      cPlots -> cd();
+
+
+      pad1 -> SetLogy(0);
+      pad2 -> SetLogy(0);
+      pad1->SetTopMargin(0.05);
+      pad2->SetTopMargin(0.05);
+
+      pad1 ->cd();
+
       TH1D* hSlicePhiNoBG = (TH1D*)hSlicePhi ->Clone("hSlicePhiNoBG");
       hSlicePhiNoBG->Reset();
-      //hSlicePhiNoBG->Sumw2();
       hSlicePhiNoBG->FillRandom("fitBgAll",10000000);
       Double_t Integral_GEN = hSlicePhiNoBG->Integral();
       Double_t BinWidth = hSlicePhi->GetXaxis()->GetBinWidth(1);
@@ -869,14 +888,14 @@ void TrackerMaterialEstimation_2018()
       if(Integral_GEN > 0.)hSlicePhiNoBG->Scale(Integral_FUNC/Integral_GEN);
       hSlicePhiNoBG -> Add (hSlicePhi, hSlicePhiNoBG, 1., -1.);
 
-      cPlots->SetLogy(0);
       hSlicePhiNoBG->SetMinimum(0);
       hSlicePhiNoBG->SetMaximum(20000);
 
       hSlicePhiNoBG -> Draw("histo");
-        TLegend* legNoBG = new TLegend(0.5, 0.70, 0.7, 0.8, "");
+        //TLegend* legNoBG = new TLegend(0.5, 0.70, 0.7, 0.8, "");
+        TLegend* legNoBG = new TLegend(0.5, 0.8, 0.8, 0.9, "");
         legNoBG->SetTextFont(42);
-        legNoBG->SetTextSize(0.04*ScaleSize);
+        legNoBG->SetTextSize(0.05*ScaleSize);
         legNoBG->SetFillColor(kWhite);
         legNoBG->SetTextColor(kBlack);
         legNoBG->AddEntry(hSlicePhiNoBG,Form("Data 2018, #phi sector = %d", phiSect),"l");
@@ -896,8 +915,49 @@ void TrackerMaterialEstimation_2018()
               lineSignal->Draw("same");
 //cout << "For structure i = " << i_cal <<  " phiSect = " << phiSect << " xmin_cal = " << xmin_cal << " xmax_cal = " << xmax_cal << " NumNI = " << NumNI[phiSect][i_cal] << endl;
       }
-      //fitBgAll->Draw("same");
-      cPlots->SaveAs(Form("Plots/MaterialPhiSectorNoBG_%d.png", phiSect));
+
+      pad2 ->cd();
+      
+      TH1D* hSlicePhiNoBG_MC = (TH1D*)hSlicePhi_MC ->Clone("hSlicePhiNoBG_MC");
+      hSlicePhiNoBG_MC->Reset();
+      hSlicePhiNoBG_MC->FillRandom("fitBgAll_MC",10000000);
+      Integral_GEN = hSlicePhiNoBG_MC->Integral();
+      BinWidth = hSlicePhi_MC->GetXaxis()->GetBinWidth(1);
+      xmin_int = hSlicePhi_MC->GetXaxis()->GetBinLowEdge(1);
+      xmax_int = hSlicePhi_MC->GetXaxis()->GetBinUpEdge(hSlicePhi_MC->GetNbinsX());
+      Integral_FUNC = fitBgAll_MC->Integral(Rmin,Rmax)/BinWidth;
+      if(Integral_GEN > 0.)hSlicePhiNoBG_MC->Scale(Integral_FUNC/Integral_GEN);
+      hSlicePhiNoBG_MC -> Add (hSlicePhi_MC, hSlicePhiNoBG_MC, 1., -1.);
+
+      hSlicePhiNoBG_MC->SetMinimum(0);
+      hSlicePhiNoBG_MC->SetMaximum(20000);
+
+      hSlicePhiNoBG_MC -> Draw("histo");
+        legNoBG = new TLegend(0.5, 0.8, 0.8, 0.9, "");
+        legNoBG->SetTextFont(42);
+        legNoBG->SetTextSize(0.05*ScaleSize);
+        legNoBG->SetFillColor(kWhite);
+        legNoBG->SetTextColor(kBlack);
+        legNoBG->AddEntry(hSlicePhiNoBG_MC,Form("MC DY Fall2017, #phi sector = %d", phiSect),"l");
+        legNoBG->AddEntry(hSlicePhiNoBG_MC,"|z| < 25 cm ","");
+        legNoBG->Draw("same");
+
+      for ( UInt_t i_cal = 0; i_cal < lenStructure ; i_cal++ ){
+              Double_t xmin_cal = rmax_BG_MC[i_cal];
+              Double_t xmax_cal = Rmax;
+              if (i_cal < (lenStructure-1))xmax_cal = rmin_BG_MC[i_cal+1];
+              Int_t xID_min = round((xmin_cal - xmin_int)/BinWidth);
+              Int_t xID_max = round((xmax_cal - xmin_int)/BinWidth);
+              NumNI_MC[phiSect][i_cal] = hSlicePhiNoBG_MC -> Integral(xID_min,xID_max);
+              TLine * lineSignal = new TLine ( xmin_cal, 0, xmax_cal , 0. );
+              lineSignal->SetLineColor(kRed);
+              lineSignal->SetLineWidth(5);
+              lineSignal->Draw("same");
+//cout << "For structure i = " << i_cal <<  " phiSect = " << phiSect << " xmin_cal = " << xmin_cal << " xmax_cal = " << xmax_cal << " NumNI = " << NumNI[phiSect][i_cal] << endl;
+      }
+
+      cPlotPhi->Update();
+      cPlotPhi->SaveAs(Form("Plots/MaterialPhiSectorNoBG_%d.png", phiSect));
       
       //if (phiSect == 1 && FitObject == "BeamPipe")cPlots->SaveAs(fn_pdf.str().c_str());
       //delete to avoid memory leak:
@@ -908,40 +968,56 @@ void TrackerMaterialEstimation_2018()
       delete hSlicePhiBG;
       delete hSlicePhiBG_MC;
       delete hSlicePhiSignal;
+      delete hSlicePhiNoBG;
+      delete hSlicePhiNoBG_MC;
     } //end phi cicle
 
     double normNumNI[lenPhi][lenStructure];
+    double normNumNI_MC[lenPhi][lenStructure];
     for(int i = 0; i < lenPhi; i++){
         for(int j = 0; j < lenStructure; j++){
            if(fabs(NumNI[i][j])< 0.001)cout << "Warning too small: NumNI[" << i << "][" << j << "] = " << NumNI[i][j] << endl;
+           if(fabs(NumNI_MC[i][j])< 0.001)cout << "Warning too small: NumNI_MC[" << i << "][" << j << "] = " << NumNI_MC[i][j] << endl;
            // normalize to L2 (j = 2)
            if (fabs(NumNI[i][2]) > 0.001) normNumNI[i][j] = NumNI[i][j]/NumNI[i][2];
-           //cout << "Test phi = " << i << " ID Structure = " << j << "Rate to L2 = " << normNumNI[i][j] << endl; 
+           if (fabs(NumNI_MC[i][2]) > 0.001) normNumNI_MC[i][j] = NumNI_MC[i][j]/NumNI_MC[i][2];
+           //cout << "Test phi = " << i << " ID Structure = " << j << " Rate to L2 = " << normNumNI[i][j] << endl; 
         }
     }
     for(int i = 0; i < lenPhi; i++){
+        cPlots->cd();
         const char *Structure[lenStructure] = {"beam pipe", "L1", "L2", "L3", "L4", "OS", "PS", "TL1"};
-        TH1F *hRate = new TH1F("hRate","Rate to L2",3,0,3);
+        TH1F *hRate = new TH1F("hRate","Data Rate to L2",3,0,3);
+        TH1F *hRate_MC = new TH1F("hRate_MC","MC Rate to L2",3,0,3);
         hRate->SetStats(0);
         hRate->SetFillColor(38);
         hRate->SetCanExtend(TH1::kAllAxes);
+        hRate_MC->SetLineWidth(4);
+        hRate_MC->SetLineColor(kGreen+2);
+        hRate_MC->SetCanExtend(TH1::kAllAxes);
         for (Int_t j=0;j<lenStructure;j++) {
     	    hRate->Fill(Structure[j],normNumNI[i][j]);
+    	    hRate_MC->Fill(Structure[j],normNumNI_MC[i][j]);
 	}
+        Double_t MaxHisto = 1.2*max(hRate->GetMaximum(), hRate_MC->GetMaximum());
 	hRate->LabelsDeflate();
-        //hRate->SetMinimum(0);
-        //hRate->SetMaximum(3.0);
+	hRate_MC->LabelsDeflate();
+        hRate->SetMinimum(0);
+        hRate->SetMaximum(MaxHisto);
 	hRate->Draw("histo");
+	hRate_MC->Draw("samehisto");
 	TLegend* legRate = new TLegend(0.5, 0.70, 0.7, 0.8, "");
 	legRate->SetTextFont(42);
 	legRate->SetTextSize(0.04*ScaleSize);
 	legRate->SetFillColor(kWhite);
 	legRate->SetTextColor(kBlack);
-	legRate->AddEntry(hRate,Form("Data 2018, #phi sector = %d", i),"f");
 	legRate->AddEntry(hRate,"|z| < 25 cm ","");
+	legRate->AddEntry(hRate,Form("Data 2018, #phi sector = %d", i),"f");
+	legRate->AddEntry(hRate_MC,"MC DY Fall2017","l");
 	legRate->Draw("same");
 	cPlots->SaveAs(Form("Plots/MaterialPhiSectorRate_%d.png", i));
         delete hRate;
+        delete hRate_MC;
    }
 
       hSlicePhi_Tot->Rebin(4);
