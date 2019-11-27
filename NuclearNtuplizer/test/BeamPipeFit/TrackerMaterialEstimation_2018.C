@@ -424,6 +424,11 @@ void TrackerMaterialEstimation_2018()
       }
       hSlicePhi->Rebin(4);
       hSlicePhi_MC->Rebin(4);
+      // rescale MC to Data:
+      Double_t Integral_MC = hSlicePhi_MC->Integral();
+      if(Integral_MC > 0.)hSlicePhi_MC->Scale(hSlicePhi->Integral()/Integral_MC);
+      else cout << "Warning: MC is not rescaled to Data, because there is no entries to MC" << endl;
+  
       //TH1D* hSlicePhiNoInTrk = (TH1D*)inputFile->Get(Form("hPFDV_PixelSlicePhiNoInTrk_%d", phiSect)); //PhiSlice
       //hSlicePhiNoInTrk->Rebin(2);
       Int_t numBinsSliceX = hSlicePhi->GetNbinsX(); 
@@ -640,47 +645,46 @@ void TrackerMaterialEstimation_2018()
      fitBgAll->SetLineColor(kRed+1);
      cout << "Test pass" << endl;
 
-//      //stara MC
-//      for ( UInt_t iR = 0; iR < 8; iR++ ){
-//          rcBGmin_Fit[iR] = rcBGmin_MC[iR]; 
-//          rcBGmax_Fit[iR] = rcBGmax_MC[iR]; 
-//      }
-//      cout << "Test pass 1 " << endl;
-//      TVirtualFitter* fitterDraw_MC;
-//      
-//      //                                                  npar
-//      // Set the function that the fitter will use and set the parameters
-//       cout << "Test pass 2 " << endl;
-//      fitterDraw_MC->SetFCN( chiSquareBG );
-//       cout << "Test pass 3 " << endl;
-//      fitterDraw_MC->SetParameter( 0,  "par0",   140., 0.01, 0., 500. );
-//      fitterDraw_MC->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. );
-//      fitterDraw_MC->SetParameter( 2,  "par2",   120, 0.01, 0., 500. );
-//      fitterDraw_MC->SetParameter( 3, "par3",    -0.4, 0.01, -10., 10. );
-//      fitterDraw_MC->SetParameter( 4, "par4",    100., 0.01, 0., 500. );
-//      fitterDraw_MC->SetParameter( 5, "par5",    -0.3, 0.01, -10., 10. );
-//      fitterDraw_MC->SetParameter( 6, "par6",     50., 0.01, 0., 200. );
-//      fitterDraw_MC->SetParameter( 7, "par7",    -0.25, 0.01, -10., 10. );
-//      fitterDraw_MC->SetParameter( 8, "par8",    50., 0.01, 0., 200. );
-//      fitterDraw_MC->SetParameter( 9, "par9",    -0.2, 0.01, -10., 10. );
-//      //   fitterDraw_MC->FixParameter(1); fitterDraw_MC->FixParameter(2); 
-//
-//      Double_t arglist_MC[10] = {0.};
-//      fitterDraw_MC->ExecuteCommand( "MIGRAD", arglist_MC, 0 );
-//      Double_t parBG_MC[10];
-//      for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
-//         parBG_MC[iBG] = fitterDraw_MC->GetParameter(iBG);
-//         cout << "parBG_MC[" << iBG << "] = " << parBG_MC[iBG] << endl;
-//      }
-//     TF1 *fitBgAll_MC = new TF1( "fitBgAll_MC",func_fitBgAll, 1., 25., 10 );
-//     fitBgAll_MC ->SetNpx(1000);
-//     for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
-//         fitBgAll_MC->SetParameter(iBG, parBG_MC[iBG]);
-//     }
-//     fitBgAll_MC->SetLineWidth(3);
-//     fitBgAll_MC->SetLineColor(kRed+1);
-//     fitBgAll_MC->Draw("same");
-//      //end MC
+      //stara MC
+      for ( UInt_t iR = 0; iR < 8; iR++ ){
+          rcBGmin_Fit[iR] = rcBGmin_MC[iR]; 
+          rcBGmax_Fit[iR] = rcBGmax_MC[iR]; 
+      }
+      cout << "Test pass 1 " << endl;
+      TVirtualFitter* fitterDraw_MC;
+      fitterDraw_MC = TVirtualFitter::Fitter( 0, 10 );
+      
+      //                                                  npar
+      // Set the function that the fitter will use and set the parameters
+       cout << "Test pass 2 " << endl;
+      hSlicePhiBG_Fit = (TH1D*)hSlicePhiBG_MC ->Clone("hSlicePhiBG_Fit");
+      fitterDraw_MC->SetFCN( chiSquareBG );
+       cout << "Test pass 3 " << endl;
+      fitterDraw_MC->SetParameter( 0,  "par0",   140., 0.01, 0., 500. );
+      fitterDraw_MC->SetParameter( 1, "par1",   -0.7, 0.01, -10., 10. );
+      fitterDraw_MC->SetParameter( 2,  "par2",   120, 0.01, 0., 500. );
+      fitterDraw_MC->SetParameter( 3, "par3",    -0.4, 0.01, -10., 10. );
+      fitterDraw_MC->SetParameter( 4, "par4",    100., 0.01, 0., 500. );
+      fitterDraw_MC->SetParameter( 5, "par5",    -0.3, 0.01, -10., 10. );
+      fitterDraw_MC->SetParameter( 6, "par6",     50., 0.01, 0., 500. );
+      fitterDraw_MC->SetParameter( 7, "par7",    -0.25, 0.01, -10., 10. );
+      fitterDraw_MC->SetParameter( 8, "par8",    50., 0.01, 0., 200. );
+      fitterDraw_MC->SetParameter( 9, "par9",    -0.2, 0.01, -10., 10. );
+      //   fitterDraw_MC->FixParameter(1); fitterDraw_MC->FixParameter(2); 
+
+      Double_t arglist_MC[10] = {0.};
+      fitterDraw_MC->ExecuteCommand( "MIGRAD", arglist_MC, 0 );
+      Double_t parBG_MC[10];
+      for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
+         parBG_MC[iBG] = fitterDraw_MC->GetParameter(iBG);
+         cout << "parBG_MC[" << iBG << "] = " << parBG_MC[iBG] << endl;
+      }
+     TF1 *fitBgAll_MC = new TF1( "fitBgAll_MC",func_fitBgAll, 1., 25., 10 );
+     fitBgAll_MC ->SetNpx(1000);
+     for ( UInt_t iBG = 0; iBG < 10; iBG++ ){
+         fitBgAll_MC->SetParameter(iBG, parBG_MC[iBG]);
+     }
+      //end MC
 
       TCanvas* cPlotPhi = new TCanvas();
       // Inside this canvas, we create two pads
@@ -734,18 +738,16 @@ void TrackerMaterialEstimation_2018()
       //gStyle->SetHatchesLineWidth(2);
       hSlicePhi->SetLineWidth(3);
       hSlicePhi_MC->SetLineWidth(3);
-      hSlicePhiBG->SetLineWidth(3);
       hSlicePhiSignal->SetLineWidth(3);
       hSlicePhi->Draw("histo");
       hSlicePhi_MC->SetLineColor(kGreen+2);
-      Double_t Integral_MC = hSlicePhi_MC->Integral();
-      if(Integral_MC > 0.)hSlicePhi_MC->Scale(hSlicePhi->Integral()/Integral_MC);
       hSlicePhi_MC->Draw("samehisto");
 
       //hSlicePhiNoInTrk->SetLineWidth(3);
       //hSlicePhiNoInTrk->SetLineColor(kGreen+1);
       //hSlicePhiNoInTrk->Draw("samehisto");
 
+      hSlicePhiBG->SetLineWidth(3);
       hSlicePhiBG->SetFillStyle(3004);
       //hSlicePhiBG->SetFillStyle(545);
       hSlicePhiBG->SetFillColor(kRed+1);
@@ -789,10 +791,8 @@ void TrackerMaterialEstimation_2018()
       //legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"");
       legBg->AddEntry(hSlicePhi,"|z| < 25 cm ","");
       legBg->AddEntry(hSlicePhi,Form("Data 2018, #phi sector = %d", phiSect),"l");
+      legBg->AddEntry(hSlicePhiBG,"Data sideband fit region","f");
       legBg->AddEntry(hSlicePhi_MC,Form("MC DY Fall2017, #phi sector = %d", phiSect),"l");
-      //legBg->AddEntry(hSlicePhiNoInTrk,"Data, no income/merged track","l");
-      //legBg->AddEntry(hSlicePhiSignal,"Signal fit region","f");
-      legBg->AddEntry(hSlicePhiBG,"Sideband fit region","f");
       //legBg->AddEntry(fitBg,"sideband fit function","l");
       legBg->Draw("same");
 
@@ -820,9 +820,32 @@ void TrackerMaterialEstimation_2018()
       //pad->SetBorderMode(1);
       gStyle->SetOptFit(0);
       gStyle->SetOptStat(0);
+      hSlicePhi_MC->GetXaxis()->SetRangeUser(Rmin, Rmax);
       hSlicePhi_MC->GetXaxis()->SetTitle("r (cm)");
       hSlicePhi_MC->GetYaxis()->SetTitle(Form("Events / %2.2f cm ",hSlicePhi_MC->GetXaxis()->GetBinWidth(1)));
       hSlicePhi_MC->Draw("histo"); 
+
+      hSlicePhiBG_MC->SetLineWidth(3);
+      hSlicePhiBG_MC->SetFillStyle(3004);
+      hSlicePhiBG_MC->SetFillColor(kRed+1);
+      hSlicePhiBG_MC->SetMarkerColor(kRed+1);
+      hSlicePhiBG_MC->SetLineColor(kRed+1);
+      hSlicePhiBG_MC->Draw("samehisto");
+
+      fitBgAll_MC->SetLineWidth(3);
+      fitBgAll_MC->SetLineColor(kRed+1);
+      fitBgAll_MC->Draw("same");
+
+      TLegend* legBg_MC = new TLegend(0.5, 0.75, 0.8, 0.95, "");
+      legBg_MC->SetTextFont(42);
+      legBg_MC->SetTextSize(0.05*ScaleSize);
+      legBg_MC->SetFillColor(kWhite);
+      legBg_MC->SetTextColor(kBlack);
+      legBg_MC->AddEntry(hSlicePhi,"|z| < 25 cm ","");
+      legBg_MC->AddEntry(hSlicePhi_MC,Form("MC DY Fall2017, #phi sector = %d", phiSect),"l");
+      legBg_MC->AddEntry(hSlicePhiBG,"MC sideband fit region","f");
+      legBg_MC->Draw("same");
+
       //if (phiSect == 1 && FitObject == "BeamPipe" ) CMS_lumi( cPlots, iPeriod, iPos );
       //gStyle->SetOptStat(1000111110);
       //gStyle->SetOptStat(0000000000);
