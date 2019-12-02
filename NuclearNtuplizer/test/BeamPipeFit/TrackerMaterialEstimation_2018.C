@@ -1007,25 +1007,28 @@ void TrackerMaterialEstimation_2018()
 
     double normNumNI[lenPhi][lenStructure];
     double normNumNI_MC[lenPhi][lenStructure];
+    // normalize to L2 (j = 2) or to PS (j = 6)
+    int jnorm = 2;
+    //int jnorm = 6;
     for(int i = 0; i < lenPhi; i++){
         for(int j = 0; j < lenStructure; j++){
            if(fabs(NumNI[i][j])< 0.001)cout << "Warning too small: NumNI[" << i << "][" << j << "] = " << NumNI[i][j] << endl;
            if(fabs(NumNI_MC[i][j])< 0.001)cout << "Warning too small: NumNI_MC[" << i << "][" << j << "] = " << NumNI_MC[i][j] << endl;
-           // normalize to L2 (j = 2) or to PS (j = 6)
-           //int jnorm = 2;
-           int jnorm = 6;
            if (fabs(NumNI[i][jnorm]) > 0.001) normNumNI[i][j] = NumNI[i][j]/NumNI[i][jnorm];
            if (fabs(NumNI_MC[i][jnorm]) > 0.001) normNumNI_MC[i][j] = NumNI_MC[i][j]/NumNI_MC[i][jnorm];
            //cout << "Test phi = " << i << " ID Structure = " << j << " Rate to L2 = " << normNumNI[i][j] << endl; 
         }
     }
+    const char *Structure[lenStructure] = {"beam pipe", "L1", "L2", "L3", "L4", "OS", "PS", "TL1"};
+    TString Structure_string[lenStructure] = {"beam pipe", "L1", "L2", "L3", "L4", "OS", "PS", "TL1"};
     for(int i = 0; i < lenPhi; i++){
         cPlots->cd();
-        const char *Structure[lenStructure] = {"beam pipe", "L1", "L2", "L3", "L4", "OS", "PS", "TL1"};
         TH1F *hRate = new TH1F("hRate","Data Rate to L2",3,0,3);
         TH1F *hRate_MC = new TH1F("hRate_MC","MC Rate to L2",3,0,3);
         hRate->SetStats(0);
-        hRate->SetFillColor(38);
+        //hRate->SetFillColor(38);
+        hRate->SetLineWidth(4);
+        hRate->SetLineColor(kBlue);
         hRate->SetCanExtend(TH1::kAllAxes);
         hRate_MC->SetLineWidth(4);
         hRate_MC->SetLineColor(kGreen+2);
@@ -1039,6 +1042,7 @@ void TrackerMaterialEstimation_2018()
 	hRate_MC->LabelsDeflate();
         hRate->SetMinimum(0);
         hRate->SetMaximum(MaxHisto);
+        hRate->GetYaxis()->SetTitle(Form("Ratio to %s",Structure_string[jnorm].Data()));
 	hRate->Draw("histo");
 	hRate_MC->Draw("samehisto");
 	TLegend* legRate = new TLegend(0.5, 0.70, 0.7, 0.8, "");
@@ -1047,14 +1051,59 @@ void TrackerMaterialEstimation_2018()
 	legRate->SetFillColor(kWhite);
 	legRate->SetTextColor(kBlack);
 	legRate->AddEntry(hRate,"|z| < 25 cm ","");
-	legRate->AddEntry(hRate,Form("Data 2018, #phi sector = %d", i),"f");
+	//legRate->AddEntry(hRate,Form("Data 2018, #phi sector = %d", i),"f");
+	legRate->AddEntry(hRate,Form("Data 2018, #phi sector = %d", i),"l");
 	legRate->AddEntry(hRate_MC,"MC DY Fall2017","l");
 	legRate->Draw("same");
 	cPlots->SaveAs(Form("Plots/MaterialPhiSectorRate_%d.png", i));
         delete hRate;
         delete hRate_MC;
    }
+   for (Int_t j=0;j<lenStructure;j++) {
+        TH1F *hYield = new TH1F("hYield","Data Rate to L2",lenPhi,0,2.*TMath::Pi());
+        TH1F *hYield_MC = new TH1F("hYield_MC","MC Rate to L2",lenPhi,0,2.*TMath::Pi());
+        for(int i = 0; i < lenPhi; i++){
+          Double_t Phi = 2.*TMath::Pi()*(Double_t(i)+0.5)/Double_t(lenPhi);
+	  //hYield -> Fill(Phi,NumNI[i][j]);
+	  //hYield_MC -> Fill(Phi,NumNI_MC[i][j]);
+	  hYield -> Fill(Phi,normNumNI[i][j]);
+	  hYield_MC -> Fill(Phi,normNumNI_MC[i][j]);
+        }
+        cPlots->cd();
+        hYield->SetStats(0);
+        //hYield->SetFillColor(38);
+        hYield->SetLineWidth(4);
+        hYield->SetLineColor(kBlue);
+        hYield->SetCanExtend(TH1::kAllAxes);
+        hYield_MC->SetLineWidth(4);
+        hYield_MC->SetLineColor(kGreen+2);
+        Double_t MaxHisto = 1.2*max(hYield->GetMaximum(), hYield_MC->GetMaximum());
+        hYield->SetMinimum(0);
+        hYield->SetMaximum(MaxHisto);
+        //TPad* pad = (TPad*)cPlots->GetPad(2);
+        //pad->SetLeftMargin(0.2);
 
+        //hYield->GetYaxis()->SetTitle(Form("Yield / %1.3f rad",hYield->GetXaxis()->GetBinWidth(1)));
+        hYield->GetYaxis()->SetTitle(Form("Ratio to %s / %1.3f rad",Structure_string[jnorm].Data(),hYield->GetXaxis()->GetBinWidth(1)));
+        hYield->GetXaxis()->SetTitle("#phi (rad)");
+        hYield->Draw("histo");
+        hYield_MC->Draw("samehisto");
+        TLegend* legRate = new TLegend(0.5, 0.70, 0.7, 0.8, "");
+        legRate->SetTextFont(42);
+        legRate->SetTextSize(0.04*ScaleSize);
+        legRate->SetFillColor(kWhite);
+        legRate->SetTextColor(kBlack);
+        legRate->AddEntry(hYield,"|z| < 25 cm ","");
+        //legRate->AddEntry(hYield,Form("Data 2018, for %s", Structure_string[j].Data()),"f");
+        legRate->AddEntry(hYield,Form("Data 2018, for %s", Structure_string[j].Data()),"l");
+        legRate->AddEntry(hYield_MC,"MC DY Fall2017","l");
+        legRate->Draw("same");
+        cPlots->SaveAs(Form("Plots/MaterialPhiSectorYield_%d.png", j));
+        delete hYield;
+        delete hYield_MC;
+
+        //pad->SetLeftMargin(0.1);
+   }
       hSlicePhi_Tot->Rebin(4);
       hSlicePhiMC_Tot->Rebin(4);
       TString PlotTitle = "Plots/Material_Tot.png";
