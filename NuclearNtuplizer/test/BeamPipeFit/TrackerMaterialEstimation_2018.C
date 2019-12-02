@@ -404,7 +404,37 @@ void TrackerMaterialEstimation_2018()
       vector<double> rmax_BG = { 0, 0, 0, 0, 0, 0, 0, 0};
       vector<double> rmin_BG_MC = { 0, 0, 0, 0, 0, 0, 0, 0};
       vector<double> rmax_BG_MC = { 0, 0, 0, 0, 0, 0, 0, 0};
-     
+      Double_t pc = ( 2*TMath::Pi() ) * Double_t(phiSect)/40; // approximate estimation angle for phi sector
+      for ( UInt_t iBG = 0; iBG <= UInt_t(sizeM); iBG++ ){
+                 rmin_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.5;
+                 rmax_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) + 0.5;
+                 if (iBG == 0) { // for beam pipe
+                    rmin_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.15;
+                    rmax_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) + 0.15;
+                 }
+		 if (iBG == 1) rmin_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.3; // for L1
+		 if (iBG == 2) rmax_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) + 0.4; // for L2
+                 if (iBG == 7) rmax_BG[iBG] = 25.;//for TL1
+                 if (iBG == 1 && (phiSect == 11 || 12) ) rmin_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.4; // for L1
+                 if (iBG == 1 && (phiSect == 27 || 28 || 29 || 30) ) rmax_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) + 0.6; // for L1
+                 if ( (iBG == 2 || iBG == 3) && (phiSect == 8 || 9 || 10 || 28 || 29 || 30) ) rmax_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) + 0.7; // for L2 & L3
+                 if (iBG == 6) rmin_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) - 0.4; // for PS
+                 if (iBG == 6) rmax_BG[iBG] = r0M[iBG] + (x0M[iBG]*cos(pc) + y0M[iBG]*sin(pc)) + 0.4; // for PS
+                 rmin_BG_MC[iBG] = r0M[iBG] - 0.5;
+                 rmax_BG_MC[iBG] = r0M[iBG] + 0.5;
+                 if (iBG == 0) {
+                    rmin_BG_MC[iBG] = r0M[iBG] - 0.2;
+                    rmax_BG_MC[iBG] = r0M[iBG] + 0.2;
+                 }
+		 if (iBG == 1) rmin_BG_MC[iBG] = r0M[iBG] - 0.3; // for L1
+		 if (iBG == 2) rmax_BG_MC[iBG] = r0M[iBG] + 0.4; // for L2
+                 if (iBG == 7) rmax_BG_MC[iBG] = 25.;
+                 if (iBG == 1 && (phiSect == 11 || 12 || 18 || 25 || 31 || 32 || 38) ) rmin_BG_MC[iBG] = r0M[iBG] - 0.4; // for L1
+                 if (iBG == 1 && (phiSect == 27 || 28 || 29 || 30) ) rmax_BG_MC[iBG] = r0M[iBG] + 0.6; // for L1
+                 if ( (iBG == 2 || iBG == 3) && (phiSect == 8 || 9 || 10 || 28 || 29 || 30) ) rmax_BG_MC[iBG] = r0M[iBG] + 0.7; // for L2 & L3
+                 if (iBG == 6) rmin_BG_MC[iBG] = r0M[iBG] + - 0.4; // for PS
+                 if (iBG == 6) rmax_BG_MC[iBG] = r0M[iBG] + 0.4; // for PS
+      } 
       //std::cout << "********MADE IT INTO LOOP********" << std::endl;
       //Int_t numBinsX = h->GetNbinsX();
       //Int_t numBinsY = h->GetNbinsY();
@@ -484,7 +514,6 @@ void TrackerMaterialEstimation_2018()
           Double_t binNum = hSlicePhi->GetBinContent( ix );
           Double_t binNum_MC = hSlicePhi_MC->GetBinContent( ix );
         
-          Double_t pc = ( 2*TMath::Pi() ) * Double_t(phiSect)/40; // approximate estimation angle for phi sector
           Int_t BG_flag = 0;
           Int_t BG_flag_MC = 0;
           for ( UInt_t iBG = 0; iBG <= UInt_t(sizeM); iBG++ ){
@@ -518,8 +547,8 @@ void TrackerMaterialEstimation_2018()
              if (iBG == 6 && (phiSect ==12 || phiSect == 7 )) rc_M_max = 20.;
              if (rc > rc_M_min && rc < rc_M_max){
                  BG_flag = 1;
-		 rmin_BG[iBG] = rc_M_min;
-		 rmax_BG[iBG] = rc_M_max;
+		 //rmin_BG[iBG] = rc_M_min;
+		 //rmax_BG[iBG] = rc_M_max;
                 // remove BG region related to double outter shield structure:
                 if (iBG == 5 && (phiSect == 1 || phiSect == 7 || phiSect == 8 || phiSect == 11 || phiSect == 18 || phiSect == 21 || phiSect == 22 || phiSect == 28 || phiSect == 31 || phiSect == 32 || phiSect == 37 || phiSect == 38) ) BG_flag = 0;            
                 // remove BG region related to rails:
@@ -559,8 +588,8 @@ void TrackerMaterialEstimation_2018()
              if (iBG == 6 && (phiSect ==12 || phiSect == 7 )) rc_M_max = 20.;
              if (rc > rc_M_min && rc < rc_M_max){
                  BG_flag_MC = 1;
-                 rmin_BG_MC[iBG] = rc_M_min;
-                 rmax_BG_MC[iBG] = rc_M_max;
+                 //rmin_BG_MC[iBG] = rc_M_min;
+                 //rmax_BG_MC[iBG] = rc_M_max;
 		 // as for data
 		 if (iBG == 5 && (phiSect == 1 || phiSect == 7 || phiSect == 8 || phiSect == 11 || phiSect == 18 || phiSect == 21 || phiSect == 22 || phiSect == 28 || phiSect == 31 || phiSect == 32 || phiSect == 37 || phiSect == 38) ) BG_flag_MC = 0;
                 // remove BG region related to rails:
@@ -903,9 +932,11 @@ void TrackerMaterialEstimation_2018()
         legNoBG->Draw("same");
 
       for ( UInt_t i_cal = 0; i_cal < lenStructure ; i_cal++ ){
-              Double_t xmin_cal = rmax_BG[i_cal];
-              Double_t xmax_cal = Rmax;
-              if (i_cal < (lenStructure-1))xmax_cal = rmin_BG[i_cal+1];
+              //Double_t xmin_cal = rmax_BG[i_cal];
+              //Double_t xmax_cal = Rmax;
+              //if (i_cal < (lenStructure-1))xmax_cal = rmin_BG[i_cal+1];
+              Double_t xmin_cal = rmin_BG[i_cal];
+              Double_t xmax_cal = rmax_BG[i_cal];
               Int_t xID_min = round((xmin_cal - xmin_int)/BinWidth);
               Int_t xID_max = round((xmax_cal - xmin_int)/BinWidth);
 	      NumNI[phiSect][i_cal] = hSlicePhiNoBG -> Integral(xID_min,xID_max);
@@ -943,9 +974,11 @@ void TrackerMaterialEstimation_2018()
         legNoBG->Draw("same");
 
       for ( UInt_t i_cal = 0; i_cal < lenStructure ; i_cal++ ){
-              Double_t xmin_cal = rmax_BG_MC[i_cal];
-              Double_t xmax_cal = Rmax;
-              if (i_cal < (lenStructure-1))xmax_cal = rmin_BG_MC[i_cal+1];
+              //Double_t xmin_cal = rmax_BG_MC[i_cal];
+              //Double_t xmax_cal = Rmax;
+              //if (i_cal < (lenStructure-1))xmax_cal = rmin_BG_MC[i_cal+1];
+              Double_t xmin_cal = rmin_BG_MC[i_cal];
+              Double_t xmax_cal = rmax_BG_MC[i_cal];
               Int_t xID_min = round((xmin_cal - xmin_int)/BinWidth);
               Int_t xID_max = round((xmax_cal - xmin_int)/BinWidth);
               NumNI_MC[phiSect][i_cal] = hSlicePhiNoBG_MC -> Integral(xID_min,xID_max);
@@ -978,9 +1011,11 @@ void TrackerMaterialEstimation_2018()
         for(int j = 0; j < lenStructure; j++){
            if(fabs(NumNI[i][j])< 0.001)cout << "Warning too small: NumNI[" << i << "][" << j << "] = " << NumNI[i][j] << endl;
            if(fabs(NumNI_MC[i][j])< 0.001)cout << "Warning too small: NumNI_MC[" << i << "][" << j << "] = " << NumNI_MC[i][j] << endl;
-           // normalize to L2 (j = 2)
-           if (fabs(NumNI[i][2]) > 0.001) normNumNI[i][j] = NumNI[i][j]/NumNI[i][2];
-           if (fabs(NumNI_MC[i][2]) > 0.001) normNumNI_MC[i][j] = NumNI_MC[i][j]/NumNI_MC[i][2];
+           // normalize to L2 (j = 2) or to PS (j = 6)
+           //int jnorm = 2;
+           int jnorm = 6;
+           if (fabs(NumNI[i][jnorm]) > 0.001) normNumNI[i][j] = NumNI[i][j]/NumNI[i][jnorm];
+           if (fabs(NumNI_MC[i][jnorm]) > 0.001) normNumNI_MC[i][j] = NumNI_MC[i][j]/NumNI_MC[i][jnorm];
            //cout << "Test phi = " << i << " ID Structure = " << j << " Rate to L2 = " << normNumNI[i][j] << endl; 
         }
     }
